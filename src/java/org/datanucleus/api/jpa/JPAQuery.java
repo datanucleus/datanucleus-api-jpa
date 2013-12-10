@@ -1,0 +1,1017 @@
+/**********************************************************************
+Copyright (c) 2007 Andy Jefferson and others. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+    ...
+**********************************************************************/
+package org.datanucleus.api.jpa;
+
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.FlushModeType;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.Parameter;
+import javax.persistence.PersistenceException;
+import javax.persistence.QueryTimeoutException;
+import javax.persistence.TemporalType;
+import javax.persistence.TypedQuery;
+
+import org.datanucleus.exceptions.NucleusException;
+import org.datanucleus.metadata.QueryLanguage;
+import org.datanucleus.query.QueryUtils;
+import org.datanucleus.store.query.Query;
+import org.datanucleus.store.query.QueryInvalidParametersException;
+import org.datanucleus.store.query.NoQueryResultsException;
+import org.datanucleus.store.query.QueryNotUniqueException;
+import org.datanucleus.util.Localiser;
+import org.datanucleus.util.StringUtils;
+
+/**
+ * Basic implementation of a JPA Query.
+ * Wraps an internal query.
+ * @param <X> Type of the candidate of the query
+ */
+public class JPAQuery<X> implements TypedQuery<X>
+{
+    /** Localisation utility for output messages */
+    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation", 
+        JPAEntityManagerFactory.class.getClassLoader());
+
+    /** Underlying EntityManager handling persistence. */
+    JPAEntityManager em;
+
+    /** Query language. */
+    String language;
+
+    /** Underlying query providing the querying capability. */
+    org.datanucleus.store.query.Query query;
+
+    /** Flush mode for the query. */
+    FlushModeType flushMode = FlushModeType.AUTO;
+
+    /** Lock mode for the query. */
+    LockModeType lockMode = null;
+
+    /** The current start position. */
+    private int startPosition = 0;
+
+    /** The current max number of results. */
+    private int maxResults = -1;
+
+    JPAFetchPlan fetchPlan;
+
+    /**
+     * Constructor for a query used by JPA.
+     * @param em Entity Manager
+     * @param query Underlying query
+     * @param language Query language
+     */
+    public JPAQuery(JPAEntityManager em, org.datanucleus.store.query.Query query, String language)
+    {
+        this.em = em;
+        this.query = query;
+        this.language = language;
+        this.flushMode = em.getFlushMode(); // Default to flush mode of EntityManager
+        this.query.setCacheResults(false);
+        this.fetchPlan = new JPAFetchPlan(query.getFetchPlan());
+//        this.lockMode = em.getLockMode();
+    }
+
+    public JPAFetchPlan getFetchPlan()
+    {
+        return fetchPlan;
+    }
+
+    /**
+     * Method to execute a (UPDATE/DELETE) query returning the number of changed records.
+     * @return Number of records updated/deleted with the query.
+     * @throws QueryTimeoutException if the query times out
+     */
+    public int executeUpdate()
+    {
+        if (query.getType() == org.datanucleus.store.query.Query.SELECT)
+        {
+            throw new IllegalStateException(LOCALISER.msg("Query.ExecuteUpdateForSelectInvalid"));
+        }
+
+        try
+        {
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            {
+                em.flush();
+            }
+
+            if (lockMode == LockModeType.PESSIMISTIC_READ || lockMode == LockModeType.PESSIMISTIC_WRITE)
+            {
+                query.setSerializeRead(Boolean.TRUE);
+            }
+
+            Object result = query.executeWithMap(null); // Params defined using setParameter() earlier
+            if (result != null)
+            {
+                return ((Long)result).intValue();
+            }
+            else
+            {
+                throw new NucleusException("Invalid return from query for an update/delete. Expected Long");
+            }
+        }
+        catch (NoQueryResultsException nqre)
+        {
+            return 0;
+        }
+        catch (QueryInvalidParametersException ex)
+        {
+            throw new IllegalArgumentException(ex.getMessage(),ex);
+        }
+        catch (org.datanucleus.store.query.QueryTimeoutException qte)
+        {
+            throw new QueryTimeoutException();
+        }
+        catch (NucleusException jpe)
+        {
+            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+        }
+    }
+
+    /**
+     * Method to execute a (SELECT) query statement returning multiple results.
+     * @return The results
+     * @throws QueryTimeoutException if the query times out
+     */
+    public List getResultList()
+    {
+        if (query.getType() != org.datanucleus.store.query.Query.SELECT)
+        {
+            throw new IllegalStateException(LOCALISER.msg("Query.GetResultForUpdateInvalid"));
+        }
+
+        try
+        {
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            {
+                em.flush();
+            }
+
+            if (lockMode == LockModeType.PESSIMISTIC_READ || lockMode == LockModeType.PESSIMISTIC_WRITE)
+            {
+                query.setSerializeRead(Boolean.TRUE);
+            }
+
+            if (QueryUtils.queryReturnsSingleRow(query))
+            {
+                X res = (X) query.executeWithMap(null); // Params defined using setParameter() earlier
+                List l = new ArrayList<X>();
+                l.add(res);
+                return l;
+            }
+            else
+            {
+                return (List)query.executeWithMap(null); // Params defined using setParameter() earlier
+            }
+        }
+        catch (NoQueryResultsException nqre)
+        {
+            return null;
+        }
+        catch (QueryInvalidParametersException ex)
+        {
+            throw new IllegalArgumentException(ex.getMessage(),ex);
+        }
+        catch (org.datanucleus.store.query.QueryTimeoutException qte)
+        {
+            throw new QueryTimeoutException();
+        }
+        catch (NucleusException jpe)
+        {
+            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+        }
+    }
+
+    /**
+     * Method to execute a SELECT statement returning a single result.
+     * @return the result
+     * @throws QueryTimeoutException if the query times out
+     */
+    public X getSingleResult()
+    {
+        if (query.getType() != org.datanucleus.store.query.Query.SELECT)
+        {
+            throw new IllegalStateException(LOCALISER.msg("Query.GetResultForUpdateInvalid"));
+        }
+
+        try
+        {
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            {
+                em.flush();
+            }
+
+            query.setUnique(true);
+
+            if (lockMode == LockModeType.PESSIMISTIC_READ || lockMode == LockModeType.PESSIMISTIC_WRITE)
+            {
+                query.setSerializeRead(Boolean.TRUE);
+            }
+
+            return (X)query.executeWithMap(null); // Params defined using setParameter() earlier
+        }
+        catch (NoQueryResultsException nqre)
+        {
+            throw new NoResultException("No results for query: " + query.toString());
+        }
+        catch (QueryNotUniqueException ex)
+        {
+            throw new NonUniqueResultException("Expected a single result for query: " + query.toString() +
+                " : " + StringUtils.getStringFromStackTrace(ex));
+        }
+        catch (QueryInvalidParametersException ex)
+        {
+            throw new IllegalArgumentException(ex.getMessage(),ex);
+        }
+        catch (org.datanucleus.store.query.QueryTimeoutException qte)
+        {
+            throw new QueryTimeoutException();
+        }
+        catch (NucleusException jpe)
+        {
+            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+        }
+    }
+
+    /**
+     * Method to set the results to start from a particular position.
+     * @param startPosition position of first result numbered from 0
+     * @return The query
+     */
+    public TypedQuery<X> setFirstResult(int startPosition)
+    {
+        if (startPosition < 0)
+        {
+            throw new IllegalArgumentException(LOCALISER.msg("Query.StartPositionInvalid"));
+        }
+
+        this.startPosition = startPosition;
+        if (this.maxResults == -1)
+        {
+            query.setRange(this.startPosition, Long.MAX_VALUE);
+        }
+        else
+        {
+            query.setRange(this.startPosition, this.startPosition+this.maxResults);
+        }
+        return this;
+    }
+
+    /**
+     * Method to set the max number of results to return.
+     * @param max Number of results max
+     * @return The query
+     */
+    public TypedQuery<X> setMaxResults(int max)
+    {
+        if (max < 0)
+        {
+            throw new IllegalArgumentException(LOCALISER.msg("Query.MaxResultsInvalid"));
+        }
+
+        this.maxResults = max;
+        query.setRange(startPosition, startPosition+max);
+        return this;
+    }
+
+    /**
+     * The maximum number of results the query object was set to retrieve. 
+     * Returns Integer.MAX_VALUE if setMaxResults was not applied to the query object.
+     * @return maximum number of results
+     */
+    public int getMaxResults()
+    {
+        if (maxResults == -1)
+        {
+            return Integer.MAX_VALUE;
+        }
+        long queryMin = query.getRangeFromIncl();
+        long queryMax = query.getRangeToExcl();
+        long max = queryMax - queryMin;
+        if (max > Integer.MAX_VALUE)
+        {
+            return Integer.MAX_VALUE;
+        }
+        return (int)max;
+    }
+
+    /**
+     * The position of the first result the query object was set to retrieve. 
+     * Returns 0 if setFirstResult was not applied to the query object.
+     * @return position of first result
+     */
+    public int getFirstResult()
+    {
+        return (int)query.getRangeFromIncl();
+    }
+
+    /**
+     * Mutator for the flush mode.
+     * @param mode Flush mode
+     * @return The query
+     */
+    public TypedQuery<X> setFlushMode(FlushModeType mode)
+    {
+        flushMode = mode;
+        return this;
+    }
+
+    /**
+     * The flush mode in effect for the query execution. If a flush mode has not been set for 
+     * the query object, returns the flush mode in effect for the entity manager.
+     * @return flush mode
+     */
+    public FlushModeType getFlushMode()
+    {
+        return flushMode;
+    }
+
+    /**
+     * Method to add a vendor extension to the query.
+     * If the hint name is not recognized, it is silently ignored.
+     * @param hintName Name of the "hint"
+     * @param value Value for the "hint"
+     * @return the same query instance
+     * @throws IllegalArgumentException if the second argument is not valid for the implementation
+     */
+    public TypedQuery<X> setHint(String hintName, Object value)
+    {
+        if (hintName == null)
+        {
+            return this;
+        }
+        if (hintName.equalsIgnoreCase("javax.persistence.query.timeout"))
+        {
+            query.setDatastoreReadTimeoutMillis((Integer)value);
+        }
+        else if (hintName.equalsIgnoreCase(JPAEntityGraph.FETCHGRAPH_PROPERTY))
+        {
+            JPAEntityGraph eg = (JPAEntityGraph) value;
+            String egName = eg.getName();
+            if (eg.getName() == null)
+            {
+                JPAEntityManagerFactory emf = (JPAEntityManagerFactory)em.getEntityManagerFactory();
+                String tmpEntityGraphName = emf.getDefinedEntityGraphName();
+                emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                egName = tmpEntityGraphName;
+            }
+            query.getFetchPlan().setGroup(egName);
+            // TODO Need to deregister any temporary EntityGraph
+        }
+        else if (hintName.equalsIgnoreCase(JPAEntityGraph.LOADGRAPH_PROPERTY))
+        {
+            JPAEntityGraph eg = (JPAEntityGraph) value;
+            String egName = eg.getName();
+            if (eg.getName() == null)
+            {
+                JPAEntityManagerFactory emf = (JPAEntityManagerFactory)em.getEntityManagerFactory();
+                String tmpEntityGraphName = emf.getDefinedEntityGraphName();
+                emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                egName = tmpEntityGraphName;
+            }
+            query.getFetchPlan().addGroup(egName);
+            // TODO Need to deregister any temporary EntityGraph
+        }
+        else if (hintName.equalsIgnoreCase("datanucleus.query.fetchSize"))
+        {
+            if (value instanceof Integer)
+            {
+                query.getFetchPlan().setFetchSize((Integer)value);
+            }
+            else if (value instanceof Long)
+            {
+                query.getFetchPlan().setFetchSize(((Long)value).intValue());
+            }
+        }
+
+        // Just treat a "hint" as an "extension".
+        query.addExtension(hintName, value);
+        return this;
+    }
+
+    /**
+     * Get the hints and associated values that are in effect for the query instance.
+     * @return query hints
+     */
+    public Map getHints()
+    {
+        Map extensions = query.getExtensions();
+        Map map = new HashMap();
+        if (extensions != null && extensions.size() > 0)
+        {
+            map.putAll(extensions);
+        }
+        return map;
+    }
+
+    /**
+     * Get the names of the hints that are supported for query objects.
+     * These hints correspond to hints that may be passed to the methods of the Query interface 
+     * that take hints as arguments or used with the NamedQuery and NamedNativeQuery annotations.
+     * These include all standard query hints as well as vendor-specific hints supported by the 
+     * provider. These hints may or may not currently be in effect.
+     * @return hints
+     */
+    public Set<String> getSupportedHints()
+    {
+        return query.getSupportedExtensions();
+    }
+
+    /**
+     * Bind the value of a Parameter object.
+     * @param param parameter to be set
+     * @param value parameter value
+     * @return query instance
+     * @throws IllegalArgumentException if parameter does not correspond to a parameter of the query
+     */
+     public <T> TypedQuery<X> setParameter(Parameter<T> param, T value)
+     {
+         if (param.getName() != null)
+         {
+             setParameter(param.getName(), value);
+         }
+         else
+         {
+             setParameter(param.getPosition(), value);
+         }
+         return this;
+     }
+
+    /**
+     * Bind an argument to a named parameter.
+     * @param name the parameter name
+     * @param value The value for the param
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
+     *     or argument is of incorrect type
+     */
+    public TypedQuery<X> setParameter(String name, Object value)
+    {
+        try
+        {
+            query.setImplicitParameter(name, value);
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage(), ipe);
+        }
+        return this;
+    }
+
+    /**
+     * Bind an argument to a positional parameter.
+     * @param position Parameter position
+     * @param value The value
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not correspond to positional parameter of query 
+     *     or argument is of incorrect type
+     */
+    public TypedQuery<X> setParameter(int position, Object value)
+    {
+        try
+        {
+            if (language.equals(QueryLanguage.SQL.toString()))
+            {
+                query.setImplicitParameter(position, value);
+            }
+            else
+            {
+                query.setImplicitParameter("" + position, value);
+            }
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage(), ipe);
+        }
+        return this;
+    }
+
+    /**
+     * Bind an instance of java.util.Date to a named parameter.
+     * @param name Name of the param
+     * @param value Value for the param
+     * @param temporalType The temporal type
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
+     */
+    public TypedQuery<X> setParameter(String name, Date value, TemporalType temporalType)
+    {
+        Object paramValue = value;
+        if (temporalType == TemporalType.TIME && !(value instanceof Time))
+        {
+            paramValue = new Time(value.getTime());
+        }
+        else if (temporalType == TemporalType.TIMESTAMP && !(value instanceof Timestamp))
+        {
+            paramValue = new Timestamp(value.getTime());
+        }
+
+        try
+        {
+            query.setImplicitParameter(name, paramValue);
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage());
+        }
+        return this;
+    }
+
+    /**
+     * Bind an instance of java.util.Calendar to a named parameter.
+     * @param name name of the param
+     * @param value Value for the param
+     * @param temporalType The temporal type
+     * @return the same query instance
+     * @throws IllegalArgumentException if parameter name does not correspond to parameter in query string
+     */
+    public TypedQuery<X> setParameter(String name, Calendar value, TemporalType temporalType)
+    {
+        Object paramValue = value;
+        if (temporalType == TemporalType.DATE)
+        {
+            paramValue = value.getTime();
+        }
+        else if (temporalType == TemporalType.TIME)
+        {
+            paramValue = new Time(value.getTime().getTime());
+        }
+        else if (temporalType == TemporalType.TIMESTAMP)
+        {
+            paramValue = new Timestamp(value.getTime().getTime());
+        }
+
+        try
+        {
+            query.setImplicitParameter(name, paramValue);
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage());
+        }
+        return this;
+    }
+
+    /**
+     * Bind an instance of java.util.Date to a positional parameter.
+     * @param position Parameter position
+     * @param value Value for the param
+     * @param temporalType Temporal Type
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not correspond to positional parameter of query
+     */
+    public TypedQuery<X> setParameter(int position, Date value, TemporalType temporalType)
+    {
+        Object paramValue = value;
+        if (temporalType == TemporalType.TIME && !(value instanceof Time))
+        {
+            paramValue = new Time(value.getTime());
+        }
+        else if (temporalType == TemporalType.TIMESTAMP && !(value instanceof Timestamp))
+        {
+            paramValue = new Timestamp(value.getTime());
+        }
+
+        try
+        {
+            if (language.equals(QueryLanguage.SQL.toString()))
+            {
+                query.setImplicitParameter(position, paramValue);
+            }
+            else
+            {
+                query.setImplicitParameter("" + position, paramValue);
+            }
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage());
+        }
+        return this;
+    }
+
+    /**
+     * Bind an instance of java.util.Calendar to a positional parameter.
+     * @param position Parameter position
+     * @param value Value for the param
+     * @param temporalType Temporal type
+     * @return the same query instance
+     * @throws IllegalArgumentException if position does not correspond to positional parameter of query
+     */
+    public TypedQuery<X> setParameter(int position, Calendar value, TemporalType temporalType)
+    {
+        Object paramValue = value;
+        if (temporalType == TemporalType.DATE)
+        {
+            paramValue = value.getTime();
+        }
+        else if (temporalType == TemporalType.TIME)
+        {
+            paramValue = new Time(value.getTime().getTime());
+        }
+        else if (temporalType == TemporalType.TIMESTAMP)
+        {
+            paramValue = new Timestamp(value.getTime().getTime());
+        }
+
+        try
+        {
+            if (language.equals(QueryLanguage.SQL.toString()))
+            {
+                query.setImplicitParameter(position, paramValue);
+            }
+            else
+            {
+                query.setImplicitParameter("" + position, paramValue);
+            }
+        }
+        catch (QueryInvalidParametersException ipe)
+        {
+            throw new IllegalArgumentException(ipe.getMessage());
+        }
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#setParameter(javax.persistence.Parameter, java.util.Calendar, javax.persistence.TemporalType)
+     */
+    public JPAQuery<X> setParameter(Parameter<Calendar> param, Calendar cal, TemporalType type)
+    {
+        if (param.getName() != null)
+        {
+            setParameter(param.getName(), cal, type);
+        }
+        else
+        {
+            setParameter(param.getPosition(), cal, type);
+        }
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#setParameter(javax.persistence.Parameter, java.util.Date, javax.persistence.TemporalType)
+     */
+    public TypedQuery<X> setParameter(Parameter<Date> param, Date date, TemporalType type)
+    {
+        if (param.getName() != null)
+        {
+            setParameter(param.getName(), date, type);
+        }
+        else
+        {
+            setParameter(param.getPosition(), date, type);
+        }
+        return this;
+    }
+
+    /**
+     * Accessor for the internal query.
+     * @return Internal query
+     */
+    public org.datanucleus.store.query.Query getInternalQuery()
+    {
+        return query;
+    }
+
+    /**
+     * Return an object of the specified type to allow access to the provider-specific API.
+     * If the provider's Query implementation does not support the specified class, the 
+     * PersistenceException is thrown.
+     * @param cls the class of the object to be returned. This is normally either the underlying 
+     * Query implementation class or an interface that it implements.
+     * @return an instance of the specified class
+     * @throws PersistenceException if the provider does not support the call.
+     */
+    public <T> T unwrap(Class<T> cls)
+    {
+        if (cls == org.datanucleus.store.query.Query.class)
+        {
+            return (T)query;
+        }
+        throw new PersistenceException("Not supported unwrapping of query to " + cls.getName());
+    }
+
+    /**
+     * Accessor for the query language.
+     * @return Query language
+     */
+    public String getLanguage()
+    {
+        return language;
+    }
+
+    /**
+     * Get the query parameter objects.
+     * Returns empty set if the query has no parameters.
+     * @return parameter objects
+     */
+    public Set<Parameter<?>> getParameters()
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            return Collections.EMPTY_SET;
+        }
+
+        Set paramKeys = query.getImplicitParameters().keySet();
+        Set<Parameter<?>> parameters = new HashSet();
+        Iterator iter = paramKeys.iterator();
+        while (iter.hasNext())
+        {
+            Object paramKey = iter.next();
+            Object value = query.getImplicitParameters().get(paramKey);
+            if (paramKey instanceof String)
+            {
+                parameters.add(new JPAQueryParameter((String)paramKey, value != null ? value.getClass() : null));
+            }
+            else if (paramKey instanceof Integer)
+            {
+                parameters.add(new JPAQueryParameter((Integer)paramKey, value != null ? value.getClass() : null));
+            }
+        }
+        return parameters;
+    }
+
+    /**
+     * Get the parameter of the given name and type.
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter of the specified name and type doesn't exist
+     */
+    public <T> Parameter<T> getParameter(String name, Class<T> type)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter with name " + name + " and type=" + type.getName());
+        }
+
+        Set paramKeys = query.getImplicitParameters().keySet();
+        Iterator iter = paramKeys.iterator();
+        while (iter.hasNext())
+        {
+            Object paramKey = iter.next();
+            if (paramKey instanceof String && ((String)paramKey).equals(name))
+            {
+                Object value = query.getImplicitParameters().get(paramKey);
+                if (value != null && type.isAssignableFrom(value.getClass()))
+                {
+                    return new JPAQueryParameter((String)paramKey, type);
+                }
+            }
+        }
+        throw new IllegalArgumentException("No parameter with name " + name + " and type=" + type.getName());
+    }
+
+    /**
+     * Get the positional parameter with the given position and type.
+     * @return parameter object
+     * @throws IllegalArgumentException if the parameter with the specified position and type doesn't exist
+     */
+    public <T> Parameter<T> getParameter(int position, Class<T> type)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter at position=" + position + " and type=" + type.getName());
+        }
+
+        Set paramKeys = query.getImplicitParameters().keySet();
+        Iterator iter = paramKeys.iterator();
+        while (iter.hasNext())
+        {
+            Object paramKey = iter.next();
+            if (paramKey instanceof Integer && ((Integer)paramKey).intValue() == position)
+            {
+                Object value = query.getImplicitParameters().get(paramKey);
+                if (value != null && type.isAssignableFrom(value.getClass()))
+                {
+                    return new JPAQueryParameter((Integer)paramKey, type);
+                }
+            }
+        }
+        throw new IllegalArgumentException("No parameter at position=" + position + " and type=" + type.getName());
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#getParameter(int)
+     */
+    public Parameter<?> getParameter(int position)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter at position=" + position);
+        }
+
+        Set paramKeys = query.getImplicitParameters().keySet();
+        Iterator iter = paramKeys.iterator();
+        while (iter.hasNext())
+        {
+            Object paramKey = iter.next();
+            if (paramKey instanceof Integer && ((Integer)paramKey).intValue() == position)
+            {
+                Object value = query.getImplicitParameters().get(paramKey);
+                return new JPAQueryParameter((Integer)paramKey, value != null ? value.getClass() : null);
+            }
+        }
+        throw new IllegalArgumentException("No parameter at position=" + position);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#getParameter(java.lang.String)
+     */
+    public Parameter<?> getParameter(String name)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter with name " + name);
+        }
+
+        Set paramKeys = query.getImplicitParameters().keySet();
+        Iterator iter = paramKeys.iterator();
+        while (iter.hasNext())
+        {
+            Object paramKey = iter.next();
+            if (paramKey instanceof String && ((String)paramKey).equals(name))
+            {
+                Object value = query.getImplicitParameters().get(paramKey);
+                return new JPAQueryParameter((String)paramKey, value != null ? value.getClass() : null);
+            }
+        }
+        throw new IllegalArgumentException("No parameter with name " + name);
+    }
+
+    /**
+     * Return the value that has been bound to the parameter.
+     * @param param parameter object
+     * @return parameter value
+     * @throws IllegalStateException if the parameter has not been bound
+     */
+    public <T> T getParameterValue(Parameter<T> param)
+    {
+        if (param.getName() != null)
+        {
+            if (query.getImplicitParameters() == null)
+            {
+                throw new IllegalArgumentException("No parameter with name " + param.getName());
+            }
+
+            if (query.getImplicitParameters().containsKey(param.getName()))
+            {
+                return (T)query.getImplicitParameters().get(param.getName());
+            }
+        }
+        else
+        {
+            if (query.getImplicitParameters() == null)
+            {
+                throw new IllegalArgumentException("No parameter at position " + param.getPosition());
+            }
+
+            if (query.getImplicitParameters().containsKey(param.getPosition()))
+            {
+                return (T)query.getImplicitParameters().get(param.getPosition());
+            }
+        }
+        throw new IllegalStateException("No parameter matching " + param + " bound to this query");
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#getParameterValue(int)
+     */
+    public Object getParameterValue(int position)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter at position " + position);
+        }
+
+        if (query.getImplicitParameters().containsKey(position))
+        {
+            return query.getImplicitParameters().get(position);
+        }
+        throw new IllegalArgumentException("No parameter at position " + position);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#getParameterValue(java.lang.String)
+     */
+    public Object getParameterValue(String name)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            throw new IllegalArgumentException("No parameter with name " + name);
+        }
+
+        if (query.getImplicitParameters().containsKey(name))
+        {
+            return query.getImplicitParameters().get(name);
+        }
+        throw new IllegalArgumentException("No parameter with name " + name);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.persistence.Query#isBound(javax.persistence.Parameter)
+     */
+    public boolean isBound(Parameter<?> param)
+    {
+        if (query.getImplicitParameters() == null)
+        {
+            return false;
+        }
+
+        if (param.getName() != null)
+        {
+            if (query.getImplicitParameters().containsKey(param.getName()))
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (query.getImplicitParameters().containsKey(param.getPosition()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public LockModeType getLockMode()
+    {
+        if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
+        {
+            throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
+        }
+
+        return lockMode;
+    }
+
+    public TypedQuery<X> setLockMode(LockModeType lock)
+    {
+        if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
+        {
+            throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
+        }
+
+        this.lockMode = lock;
+        return this;
+    }
+
+    /**
+     * Convenience method to allow setting of the result class of the internal query.
+     * @param resultClass The result class
+     * @return This query
+     */
+    TypedQuery<X> setResultClass(Class resultClass)
+    {
+        query.setResultClass(resultClass);
+        return this;
+    }
+
+    /**
+     * Method to return the single-string form of the query.
+     * Note that the JPA spec doesn't define this methods handling and this is an extension.
+     * @return The single-string form of the query
+     */
+    public String toString()
+    {
+        return query.toString();
+    }
+
+    /**
+     * Accessor for the native query invoked by this query (if known at this time and supported by the
+     * store plugin).
+     * @return The native query (e.g for RDBMS this is the SQL).
+     */
+    public Object getNativeQuery()
+    {
+        return query.getNativeQuery();
+    }
+}

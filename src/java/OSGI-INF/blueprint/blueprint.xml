@@ -1,0 +1,10 @@
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+<bean id="persistenceProviderImpl" class="org.datanucleus.api.jpa.PersistenceProviderImpl"/>                                                                                
+    <service id="persistenceProvider" ref="persistenceProviderImpl"  interface="javax.persistence.spi.PersistenceProvider">
+        <service-properties>
+            <entry key="javax.persistence.provider" value="org.datanucleus.api.jpa.PersistenceProviderImpl"/>
+        </service-properties>
+    </service>
+</blueprint>
