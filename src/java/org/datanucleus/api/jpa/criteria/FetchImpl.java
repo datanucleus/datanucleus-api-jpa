@@ -17,6 +17,7 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.criteria;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.persistence.criteria.Fetch;
@@ -109,6 +110,10 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      */
     public Set<Fetch<X, ?>> getFetches()
     {
+        if (fetches == null)
+        {
+            return Collections.EMPTY_SET;
+        }
         return fetches;
     }
 
