@@ -18,6 +18,7 @@ Contributors:
 package org.datanucleus.api.jpa.criteria;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -107,6 +108,10 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
      */
     public Set<Join<X, ?>> getJoins()
     {
+        if (joins == null)
+        {
+            return Collections.EMPTY_SET;
+        }
         return joins;
     }
 
@@ -339,6 +344,10 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
      */
     public Set<Fetch<X, ?>> getFetches()
     {
+        if (fetchJoins == null)
+        {
+            return Collections.EMPTY_SET;
+        }
         return fetchJoins;
     }
 
