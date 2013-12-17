@@ -179,7 +179,7 @@ public class InPredicate<X> extends PredicateImpl implements Predicate, In<X>
      */
     public String toString()
     {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         if (negated)
         {
             str.append("!(");

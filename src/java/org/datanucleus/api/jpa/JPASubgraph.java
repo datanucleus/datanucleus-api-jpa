@@ -37,7 +37,7 @@ public class JPASubgraph<T> extends JPAGraph<T> implements Subgraph<T>
 
     public String toString()
     {
-        StringBuffer str = new StringBuffer("Graph(");
+        StringBuilder str = new StringBuilder("Graph(");
         str.append("type=").append(classType.getName());
         if (attributeNodeMap != null)
         {

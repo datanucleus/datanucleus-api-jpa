@@ -56,7 +56,7 @@ public class ConcatExpression extends ExpressionImpl<String>
     @Override
     public String toString()
     {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         str.append("CONCAT(");
         str.append(JPQLHelper.getJPQLForExpression(((ExpressionImpl)expr1).getQueryExpression()));
         str.append(",");

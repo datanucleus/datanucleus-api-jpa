@@ -576,7 +576,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         if (from)
         {
             // "mydomain.MyClass {alias} JOIN ..."
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
             str.append(getJavaType().getName());
             if (getAlias() != null)
             {

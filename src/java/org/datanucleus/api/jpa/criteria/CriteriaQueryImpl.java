@@ -690,7 +690,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         if (jpqlString == null)
         {
             // Generate the query string
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
             str.append("SELECT ");
             if (distinct)
             {

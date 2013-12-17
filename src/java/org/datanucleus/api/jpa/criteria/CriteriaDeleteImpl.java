@@ -240,7 +240,7 @@ public class CriteriaDeleteImpl<T> implements CriteriaDelete<T>, Serializable
         if (jpqlString == null)
         {
             // Generate the query string
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
             str.append("DELETE ");
 
             // FROM clause

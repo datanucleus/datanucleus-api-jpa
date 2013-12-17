@@ -137,7 +137,7 @@ public class JPAEntityGraph<T> extends JPAGraph<T> implements EntityGraph<T>
 
     public String toString()
     {
-        StringBuffer str = new StringBuffer("Graph(");
+        StringBuilder str = new StringBuilder("Graph(");
         str.append("\"").append(name).append("\"");
         str.append(", type=").append(classType.getName());
         if (attributeNodeMap != null)

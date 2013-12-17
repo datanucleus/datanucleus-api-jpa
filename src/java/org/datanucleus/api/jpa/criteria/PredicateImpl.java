@@ -154,7 +154,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
      */
     public String toString()
     {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
         if (negated)
         {
             str.append("!(");

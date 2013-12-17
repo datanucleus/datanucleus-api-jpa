@@ -310,7 +310,7 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
         if (jpqlString == null)
         {
             // Generate the query string
-            StringBuffer str = new StringBuffer();
+            StringBuilder str = new StringBuilder();
             str.append("UPDATE ");
             str.append(from.toString(true));
             str.append(" SET ");
