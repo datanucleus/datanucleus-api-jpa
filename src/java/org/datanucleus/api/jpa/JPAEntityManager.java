@@ -361,7 +361,7 @@ public class JPAEntityManager implements EntityManager
                 {
                     if (acmd.usesSingleFieldIdentityClass() && ec.getNucleusContext().getIdentityKeyTranslator() == null)
                     {
-                        if (ec.getNucleusContext().getPersistenceConfiguration().getBooleanProperty(JPAPropertyNames.PROPERTY_JPA_FIND_TYPE_CONVERSION))
+                        if (ec.getNucleusContext().getPersistenceConfiguration().getBooleanProperty(PropertyNames.PROPERTY_FIND_OBJECT_TYPE_CONVERSION))
                         {
                             String[] pkNames = acmd.getPrimaryKeyMemberNames();
                             AbstractMemberMetaData mmd = acmd.getMetaDataForMember(pkNames[0]);

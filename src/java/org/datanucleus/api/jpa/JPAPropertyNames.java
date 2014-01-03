@@ -25,7 +25,6 @@ public class JPAPropertyNames
     public static final String PROPERTY_JPA_ADD_CLASS_TRANSFORMER = "datanucleus.jpa.addClassTransformer";
     public static final String PROPERTY_JPA_PERSISTENCE_CONTEXT_TYPE = "datanucleus.jpa.persistenceContextType";
     public static final String PROPERTY_JPA_TRANSACTION_ROLLBACK_ON_EXCEPTION = "datanucleus.jpa.txnMarkForRollbackOnException";
-    public static final String PROPERTY_JPA_FIND_TYPE_CONVERSION = "datanucleus.jpa.findTypeConversion";
     public static final String PROPERTY_JPA_SINGLETON_EMF_FOR_NAME = "datanucleus.singletonEMFForName";
 
     public static final String PROPERTY_JPA_STANDARD_JDBC_URL = "javax.persistence.jdbc.url";
