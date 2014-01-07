@@ -19,6 +19,6 @@ __Javadocs__ : [3.3](http://www.datanucleus.org/javadocs/api.jpa/3.3/), [3.2](ht
 
 __Download(Releases)__ : [Maven Central](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jpa)
 
-__Download(Nightly)__ : [Nightly Builds](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jpa)
+__Download(Nightly)__ : [Nightly Builds](http://www.datanucleus.org/downloads/maven2-nightly/org/datanucleus/datanucleus-api-jpa)
 
 __Dependencies__ : See file [pom.xml](pom.xml)
