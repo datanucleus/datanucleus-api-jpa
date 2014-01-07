@@ -152,6 +152,8 @@ Contributors:
 
     <!-- EXTENSION ANNOTATIONS -->
     <extension point="org.datanucleus.member_annotation_handler">
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.Index" 
+            handler="org.datanucleus.api.jpa.annotations.IndexHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.JdbcType" 
             handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" 
