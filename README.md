@@ -18,8 +18,8 @@ __RoadMap__ : http://issues.datanucleus.org/browse/NUCJPA?report=com.atlassian.j
 
 __Javadocs__ : [3.3](http://www.datanucleus.org/javadocs/api.jpa/3.3/), [3.2](http://www.datanucleus.org/javadocs/api.jpa/3.2/), [3.1](http://www.datanucleus.org/javadocs/api.jpa/3.1/), [3.0](http://www.datanucleus.org/javadocs/api.jpa/3.0/), [2.1](http://www.datanucleus.org/javadocs/api.jpa/2.1/), [3.2](http://www.datanucleus.org/javadocs/api.jpa/2.0/), [1.1](http://www.datanucleus.org/javadocs/api.jpa/1.1/)
 
-__Download(Releases)__ : [Maven Central](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jdo)
+__Download(Releases)__ : [Maven Central](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jpa)
 
-__Download(Nightly)__ : [Nightly Builds](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jdo)
+__Download(Nightly)__ : [Nightly Builds](http://central.maven.org/maven2/org/datanucleus/datanucleus-api-jpa)
 
 __Dependencies__ : See file [pom.xml](pom.xml)
