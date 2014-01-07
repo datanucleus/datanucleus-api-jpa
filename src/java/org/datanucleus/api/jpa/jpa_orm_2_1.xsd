@@ -1148,6 +1148,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="extension" type="orm:extension" minOccurs="0" maxOccurs="unbounded"/> <!-- DN EXTENSION -->
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="column-list" type="xsd:string" use="required"/>
