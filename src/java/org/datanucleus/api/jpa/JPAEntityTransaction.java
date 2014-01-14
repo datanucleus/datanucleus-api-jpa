@@ -41,8 +41,8 @@ public class JPAEntityTransaction implements EntityTransaction
     protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
         NucleusJPAHelper.class.getClassLoader());
 
-    /** ExecutionContext managing the persistence and providing the underlying transaction. */
-    ExecutionContext ec;
+    /** The underlying transaction */
+    org.datanucleus.Transaction tx;
 
     /**
      * Constructor.
@@ -50,7 +50,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public JPAEntityTransaction(ExecutionContext ec)
     {
-        this.ec = ec;
+        this.tx = ec.getTransaction();
     }
 
     /**
@@ -59,7 +59,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public boolean isActive()
     {
-        return ec.getTransaction().isActive();
+        return tx.isActive();
     }
 
     /**
@@ -71,7 +71,7 @@ public class JPAEntityTransaction implements EntityTransaction
         assertNotActive();
         try
         {
-            ec.getTransaction().begin();
+            tx.begin();
         }
         catch (NucleusException ne)
         {
@@ -88,7 +88,7 @@ public class JPAEntityTransaction implements EntityTransaction
     {
         assertActive();
 
-        if (ec.getTransaction().getRollbackOnly())
+        if (tx.getRollbackOnly())
         {
             // This is thrown by the underlying transaction but we want to have a RollbackException here so intercept it
             if (NucleusLogger.TRANSACTION.isDebugEnabled())
@@ -100,7 +100,7 @@ public class JPAEntityTransaction implements EntityTransaction
 
         try
         {
-            ec.getTransaction().commit();
+            tx.commit();
         }
         catch (NucleusTransactionException nte)
         {
@@ -138,7 +138,7 @@ public class JPAEntityTransaction implements EntityTransaction
 
         try
         {
-            ec.getTransaction().rollback();
+            tx.rollback();
         }
         catch (NucleusException ne)
         {
@@ -153,7 +153,7 @@ public class JPAEntityTransaction implements EntityTransaction
     public boolean getRollbackOnly()
     {
         assertActive();
-        return ec.getTransaction().getRollbackOnly();
+        return tx.getRollbackOnly();
     }
 
     /**
@@ -163,7 +163,7 @@ public class JPAEntityTransaction implements EntityTransaction
     public void setRollbackOnly()
     {
         assertActive();
-        ec.getTransaction().setRollbackOnly();
+        tx.setRollbackOnly();
     }
 
     /**
@@ -173,7 +173,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void setOption(String option, int value)
     {
-        ec.getTransaction().setOption(option, value);
+        tx.setOption(option, value);
     }
 
     /**
@@ -183,7 +183,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void setOption(String option, boolean value)
     {
-        ec.getTransaction().setOption(option, value);
+        tx.setOption(option, value);
     }
 
     /**
@@ -193,7 +193,76 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void setOption(String option, String value)
     {
-        ec.getTransaction().setOption(option, value);
+        tx.setOption(option, value);
+    }
+
+    /**
+     * Method to mark the current point as a savepoint with the provided name.
+     * @param name Name of the savepoint.
+     * @throws UnsupportedOperationException if the underlying datastore doesn't support savepoints
+     * @throws IllegalStateException if no name is provided
+     */
+    public void setSavepoint(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalStateException("No savepoint name provided so cannot set savepoint");
+        }
+        if (tx.isActive())
+        {
+            // TODO Implement in DN 4.0
+            throw new UnsupportedOperationException("Dont currently support savepoints");
+        }
+        else
+        {
+            throw new IllegalStateException("No active transaction so cannot set savepoint");
+        }
+    }
+
+    /**
+     * Method to mark the current point as a savepoint with the provided name.
+     * @param name Name of the savepoint.
+     * @throws UnsupportedOperationException if the underlying datastore doesn't support savepoints
+     * @throws IllegalStateException if no name is provided, or the name doesn't correspond to a known savepoint
+     */
+    public void releaseSavepoint(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalStateException("No savepoint name provided so cannot release savepoint");
+        }
+        if (tx.isActive())
+        {
+            // TODO Implement in DN 4.0
+            throw new UnsupportedOperationException("Dont currently support savepoints");
+        }
+        else
+        {
+            throw new IllegalStateException("No active transaction so cannot release a savepoint");
+        }
+    }
+
+    /**
+     * Method to mark the current point as a savepoint with the provided name.
+     * @param name Name of the savepoint.
+     * @throws UnsupportedOperationException if the underlying datastore doesn't support savepoints
+     * @throws IllegalStateException if no name is provided, or the name doesn't correspond to a known savepoint
+     */
+    public void rollbackToSavepoint(String name)
+    {
+        if (name == null)
+        {
+            throw new IllegalStateException("No savepoint name provided so cannot rollback to savepoint");
+        }
+        if (tx.isActive())
+        {
+            // TODO Implement in DN 4.0
+            throw new UnsupportedOperationException("Dont currently support savepoints");
+        }
+        else
+        {
+            throw new IllegalStateException("No active transaction so cannot rollback to savepoint");
+        }
     }
 
     /**
@@ -202,7 +271,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     protected void assertActive()
     {
-        if (!ec.getTransaction().isActive())
+        if (!tx.isActive())
         {
             throw new IllegalStateException(LOCALISER.msg("015040"));
         }
@@ -214,7 +283,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     protected void assertNotActive()
     {
-        if (ec.getTransaction().isActive())
+        if (tx.isActive())
         {
             throw new IllegalStateException(LOCALISER.msg("015032"));
         }
@@ -226,7 +295,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void registerEventListener(TransactionEventListener listener)
     {
-        ec.getTransaction().bindTransactionEventListener(listener);
+        tx.bindTransactionEventListener(listener);
     }
 
     /**
@@ -235,6 +304,6 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void deregisterEventListener(TransactionEventListener listener)
     {
-        ec.getTransaction().removeTransactionEventListener(listener);
+        tx.removeTransactionEventListener(listener);
     }
 }
