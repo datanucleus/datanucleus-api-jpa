@@ -115,6 +115,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
             DyadicOperator op = (operator == BooleanOperator.AND ?
                     org.datanucleus.query.expression.Expression.OP_AND :
                     org.datanucleus.query.expression.Expression.OP_OR);
+
             Iterator<Predicate> iter = exprs.iterator();
             org.datanucleus.query.expression.Expression left = null;
             org.datanucleus.query.expression.Expression right = null;
@@ -168,6 +169,10 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
         else
         {
             // Sub-predicates, using the defined operator
+            if (operator == BooleanOperator.OR)
+            {
+                str.append("(");
+            }
             Iterator<Predicate> iter = exprs.iterator();
             while (iter.hasNext())
             {
@@ -177,6 +182,10 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
                 {
                     str.append(operator == BooleanOperator.AND ? " AND " : " OR ");
                 }
+            }
+            if (operator == BooleanOperator.OR)
+            {
+                str.append(")");
             }
         }
         if (negated)
