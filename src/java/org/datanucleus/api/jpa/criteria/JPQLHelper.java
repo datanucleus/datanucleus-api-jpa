@@ -17,6 +17,9 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.criteria;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.datanucleus.query.expression.DyadicExpression;
@@ -402,6 +405,24 @@ public class JPQLHelper
             else if (value instanceof Boolean)
             {
                 return ((Boolean)value ? "TRUE" : "FALSE");
+            }
+            else if (value instanceof Time)
+            {
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+                String timeStr = formatter.format((Time)value);
+                return "{t '" + timeStr + "'}";
+            }
+            else if (value instanceof Date)
+            {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String dateStr = formatter.format((Date)value);
+                return "{d '" + dateStr + "'}";
+            }
+            else if (value instanceof java.util.Date)
+            {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String datetimeStr = formatter.format((java.util.Date)value);
+                return "{ts '" + datetimeStr + "'}";
             }
             else
             {
