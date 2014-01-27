@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>datanucleus-api-jpa</artifactId>
-    <version>3.3.8-SNAPSHOT</version>
+    <version>4.0.0-m1-SNAPSHOT</version>
 
     <name>DataNucleus JPA API plugin</name>
     <description>
@@ -18,7 +18,7 @@
 
     <properties>
         <jdo.version>3.0</jdo.version>
-        <dn.core.version>3.2.12</dn.core.version>
+        <dn.core.version>4.0.0-m1-SNAPSHOT</dn.core.version>
     </properties>
 
     <scm>
