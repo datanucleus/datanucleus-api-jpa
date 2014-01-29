@@ -51,13 +51,14 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
 
+
 import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.FetchPlan;
 import org.datanucleus.JTATransactionImpl;
-import org.datanucleus.NucleusContext;
-import org.datanucleus.PersistenceConfiguration;
+import org.datanucleus.Configuration;
+import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.criteria.CriteriaBuilderImpl;
 import org.datanucleus.api.jpa.criteria.CriteriaDeleteImpl;
@@ -124,7 +125,7 @@ public class JPAEntityManager implements EntityManager
      * @param contextType The Persistence Context type
      * @param syncType The Synchronisation type
      */
-    public JPAEntityManager(JPAEntityManagerFactory theEMF, NucleusContext nucleusCtx, PersistenceContextType contextType,
+    public JPAEntityManager(JPAEntityManagerFactory theEMF, PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType,
             SynchronizationType syncType)
     {
         this.emf = theEMF;
@@ -141,7 +142,7 @@ public class JPAEntityManager implements EntityManager
         }
         ec = nucleusCtx.getExecutionContext(new JPAPersistenceManager(this), options);
 
-        if (nucleusCtx.getPersistenceConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
             TransactionType.RESOURCE_LOCAL.toString()))
         {
             // Using ResourceLocal transaction so allocate a transaction
@@ -361,7 +362,7 @@ public class JPAEntityManager implements EntityManager
                 {
                     if (acmd.usesSingleFieldIdentityClass() && ec.getNucleusContext().getIdentityKeyTranslator() == null)
                     {
-                        if (ec.getNucleusContext().getPersistenceConfiguration().getBooleanProperty(PropertyNames.PROPERTY_FIND_OBJECT_TYPE_CONVERSION))
+                        if (ec.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_FIND_OBJECT_TYPE_CONVERSION))
                         {
                             String[] pkNames = acmd.getPrimaryKeyMemberNames();
                             AbstractMemberMetaData mmd = acmd.getMetaDataForMember(pkNames[0]);
@@ -1631,7 +1632,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (re instanceof PersistenceException)
         {
-            PersistenceConfiguration conf = ec.getNucleusContext().getPersistenceConfiguration();
+            Configuration conf = ec.getNucleusContext().getConfiguration();
             if (tx != null && tx.isActive())
             {
                 if (conf.getBooleanProperty(JPAPropertyNames.PROPERTY_JPA_TRANSACTION_ROLLBACK_ON_EXCEPTION))

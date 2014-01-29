@@ -55,11 +55,14 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
+import org.datanucleus.AbstractNucleusContext;
 import org.datanucleus.ClassLoaderResolverImpl;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.FetchGroup;
 import org.datanucleus.NucleusContext;
-import org.datanucleus.PersistenceConfiguration;
+import org.datanucleus.PersistenceNucleusContext;
+import org.datanucleus.PersistenceNucleusContextImpl;
+import org.datanucleus.Configuration;
 import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.criteria.CriteriaBuilderImpl;
 import org.datanucleus.api.jpa.exceptions.NotProviderException;
@@ -107,7 +110,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
     private PersistenceUnitMetaData unitMetaData = null;
 
-    private transient NucleusContext nucleusCtx = null;
+    private transient PersistenceNucleusContext nucleusCtx = null;
 
     private PersistenceContextType persistenceContextType = PersistenceContextType.EXTENDED;
 
@@ -309,7 +312,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         // Turn off loading of metadata from here if required
         boolean allowMetadataLoad =
-            nucleusCtx.getPersistenceConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
+            nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
         if (!allowMetadataLoad)
         {
             nucleusCtx.getMetaDataManager().setAllowMetaDataLoad(false);
@@ -448,7 +451,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         // Turn off loading of metadata from here if required
         boolean allowMetadataLoad =
-            nucleusCtx.getPersistenceConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
+            nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
         if (!allowMetadataLoad)
         {
             nucleusCtx.getMetaDataManager().setAllowMetaDataLoad(false);
@@ -586,7 +589,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         assertIsClosed();
 
         // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        NucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
+        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
 
         return newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
     }
@@ -604,7 +607,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     public EntityManager createEntityManager(SynchronizationType syncType)
     {
         assertIsClosed();
-        if (nucleusCtx.getPersistenceConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
             TransactionType.RESOURCE_LOCAL.toString()))
         {
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
@@ -627,14 +630,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     public EntityManager createEntityManager(SynchronizationType syncType, Map overridingProps)
     {
         assertIsClosed();
-        if (nucleusCtx.getPersistenceConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
             TransactionType.RESOURCE_LOCAL.toString()))
         {
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
         }
 
         // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        NucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
+        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
 
         return newEntityManager(nucleusCtx, persistenceContextType, syncType);
     }
@@ -646,7 +649,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param contextType The persistence context type
      * @param syncType Synchronization type
      */
-    protected EntityManager newEntityManager(NucleusContext nucleusCtx, PersistenceContextType contextType,
+    protected EntityManager newEntityManager(PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType,
             SynchronizationType syncType)
     {
         return new JPAEntityManager(this, nucleusCtx, contextType, syncType);
@@ -660,7 +663,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param overridingProps Properties to override all others
      * @return The PersistenceManagerFactory
      */
-    protected NucleusContext initialiseNucleusContext(PersistenceUnitMetaData unitMetaData, Map overridingProps,
+    protected PersistenceNucleusContext initialiseNucleusContext(PersistenceUnitMetaData unitMetaData, Map overridingProps,
             PluginManager pluginMgr)
     {
         // Build map of properties for the NucleusContext, with all properties in lower-case
@@ -781,7 +784,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         // Extract any properties that affect NucleusContext startup
         Map startupProps = null;
-        for (String startupPropName : NucleusContext.STARTUP_PROPERTIES)
+        for (String startupPropName : AbstractNucleusContext.STARTUP_PROPERTIES)
         {
             for (String currentPropName : props.keySet())
             {
@@ -797,11 +800,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         // Initialise the context for JPA
-        NucleusContext nucleusCtx = (pluginMgr != null ? new NucleusContext("JPA", startupProps, pluginMgr) :
-            new NucleusContext("JPA", startupProps));
+        PersistenceNucleusContext nucleusCtx = (pluginMgr != null ? new PersistenceNucleusContextImpl("JPA", startupProps, pluginMgr) :
+            new PersistenceNucleusContextImpl("JPA", startupProps));
 
         // Apply remaining persistence properties
-        PersistenceConfiguration propConfig = nucleusCtx.getPersistenceConfiguration();
+        Configuration propConfig = nucleusCtx.getConfiguration();
         propConfig.setPersistenceProperties(props);
         JPAMetaDataManager mmgr = (JPAMetaDataManager)nucleusCtx.getMetaDataManager();
 
@@ -825,7 +828,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public Map<String, Object> getProperties()
     {
-        return nucleusCtx.getPersistenceConfiguration().getPersistenceProperties();
+        return nucleusCtx.getConfiguration().getPersistenceProperties();
     }
 
     /**
@@ -838,7 +841,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public Set<String> getSupportedProperties()
     {
-        return nucleusCtx.getPersistenceConfiguration().getSupportedProperties();
+        return nucleusCtx.getConfiguration().getSupportedProperties();
     }
 
     protected void assertIsClosed()
@@ -1205,7 +1208,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             throw new InvalidObjectException("Could not serialize EntityManagerFactory with null name");
         }
         oos.defaultWriteObject();
-        oos.writeObject(nucleusCtx.getPersistenceConfiguration().getPersistenceProperties());
+        oos.writeObject(nucleusCtx.getConfiguration().getPersistenceProperties());
     }
 
     private Map<String, Object> deserialisationProps = null;
@@ -1250,7 +1253,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     private static synchronized void assertSingleton(String name, JPAEntityManagerFactory emf)
     {
         Boolean singleton =
-            emf.getNucleusContext().getPersistenceConfiguration().getBooleanObjectProperty(JPAPropertyNames.PROPERTY_JPA_SINGLETON_EMF_FOR_NAME);
+            emf.getNucleusContext().getConfiguration().getBooleanObjectProperty(JPAPropertyNames.PROPERTY_JPA_SINGLETON_EMF_FOR_NAME);
         if (singleton != null && singleton)
         {
             // Check on singleton pattern
