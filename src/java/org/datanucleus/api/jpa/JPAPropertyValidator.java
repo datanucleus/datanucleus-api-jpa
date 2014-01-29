@@ -17,13 +17,13 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa;
 
-import org.datanucleus.properties.PersistencePropertyValidator;
+import org.datanucleus.properties.PropertyValidator;
 import org.datanucleus.util.NucleusLogger;
 
 /**
  * Validator for persistence properties used by JPA.
  */
-public class JPAPropertyValidator implements PersistencePropertyValidator
+public class JPAPropertyValidator implements PropertyValidator
 {
     /**
      * Validate the specified property.
