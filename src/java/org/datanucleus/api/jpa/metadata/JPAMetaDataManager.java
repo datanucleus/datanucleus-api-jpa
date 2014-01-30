@@ -40,7 +40,7 @@ import org.datanucleus.metadata.DiscriminatorMetaData;
 import org.datanucleus.metadata.DiscriminatorStrategy;
 import org.datanucleus.metadata.EventListenerMetaData;
 import org.datanucleus.metadata.FileMetaData;
-import org.datanucleus.metadata.MetaDataManager;
+import org.datanucleus.metadata.MetaDataManagerImpl;
 import org.datanucleus.metadata.MetadataFileType;
 import org.datanucleus.metadata.PackageMetaData;
 import org.datanucleus.metadata.xml.MetaDataParser;
@@ -50,7 +50,7 @@ import org.datanucleus.util.NucleusLogger;
  * Manager of JPA MetaData information in DataNucleus.
  * Manages the MetaData for a particular "persistence-unit".
  */
-public class JPAMetaDataManager extends MetaDataManager
+public class JPAMetaDataManager extends MetaDataManagerImpl
 {
     /** EventListeners. Use a list to preserve ordering. */
     protected List eventListeners = new ArrayList();
