@@ -292,9 +292,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             unimd.setTable((String)annotationValues.get("name"));
                             for (int k=0;k<constrs[j].columnNames().length;k++)
                             {
-                                ColumnMetaData colmd = new ColumnMetaData();
-                                colmd.setName(constrs[j].columnNames()[k]);
-                                unimd.addColumn(colmd);
+                                unimd.addColumn(constrs[j].columnNames()[k]);
                             }
                             if (uniques == null)
                             {
@@ -320,10 +318,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 for (int k=0;k<cols.length;k++)
                                 {
-                                    ColumnMetaData colmd = new ColumnMetaData();
-                                    colmd.setName(cols[k]);
-                                    colmd.setParent(idxmd);
-                                    idxmd.addColumn(colmd);
+                                    idxmd.addColumn(cols[k]);
                                 }
                             }
                             if (indexConstrs[j].unique())
@@ -1568,9 +1563,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             UniqueMetaData unimd = new UniqueMetaData();
                             for (int k=0;k<joinUniqueConstraints[j].columnNames().length;k++)
                             {
-                                ColumnMetaData colmd = new ColumnMetaData();
-                                colmd.setName(joinUniqueConstraints[j].columnNames()[k]);
-                                unimd.addColumn(colmd);
+                                unimd.addColumn(joinUniqueConstraints[j].columnNames()[k]);
                             }
                             joinmd.setUniqueMetaData(unimd); // JDO only supports a single unique constraint on a join table
                         }
@@ -1592,10 +1585,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 for (int k=0;k<cols.length;k++)
                                 {
-                                    ColumnMetaData colmd = new ColumnMetaData();
-                                    colmd.setName(cols[k]);
-                                    colmd.setParent(idxmd);
-                                    idxmd.addColumn(colmd);
+                                    idxmd.addColumn(cols[k]);
                                 }
                             }
                             if (joinIndexConstrs[j].unique())
@@ -1665,9 +1655,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             UniqueMetaData unimd = new UniqueMetaData();
                             for (int k=0;k<joinUniqueConstraints[j].columnNames().length;k++)
                             {
-                                ColumnMetaData colmd = new ColumnMetaData();
-                                colmd.setName(joinUniqueConstraints[j].columnNames()[k]);
-                                unimd.addColumn(colmd);
+                                unimd.addColumn(joinUniqueConstraints[j].columnNames()[k]);
                             }
                             joinmd.setUniqueMetaData(unimd); // JDO only supports a single unique constraint on a join table
                         }
@@ -1689,10 +1677,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 for (int k=0;k<cols.length;k++)
                                 {
-                                    ColumnMetaData colmd = new ColumnMetaData();
-                                    colmd.setName(cols[k]);
-                                    colmd.setParent(idxmd);
-                                    idxmd.addColumn(colmd);
+                                    idxmd.addColumn(cols[k]);
                                 }
                             }
                             if (joinIndexConstrs[j].unique())
@@ -2888,9 +2873,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 unimd.setTable((String)annotationValues.get("table"));
                                 for (int l=0;l<constrs[k].columnNames().length;l++)
                                 {
-                                    ColumnMetaData colmd = new ColumnMetaData();
-                                    colmd.setName(constrs[k].columnNames()[l]);
-                                    unimd.addColumn(colmd);
+                                    unimd.addColumn(constrs[k].columnNames()[l]);
                                 }
                                 joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
                             }
@@ -2912,10 +2895,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 {
                                     for (int l=0;l<cols.length;l++)
                                     {
-                                        ColumnMetaData colmd = new ColumnMetaData();
-                                        colmd.setName(cols[l]);
-                                        colmd.setParent(idxmd);
-                                        idxmd.addColumn(colmd);
+                                        idxmd.addColumn(cols[l]);
                                     }
                                 }
                                 if (indexConstrs[k].unique())
@@ -2967,9 +2947,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         unimd.setTable((String)annotationValues.get("table"));
                         for (int k=0;k<constrs[j].columnNames().length;k++)
                         {
-                            ColumnMetaData colmd = new ColumnMetaData();
-                            colmd.setName(constrs[j].columnNames()[k]);
-                            unimd.addColumn(colmd);
+                            unimd.addColumn(constrs[j].columnNames()[k]);
                         }
                         joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
                     }
@@ -2991,10 +2969,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         {
                             for (int k=0;k<cols.length;k++)
                             {
-                                ColumnMetaData colmd = new ColumnMetaData();
-                                colmd.setName(cols[k]);
-                                colmd.setParent(idxmd);
-                                idxmd.addColumn(colmd);
+                                idxmd.addColumn(cols[k]);
                             }
                         }
                         if (indexConstrs[j].unique())

@@ -1323,8 +1323,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         String[] colNames = StringUtils.split(idxColStr, ",");
                         for (int i=0;i<colNames.length;i++)
                         {
-                            ColumnMetaData colmd = idxmd.newColumnMetaData();
-                            colmd.setName(colNames[i]);
+                            idxmd.addColumn(colNames[i]);
                         }
                         if (!StringUtils.isWhitespace(idxName))
                         {
@@ -1345,8 +1344,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         String[] colNames = StringUtils.split(idxColStr, ",");
                         for (int i=0;i<colNames.length;i++)
                         {
-                            ColumnMetaData colmd = idxmd.newColumnMetaData();
-                            colmd.setName(colNames[i]);
+                            idxmd.addColumn(colNames[i]);
                         }
                         if (!StringUtils.isWhitespace(idxName))
                         {
@@ -2331,9 +2329,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 if (md instanceof UniqueMetaData)
                 {
                     // Column for a unique constraint
-                    ColumnMetaData colmd = new ColumnMetaData();
-                    colmd.setName(currentString);
-                    ((UniqueMetaData)md).addColumn(colmd);
+                    ((UniqueMetaData)md).addColumn(currentString);
                 }
             }
             else if (localName.equals("order-by"))
