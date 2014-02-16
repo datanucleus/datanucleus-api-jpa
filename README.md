@@ -1,6 +1,6 @@
 # datanucleus-api-jpa
 
-Support for DataNucleus persistence using the JPA API (JSR0220, JSR0303. JSR-317)
+Support for DataNucleus persistence using the JPA API (JSR0220, JSR0317, JSR0338)
 
 This is built using Maven, by executing `mvn clean install` which installs the built jar in your local Maven
 repository.
