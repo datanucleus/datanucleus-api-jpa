@@ -68,7 +68,7 @@ public class JPAAdapter implements ApiAdapter
     protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
         NucleusJPAHelper.class.getClassLoader());
 
-    protected static Set<String> defaultPersistentTypeNames = new HashSet<String>();
+    protected final static Set<String> defaultPersistentTypeNames = new HashSet<String>();
 
     static
     {

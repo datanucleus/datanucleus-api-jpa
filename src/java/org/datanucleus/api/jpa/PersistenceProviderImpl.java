@@ -338,6 +338,11 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
                 TransactionType.RESOURCE_LOCAL.toString(), rootURI);
         }
+        else
+        {
+            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
+                TransactionType.RESOURCE_LOCAL.toString(), rootURI);
+        }
         
         // Classes
         List<String> classNames = unitInfo.getManagedClassNames();

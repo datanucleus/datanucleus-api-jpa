@@ -160,7 +160,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
                     {
                         tuples.add(getAlias());
                     }
-                    else
+                    else if (attribute != null)
                     {
                         tuples.add(attribute.getName());
                     }
@@ -173,7 +173,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
                     {
                         tuples.add(getAlias());
                     }
-                    else
+                    else if (attribute != null)
                     {
                         tuples.add(attribute.getName());
                     }
@@ -185,7 +185,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
                     {
                         tuples.add(getAlias());
                     }
-                    else
+                    else if (attribute != null)
                     {
                         tuples.add(attribute.getName());
                     }
@@ -198,7 +198,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
                 {
                     tuples.add(getAlias());
                 }
-                else
+                else if (attribute != null)
                 {
                     tuples.add(attribute.getName());
                 }

@@ -354,23 +354,19 @@ public class JPACallbackHandler implements CallbackHandler
         }
         catch (SecurityException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
         }
         catch (IllegalArgumentException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
         }
         catch (IllegalAccessException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
         }
         catch (InstantiationException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
         }
     }
 
@@ -409,17 +405,17 @@ public class JPACallbackHandler implements CallbackHandler
                         }
                         m.invoke(listener, (Object[])null);
                     }
-                    catch (NoSuchMethodException nsme)
+                    catch (NoSuchMethodException e)
                     {
-                        nsme.printStackTrace();
+                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
                     }
                     catch (IllegalArgumentException e)
                     {
-                        e.printStackTrace();
+                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
                     }
                     catch (IllegalAccessException e)
                     {
-                        e.printStackTrace();
+                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
                     }
                     catch (InvocationTargetException e)
                     {
@@ -501,11 +497,11 @@ public class JPACallbackHandler implements CallbackHandler
                     }
                     catch (IllegalArgumentException e)
                     {
-                        e.printStackTrace();
+                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
                     }
                     catch (IllegalAccessException e)
                     {
-                        e.printStackTrace();
+                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
                     }
                     catch (InvocationTargetException e)
                     {

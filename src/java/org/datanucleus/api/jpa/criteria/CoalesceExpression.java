@@ -17,6 +17,7 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.criteria;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.criteria.Expression;
@@ -44,6 +45,10 @@ public class CoalesceExpression<T> extends ExpressionImpl<T> implements Coalesce
         if (queryExpr != null)
         {
             args = ((InvokeExpression)queryExpr).getArguments();
+        }
+        else
+        {
+            args = new ArrayList();
         }
         args.add(expr);
         queryExpr = new InvokeExpression(null, "COALESCE", args);

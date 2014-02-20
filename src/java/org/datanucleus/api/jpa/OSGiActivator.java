@@ -63,11 +63,12 @@ public class OSGiActivator implements BundleActivator
         jpaService = ctx.registerService(PERSISTENCE_PROVIDER, provider, props);
 
         // Add listener to any JTA txn manager
-        if (jtaListener != null) 
+        if (jtaListener != null)
         {
             throw new NucleusException("Another OSGi service listener has already been registered.");
         }
         jtaListener = new Listener(ctx);
+
         ctx.addServiceListener(jtaListener, "(" + Constants.OBJECTCLASS + "=javax.transaction.TransactionManager)");
         jtaServiceRef = ctx.getServiceReference("javax.transaction.TransactionManager");
         if (jtaServiceRef != null) 
