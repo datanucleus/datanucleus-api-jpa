@@ -328,15 +328,11 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         catch (URISyntaxException e1)
         {
         }
+
         if (unitInfo.getTransactionType() == PersistenceUnitTransactionType.JTA)
         {
             pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
                 TransactionType.JTA.toString(), rootURI);
-        }
-        else if (unitInfo.getTransactionType() == PersistenceUnitTransactionType.RESOURCE_LOCAL)
-        {
-            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
-                TransactionType.RESOURCE_LOCAL.toString(), rootURI);
         }
         else
         {
