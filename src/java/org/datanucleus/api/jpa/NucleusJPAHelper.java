@@ -230,7 +230,7 @@ public class NucleusJPAHelper
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
 
             // Temporarily attach a StateManager to access the detached field information
-            ObjectProvider op = ec.newObjectProviderForDetached(pc, pc.jdoGetObjectId(), null);
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.jdoGetObjectId(), null);
             pc.jdoReplaceStateManager((javax.jdo.spi.StateManager) op);
             op.retrieveDetachState(op);
             String[] dirtyFieldNames = op.getDirtyFieldNames();
@@ -269,7 +269,7 @@ public class NucleusJPAHelper
             // Temporarily attach a StateManager to access the detached field information
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
             pc.jdoGetObjectId();
-            ObjectProvider op = ec.newObjectProviderForDetached(pc, pc.jdoGetObjectId(), null);
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.jdoGetObjectId(), null);
             pc.jdoReplaceStateManager((javax.jdo.spi.StateManager) op);
             op.retrieveDetachState(op);
             String[] loadedFieldNames = op.getLoadedFieldNames();
