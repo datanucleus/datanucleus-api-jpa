@@ -242,6 +242,7 @@ public class MetamodelImpl implements Metamodel
     /**
      * Convenience method to look up the Type for a class.
      * @param cls The class
+     * @param <X> The type
      * @return The Type for this class
      */
     public <X> Type<X> getType(Class<X> cls)

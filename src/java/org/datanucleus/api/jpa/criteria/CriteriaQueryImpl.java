@@ -512,6 +512,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
 
     /**
      * Accessor for the generic compilation that this criteria query equates to.
+     * @param mmgr MetaData manager
+     * @param clr ClassLoader resolver
      * @return The generic compilation
      */
     public QueryCompilation getCompilation(MetaDataManager mmgr, ClassLoaderResolver clr)

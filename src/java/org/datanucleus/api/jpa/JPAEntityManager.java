@@ -233,7 +233,7 @@ public class JPAEntityManager implements EntityManager
 
     /**
      * Check if the instance belongs to the current persistence context.
-     * @param entity
+     * @param entity The entity
      * @return Whether it is contained in the current context
      * @throws IllegalArgumentException if not an entity
      */
@@ -733,7 +733,7 @@ public class JPAEntityManager implements EntityManager
      * detached. Unflushed changes made to the entity if any (including removal of the entity),
      * will not be synchronized to the database. Entities which previously referenced the detached 
      * entity will continue to reference it.
-     * @param entity
+     * @param entity The entity
      * @throws IllegalArgumentException if the instance is not an entity
      */
     public void detach(Object entity)
@@ -808,10 +808,9 @@ public class JPAEntityManager implements EntityManager
      * Refresh the state of the instance from the database, using the specified properties, 
      * and overwriting changes made to the entity, if any.
      * If a vendor-specific property or hint is not recognised, it is silently ignored.
-     * @param entity
+     * @param entity The entity
      * @param properties standard and vendor-specific properties
-     * @throws IllegalArgumentException if the instance is not
-     * an entity or the entity is not managed
+     * @throws IllegalArgumentException if the instance is not an entity or the entity is not managed
      * @throws TransactionRequiredException if invoked on a container-managed entity manager 
      *     of type PersistenceContextType.TRANSACTION and there is no transaction.
      * @throws EntityNotFoundException if the entity no longer exists in the database

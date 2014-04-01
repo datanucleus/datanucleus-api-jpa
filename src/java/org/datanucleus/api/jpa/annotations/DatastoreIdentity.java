@@ -30,13 +30,22 @@ import javax.persistence.GenerationType;
 @Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME)
 public @interface DatastoreIdentity
 {
-    /** Strategy for generating values for the datastore identity. */
+    /** 
+     * Strategy for generating values for the datastore identity. 
+     * @return The generation type
+     */
     GenerationType generationType() default GenerationType.AUTO;
 
-    /** Name of the generator to use (if using generationType of TABLE or SEQUENCE). */
+    /**
+     * Name of the generator to use (if using generationType of TABLE or SEQUENCE).
+     * @return The generator
+     */
     String generator() default "";
 
-    /** Name of the column to use for datastore identity. */
+    /** 
+     * Name of the column to use for datastore identity.
+     * @return The column name
+     */
     String column() default "";
 
     // TODO Allow specification of Column

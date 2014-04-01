@@ -35,6 +35,8 @@ import org.datanucleus.api.jpa.metamodel.PluralAttributeImpl;
 public class PluralJoinImpl<Z, C, E> extends JoinImpl<Z, E> implements PluralJoin<Z, C, E>
 {
     /**
+     * Constructor
+     * @param cb Criteria Builder
      * @param parent Parent component
      * @param attr The attribute being joined to
      * @param joinType Type of join

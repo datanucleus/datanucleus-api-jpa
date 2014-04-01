@@ -42,6 +42,7 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
 
     /**
      * Constructor for a fetch join to an entity.
+     * @param cb Criteria Builder
      * @param parent Parent object
      * @param attr The type joining to
      * @param joinType Type of join (Inner/LeftOuter/RightOuter)

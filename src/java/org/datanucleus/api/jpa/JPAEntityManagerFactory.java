@@ -648,6 +648,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param nucleusCtx Nucleus Context
      * @param contextType The persistence context type
      * @param syncType Synchronization type
+     * @return The EntityManager
      */
     protected EntityManager newEntityManager(PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType,
             SynchronizationType syncType)
@@ -661,6 +662,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * If there is a unitMetaData then all metadata for that unit will be loaded/initialised.
      * @param unitMetaData The "persistence-unit" metadata (if any)
      * @param overridingProps Properties to override all others
+     * @param pluginMgr Plugin Manager
      * @return The PersistenceManagerFactory
      */
     protected PersistenceNucleusContext initialiseNucleusContext(PersistenceUnitMetaData unitMetaData, Map overridingProps,
@@ -1221,7 +1223,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     /**
      * Control deserialisation of the EMF where we have a singleton (in emfByName).
      * @return The EMF
-     * @throws InvalidObjectException 
+     * @throws InvalidObjectException Thrown if an error occurs
      */
     private Object readResolve() throws InvalidObjectException 
     {

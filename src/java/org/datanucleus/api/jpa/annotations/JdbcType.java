@@ -29,6 +29,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JdbcType
 {
-    /** The JDBC Type to use for this field/property. */
+    /** 
+     * The JDBC Type to use for this field/property. 
+     * @return The JDBC type
+     */
     String value() default "";
 }

@@ -44,6 +44,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>
 
     /**
      * Constructor for a join to an entity (1-1, N-1 relations).
+     * @param cb Criteria Builder
      * @param parent Parent object
      * @param attr The type joining to
      * @param joinType Type of join (Inner/LeftOuter/RightOuter)
@@ -56,6 +57,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>
 
     /**
      * Constructor for a join to a collection (1-N, M-N relations).
+     * @param cb Criteria Builder
      * @param parent Parent object
      * @param attr The type joining to
      * @param joinType Type of join (Inner/LeftOuter/RightOuter)

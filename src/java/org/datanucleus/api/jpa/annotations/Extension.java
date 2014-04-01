@@ -28,12 +28,21 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD}) @Retention(RetentionPolicy.RUNTIME)
 public @interface Extension
 {
-    /** Vendor that the extension applies to. Provided for compatibility with JDO. */
+    /**
+     * Vendor that the extension applies to. Provided for compatibility with JDO. 
+     * @return The name of the vendor (DataNucleus).
+     */
     String vendorName() default "datanucleus";
 
-    /** The key for the extension. */
+    /** 
+     * The key for the extension.
+     * @return The extension key
+     */
     String key();
 
-    /** The value for the extension. */
+    /**
+     * The value for the extension. 
+     * @return Value for the extension
+     */
     String value();
 }

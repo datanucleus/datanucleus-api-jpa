@@ -29,6 +29,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ColumnPosition
 {
-    /** The column position to use for this field/property (origin is 0). */
+    /**
+     * The column position to use for this field/property (origin is 0). 
+     * @return The position
+     */
     int value() default -1;
 }

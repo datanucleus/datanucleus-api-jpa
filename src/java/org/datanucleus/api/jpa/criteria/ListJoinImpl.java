@@ -35,6 +35,7 @@ public class ListJoinImpl<Z, E> extends PluralJoinImpl<Z,java.util.List<E>,E> im
 {
     /**
      * Constructor for a list join.
+     * @param cb Criteria Builder
      * @param parent The parent
      * @param attr The attribute being joined
      * @param joinType Type of join
