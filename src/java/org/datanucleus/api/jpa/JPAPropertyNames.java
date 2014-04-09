@@ -41,5 +41,5 @@ public class JPAPropertyNames
     public static final String PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_DROP_SCRIPT_SRC = "javax.persistence.schema-generation.drop-script-source";
     public static final String PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_DROP_SRC = "javax.persistence.schema-generation.drop-source";
 
-    public static final String PROPERTY_JPA_STANDARD_SQL_LOAD_SCRIPT_SRC = "javax.persistence.sql.load-script-source";
+    public static final String PROPERTY_JPA_STANDARD_SQL_LOAD_SCRIPT_SRC = "javax.persistence.sql-load-script-source";
 }

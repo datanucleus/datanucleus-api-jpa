@@ -79,7 +79,7 @@ Contributors:
         <persistence-property name="javax.persistence.schema-generation.drop-source"
             internal-name="datanucleus.generateSchema.scripts.drop.order"
             validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
-        <persistence-property name="javax.persistence.sql.load-script-source"
+        <persistence-property name="javax.persistence.sql-load-script-source"
             internal-name="datanucleus.generateSchema.scripts.load"/>
 
         <persistence-property name="datanucleus.jpa.addClassTransformer" value="false"
