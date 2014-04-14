@@ -363,14 +363,9 @@ public class JPAAnnotationUtils
         updateable = Boolean.valueOf(column.updatable()).toString(); // Note : "updatable" is spelt incorrectly in the JPA spec.
         unique = Boolean.valueOf(column.unique()).toString();
         table = column.table();
-        if (table != null)
+        if (!StringUtils.isWhitespace(table))
         {
             // Column in secondary-table
-            String columnTable = table;
-            if (!StringUtils.isWhitespace(columnTable))
-            {
-                table = columnTable;
-            }
             // TODO use this value
         }
 
