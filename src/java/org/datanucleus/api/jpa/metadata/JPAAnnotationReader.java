@@ -170,7 +170,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
         if (annotations != null && annotations.length > 0)
         {
-            if (isClassPersistenceCapable(cls))
+            if (isClassPersistable(cls))
             {
                 cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
                 cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
@@ -865,7 +865,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             cmd.setEmbeddedOnly(embeddedOnly);
             cmd.setCacheable(cacheable);
             cmd.setIdentityType(identityType);
-            if (isClassPersistenceCapable(cls.getSuperclass()))
+            if (isClassPersistable(cls.getSuperclass()))
             {
                 cmd.setPersistableSuperclass(cls.getSuperclass().getName());
             }
@@ -3031,11 +3031,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Check if class is persistence capable, by looking at annotations
+     * Check if class is persistable, by looking at annotations
      * @param cls the Class
      * @return true if the class has Entity annotation 
      */
-    protected boolean isClassPersistenceCapable(Class cls)
+    protected boolean isClassPersistable(Class cls)
     {
         AnnotationObject[] annotations = getClassAnnotationsForClass(cls);
         for (int i = 0; i < annotations.length; i++)
