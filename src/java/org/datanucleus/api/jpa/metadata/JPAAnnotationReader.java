@@ -867,7 +867,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             cmd.setIdentityType(identityType);
             if (isClassPersistenceCapable(cls.getSuperclass()))
             {
-                cmd.setPersistenceCapableSuperclass(cls.getSuperclass().getName());
+                cmd.setPersistableSuperclass(cls.getSuperclass().getName());
             }
             if (excludeSuperClassListeners)
             {
