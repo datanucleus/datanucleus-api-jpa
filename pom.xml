@@ -17,7 +17,7 @@
     </description>
 
     <properties>
-        <dn.core.version>4.0.0-m2</dn.core.version>
+        <dn.core.version>4.0.0-m3-SNAPSHOT</dn.core.version>
     </properties>
 
     <scm>
@@ -47,8 +47,8 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi</artifactId>
-            <version>3.0.0</version>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
             <optional>true</optional>
         </dependency>
         <dependency>
