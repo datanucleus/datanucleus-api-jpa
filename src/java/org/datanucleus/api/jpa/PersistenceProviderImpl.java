@@ -165,9 +165,9 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         {
             try
             {
-                // Try to access the enhanced "jdoGet" method
+                // Try to access the enhanced "dnGet" method
                 Method getterMethod = ClassUtils.getMethodWithArgument(entity.getClass(), 
-                    "jdoGet" + memberName, entity.getClass());
+                    "dnGet" + memberName, entity.getClass());
                 getterMethod.invoke(null, new Object[] {entity});
                 return LoadState.LOADED;
             }

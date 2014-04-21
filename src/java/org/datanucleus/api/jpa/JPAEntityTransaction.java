@@ -19,7 +19,6 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa;
 
-import javax.jdo.JDOException;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
@@ -38,8 +37,7 @@ import org.datanucleus.util.Localiser;
 public class JPAEntityTransaction implements EntityTransaction
 {
     /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
-        NucleusJPAHelper.class.getClassLoader());
+    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation", NucleusJPAHelper.class.getClassLoader());
 
     /** The underlying transaction */
     org.datanucleus.Transaction tx;
@@ -106,12 +104,7 @@ public class JPAEntityTransaction implements EntityTransaction
         {
             Throwable cause = nte.getCause();
             Throwable pe = null;
-            if (cause instanceof JDOException)
-            {
-                // TODO Do we still need this? Where is JDOException thrown? bytecode enhancement?
-                pe = NucleusJPAHelper.getJPAExceptionForJDOException((JDOException)cause);
-            }
-            else if (cause instanceof NucleusException)
+            if (cause instanceof NucleusException)
             {
                 pe = NucleusJPAHelper.getJPAExceptionForNucleusException((NucleusException)cause);
             }

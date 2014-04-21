@@ -26,21 +26,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jdo.JDOHelper;
-import javax.jdo.JDONullIdentityException;
-import javax.jdo.PersistenceManager;
-import javax.jdo.identity.ByteIdentity;
-import javax.jdo.identity.CharIdentity;
-import javax.jdo.identity.IntIdentity;
-import javax.jdo.identity.LongIdentity;
-import javax.jdo.identity.ObjectIdentity;
-import javax.jdo.identity.ShortIdentity;
-import javax.jdo.identity.SingleFieldIdentity;
-import javax.jdo.identity.StringIdentity;
-import javax.jdo.spi.Detachable;
-import javax.jdo.spi.PersistenceCapable;
-import javax.jdo.spi.PersistenceCapable.ObjectIdFieldConsumer;
-
+import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ClassNameConstants;
 import org.datanucleus.ExecutionContext;
@@ -48,14 +34,19 @@ import org.datanucleus.PropertyNames;
 import org.datanucleus.api.ApiAdapter;
 import org.datanucleus.state.AppIdObjectIdFieldConsumer;
 import org.datanucleus.api.jpa.state.LifeCycleStateFactory;
+import org.datanucleus.enhancer.Detachable;
+import org.datanucleus.enhancer.EnhancementHelper;
+import org.datanucleus.enhancer.Persistable;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.identity.OID;
+import org.datanucleus.identity.SingleFieldId;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.StateManager;
 import org.datanucleus.store.fieldmanager.FieldManager;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
@@ -146,7 +137,7 @@ public class JPAAdapter implements ApiAdapter
 
     /**
      * Method to return the ExecutionContext (if any) associated with the passed object.
-     * Supports persistable objects, and PersistenceManager.
+     * Supports persistable objects, and EntityManager.
      * @param obj The object
      * @return The ExecutionContext
      */
@@ -156,22 +147,14 @@ public class JPAAdapter implements ApiAdapter
         {
             return null;
         }
-
-        // TODO Try to avoid JDO-specific class usage here
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            PersistenceManager pm = JDOHelper.getPersistenceManager(obj);
-            if (pm == null)
-            {
-                return null;
-            }
-            return ((JPAPersistenceManager)pm).getExecutionContext();
+            return ((Persistable)obj).dnGetExecutionContext();
         }
-        else if (obj instanceof PersistenceManager)
+        else if (obj instanceof JPAEntityManager)
         {
-            return ((JPAPersistenceManager)obj).getExecutionContext();
+            return ((JPAEntityManager)obj).getExecutionContext();
         }
-
         return null;
     }
 
@@ -192,8 +175,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isPersistent(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isPersistent(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsPersistent() : false;
     }
 
     /**
@@ -203,8 +185,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isNew(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isNew(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsNew() : false;
     }
 
     /**
@@ -214,8 +195,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isDirty(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isDirty(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsDirty() : false;
     }
 
     /**
@@ -225,8 +205,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isDeleted(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isDeleted(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsDeleted() : false;
     }
 
     /**
@@ -236,8 +215,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isDetached(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isDetached(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsDetached() : false;
     }
 
     /**
@@ -247,8 +225,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isTransactional(Object obj)
     {
-        // Relay through to JDOHelper - TODO Change this when we JPOX-JPA doesnt depend on JDO
-        return JDOHelper.isTransactional(obj);
+        return obj instanceof Persistable ? ((Persistable)obj).dnIsTransactional() : false;
     }
 
     /**
@@ -262,9 +239,7 @@ public class JPAAdapter implements ApiAdapter
         {
             return false;
         }
-
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we enhance to that
-        return (obj instanceof PersistenceCapable);
+        return (obj instanceof Persistable);
     }
 
     /**
@@ -278,13 +253,12 @@ public class JPAAdapter implements ApiAdapter
         {
             return false;
         }
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we enhance to that
-        return (PersistenceCapable.class.isAssignableFrom(cls));
+        return (Persistable.class.isAssignableFrom(cls));
     }
 
     /**
      * Method to return if the passed object is detachable using this API.
-     * Returns whether the object is an instance of javax.jdo.spi.Detachable.
+     * Returns whether the object is an instance of Detachable.
      * @param obj The object
      * @return Whether it is detachable
      */
@@ -294,19 +268,111 @@ public class JPAAdapter implements ApiAdapter
         {
             return false;
         }
-
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we enhance to that
         return (obj instanceof Detachable);
     }
 
     /**
      * Accessor for the object state.
-     * @param obj Object
+     * @param pc Object
      * @return The state ("persistent-clean", "detached-dirty" etc)
      */
-    public String getObjectState(Object obj)
+    public String getObjectState(Object pc)
     {
-        return JDOHelper.getObjectState(obj).toString();
+        if (pc == null)
+        {
+            return null;
+        }
+
+        if (isDetached(pc))
+        {
+            if (isDirty(pc))
+            {
+                // Detached Dirty
+                return "detached-dirty";
+            }
+            else
+            {
+                // Detached Not Dirty
+                return "detached-clean";
+            }
+        }
+        else
+        {
+            if (isPersistent(pc))
+            {
+                if (isTransactional(pc))
+                {
+                    if (isDirty(pc))
+                    {
+                        if (isNew(pc))
+                        {
+                            if (isDeleted(pc))
+                            {
+                                // Persistent Transactional Dirty New Deleted
+                                return "persistent-new-deleted";
+                            }
+                            else
+                            {
+                                // Persistent Transactional Dirty New Not Deleted
+                                return "persistent-new";
+                            }
+                        }
+                        else
+                        {
+                            if (isDeleted(pc))
+                            {
+                                // Persistent Transactional Dirty Not New Deleted
+                                return "persistent-deleted";
+                            }
+                            else
+                            {
+                                // Persistent Transactional Dirty Not New Not Deleted
+                                return "persistent-dirty";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Persistent Transactional Not Dirty
+                        return "persistent-clean";
+                    }
+                }
+                else
+                {
+                    if (isDirty(pc))
+                    {
+                        // Persistent Nontransactional Dirty
+                        return "persistent-nontransactional-dirty";
+                    }
+                    else
+                    {
+                        // Persistent Nontransactional Not Dirty
+                        return "hollow/persistent-nontransactional";
+                    }
+                }
+            }
+            else
+            {
+                if (isTransactional(pc))
+                {
+                    if (isDirty(pc))
+                    {
+                        // Not Persistent Transactional Dirty
+                        return "transient-dirty";
+                    }
+                    else
+                    {
+                        // Not Persistent Transactional Not Dirty
+                        return "transient-clean";
+                    }
+                }
+                else
+                {
+                    // Not Persistent Not Transactional
+                    return "transient";
+                }
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -314,7 +380,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public void makeDirty(Object obj, String member)
     {
-        ((PersistenceCapable)obj).jdoMakeDirty(member);
+        ((Persistable)obj).dnMakeDirty(member);
     }
 
     // ------------------------------ Object Identity  --------------------------------
@@ -331,8 +397,7 @@ public class JPAAdapter implements ApiAdapter
         {
             return null;
         }
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we enhance to that
-        return ((PersistenceCapable)obj).jdoGetObjectId();
+        return ((Persistable)obj).dnGetObjectId();
     }
 
     /**
@@ -347,22 +412,20 @@ public class JPAAdapter implements ApiAdapter
         {
             return null;
         }
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we enhance to that
-        return ((PersistenceCapable)obj).jdoGetVersion();
+        return ((Persistable)obj).dnGetVersion();
     }
 
     /**
      * Utility to check if a primary-key class is valid.
      * Will throw a InvalidPrimaryKeyException if it is invalid, otherwise returning true.
      * @param pkClass The Primary Key class
-     * @param cmd AbstractClassMetaData for the PersistenceCapable class
+     * @param cmd AbstractClassMetaData for the Persistable class
      * @param clr the ClassLoaderResolver
      * @param noOfPkFields Number of primary key fields
      * @param mmgr MetaData manager
      * @return Whether it is valid
      */
-    public boolean isValidPrimaryKeyClass(Class pkClass, AbstractClassMetaData cmd, ClassLoaderResolver clr,
-            int noOfPkFields, MetaDataManager mmgr)
+    public boolean isValidPrimaryKeyClass(Class pkClass, AbstractClassMetaData cmd, ClassLoaderResolver clr, int noOfPkFields, MetaDataManager mmgr)
     {
         return true;
     }
@@ -373,8 +436,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public boolean isSingleFieldIdentity(Object id)
     {
-        // TODO Use DN-internal SingleFieldIdentity
-        return (id instanceof SingleFieldIdentity);
+        return (id instanceof SingleFieldId);
     }
 
     /* (non-Javadoc)
@@ -396,85 +458,13 @@ public class JPAAdapter implements ApiAdapter
         {
             return false;
         }
-
-        // TODO Use internal SingleFieldIdentity
-        return (className.equals(getSingleFieldIdentityClassNameForByte()) || 
-                className.equals(getSingleFieldIdentityClassNameForChar()) || 
-                className.equals(getSingleFieldIdentityClassNameForInt()) ||
-                className.equals(getSingleFieldIdentityClassNameForLong()) || 
-                className.equals(getSingleFieldIdentityClassNameForObject()) || 
-                className.equals(getSingleFieldIdentityClassNameForShort()) ||
-                className.equals(getSingleFieldIdentityClassNameForString()));
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Long/long field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForLong()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return LongIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Integer/int field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForInt()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return IntIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Short/short field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForShort()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return ShortIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Byte/byte field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForByte()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return ByteIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Character/char field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForChar()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return CharIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single String field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForString()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return StringIdentity.class.getName();
-    }
-
-    /**
-     * Accessor for the class name to use for identities when there is a single Object field.
-     * @return Class name of identity class
-     */
-    public String getSingleFieldIdentityClassNameForObject()
-    {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        return ObjectIdentity.class.getName();
+        return (className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_BYTE) || 
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_CHAR) || 
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_INT) ||
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_LONG) || 
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_OBJECT) || 
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_SHORT) ||
+                className.equals(ClassNameConstants.IDENTITY_SINGLEFIELD_STRING));
     }
 
     /**
@@ -484,10 +474,9 @@ public class JPAAdapter implements ApiAdapter
      */
     public Class getTargetClassForSingleFieldIdentity(Object id)
     {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        if (id instanceof SingleFieldIdentity)
+        if (id instanceof SingleFieldId)
         {
-            return ((SingleFieldIdentity)id).getTargetClass();
+            return ((SingleFieldId)id).getTargetClass();
         }
         return null;
     }
@@ -499,10 +488,9 @@ public class JPAAdapter implements ApiAdapter
      */
     public String getTargetClassNameForSingleFieldIdentity(Object id)
     {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        if (id instanceof SingleFieldIdentity)
+        if (id instanceof SingleFieldId)
         {
-            return ((SingleFieldIdentity)id).getTargetClassName();
+            return ((SingleFieldId)id).getTargetClassName();
         }
         return null;
     }
@@ -514,10 +502,9 @@ public class JPAAdapter implements ApiAdapter
      */
     public Object getTargetKeyForSingleFieldIdentity(Object id)
     {
-        // TODO Use JPOX-internal SingleFieldIdentity
-        if (id instanceof SingleFieldIdentity)
+        if (id instanceof SingleFieldId)
         {
-            return ((SingleFieldIdentity)id).getKeyAsObject();
+            return ((SingleFieldId)id).getKeyAsObject();
         }
         return null;
     }
@@ -538,32 +525,31 @@ public class JPAAdapter implements ApiAdapter
             return null;
         }
 
-        // TODO Use DN-internal SingleFieldIdentity
-        if (LongIdentity.class.isAssignableFrom(idType))
+        if (ClassConstants.IDENTITY_SINGLEFIELD_LONG.isAssignableFrom(idType))
         {
             return Long.class;
         }
-        else if (IntIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_INT.isAssignableFrom(idType))
         {
             return Integer.class;
         }
-        else if (ShortIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_SHORT.isAssignableFrom(idType))
         {
             return Short.class;
         }
-        else if (ByteIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_BYTE.isAssignableFrom(idType))
         {
             return Byte.class;
         }
-        else if (CharIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_CHAR.isAssignableFrom(idType))
         {
             return Character.class;
         }
-        else if (StringIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_STRING.isAssignableFrom(idType))
         {
             return String.class;
         }
-        else if (ObjectIdentity.class.isAssignableFrom(idType))
+        else if (ClassConstants.IDENTITY_SINGLEFIELD_OBJECT.isAssignableFrom(idType))
         {
             return Object.class;
         }
@@ -572,16 +558,15 @@ public class JPAAdapter implements ApiAdapter
 
     /**
      * Utility to create a new SingleFieldIdentity using reflection when you know the
-     * type of the PersistenceCapable, and also which SingleFieldIdentity, and the value of the key.
+     * type of the Persistable, and also which SingleFieldIdentity, and the value of the key.
      * @param idType Type of SingleFieldIdentity
-     * @param pcType Type of the PersistenceCapable
+     * @param pcType Type of the Persistable
      * @param value The value for the identity (the Long, or Int, or ... etc).
      * @return Single field identity
      * @throws NucleusException if invalid input is received
      */
     public Object getNewSingleFieldIdentity(Class idType, Class pcType, Object value)
     {
-        // TODO Use internal SingleFieldIdentity
         if (idType == null)
         {
             throw new NucleusException(LOCALISER.msg("029001", pcType)).setFatal();
@@ -594,14 +579,14 @@ public class JPAAdapter implements ApiAdapter
         {
             throw new NucleusException(LOCALISER.msg("029003", idType, pcType)).setFatal();
         }
-        if (!SingleFieldIdentity.class.isAssignableFrom(idType))
+        if (!SingleFieldId.class.isAssignableFrom(idType))
         {
             throw new NucleusException(LOCALISER.msg("029002", idType.getName(), pcType.getName())).setFatal();
         }
 
-        SingleFieldIdentity id = null;
+        SingleFieldId id = null;
         Class keyType = null;
-        if (idType == LongIdentity.class)
+        if (idType == ClassConstants.IDENTITY_SINGLEFIELD_LONG)
         {
             keyType = Long.class;
             if (!(value instanceof Long))
@@ -610,7 +595,7 @@ public class JPAAdapter implements ApiAdapter
                     pcType.getName(), value.getClass().getName(), "Long")).setFatal();
             }
         }
-        else if (idType == IntIdentity.class)
+        else if (idType == ClassConstants.IDENTITY_SINGLEFIELD_INT)
         {
             keyType = Integer.class;
             if (!(value instanceof Integer))
@@ -619,7 +604,7 @@ public class JPAAdapter implements ApiAdapter
                     pcType.getName(), value.getClass().getName(), "Integer")).setFatal();
             }
         }
-        else if (idType == StringIdentity.class)
+        else if (idType == ClassConstants.IDENTITY_SINGLEFIELD_STRING)
         {
             keyType = String.class;
             if (!(value instanceof String))
@@ -628,7 +613,7 @@ public class JPAAdapter implements ApiAdapter
                     pcType.getName(), value.getClass().getName(), "String")).setFatal();
             }
         }
-        else if (idType == ByteIdentity.class)
+        else if (idType == ClassConstants.IDENTITY_SINGLEFIELD_BYTE)
         {
             keyType = Byte.class;
             if (!(value instanceof Byte))
@@ -637,7 +622,7 @@ public class JPAAdapter implements ApiAdapter
                     pcType.getName(), value.getClass().getName(), "Byte")).setFatal();
             }
         }
-        else if (idType == ShortIdentity.class)
+        else if (idType == ClassConstants.IDENTITY_SINGLEFIELD_SHORT)
         {
             keyType = Short.class;
             if (!(value instanceof Short))
@@ -646,7 +631,7 @@ public class JPAAdapter implements ApiAdapter
                     pcType.getName(), value.getClass().getName(), "Short")).setFatal();
             }
         }
-        else if (idType == CharIdentity.class)
+        else if (idType == ClassConstants.IDENTITY_SINGLEFIELD_CHAR)
         {
             keyType = Character.class;
             if (!(value instanceof Character))
@@ -667,7 +652,7 @@ public class JPAAdapter implements ApiAdapter
             Constructor ctr = idType.getConstructor(ctrArgs);
 
             Object[] args = new Object[] {pcType, value};
-            id = (SingleFieldIdentity)ctr.newInstance(args);
+            id = (SingleFieldId)ctr.newInstance(args);
         }
         catch (Exception e)
         {
@@ -692,7 +677,6 @@ public class JPAAdapter implements ApiAdapter
     public Object getNewApplicationIdentityObjectId(ClassLoaderResolver clr, AbstractClassMetaData acmd, 
             String value)
     {
-        // TODO Use internal SingleFieldIdentity
         if (acmd.getIdentityType() != IdentityType.APPLICATION)
         {
             // TODO Localise this
@@ -708,7 +692,7 @@ public class JPAAdapter implements ApiAdapter
             try
             {
                 Class[] ctrArgs;
-                if (ObjectIdentity.class.isAssignableFrom(idType))
+                if (ClassConstants.IDENTITY_SINGLEFIELD_OBJECT.isAssignableFrom(idType))
                 {
                     ctrArgs = new Class[] {Class.class, Object.class};
                 }
@@ -724,7 +708,7 @@ public class JPAAdapter implements ApiAdapter
             catch (Exception e)
             {
                 // TODO Localise this
-                throw new NucleusException("Error encountered while creating SingleFieldIdentity instance with key \"" + value + "\"", e);
+                throw new NucleusException("Error encountered while creating single-field identity instance with key \"" + value + "\"", e);
             }
         }
         else
@@ -733,8 +717,7 @@ public class JPAAdapter implements ApiAdapter
             {
                 try
                 {
-                    Constructor c = clr.classForName(acmd.getObjectidClass()).getDeclaredConstructor(
-                        new Class[] {java.lang.String.class});
+                    Constructor c = clr.classForName(acmd.getObjectidClass()).getDeclaredConstructor(new Class[] {java.lang.String.class});
                     id = c.newInstance(new Object[] {value});
                 }
                 catch (Exception e) 
@@ -749,7 +732,7 @@ public class JPAAdapter implements ApiAdapter
             else
             {
                 clr.classForName(targetClass.getName(), true);
-                id = NucleusJPAHelper.getJDOImplHelper().newObjectIdInstance(targetClass, value);
+                id = EnhancementHelper.getInstance().newObjectIdInstance(targetClass, value);
             }
         }
 
@@ -770,17 +753,16 @@ public class JPAAdapter implements ApiAdapter
             return null;
         }
 
-        // TODO Change this to Persistable
         try
         {
-            Object id = ((PersistenceCapable)pc).jdoNewObjectIdInstance();
+            Object id = ((Persistable)pc).dnNewObjectIdInstance();
             if (!cmd.usesSingleFieldIdentityClass())
             {
-                ((PersistenceCapable)pc).jdoCopyKeyFieldsToObjectId(id);
+                ((Persistable)pc).dnCopyKeyFieldsToObjectId(id);
             }
             return id;
         }
-        catch (JDONullIdentityException nie)
+        catch (Exception e)
         {
             return null;
         }
@@ -794,8 +776,7 @@ public class JPAAdapter implements ApiAdapter
      */
     public Object getNewApplicationIdentityObjectId(Class cls, Object key)
     {
-        // TODO Replace this with a non-JDO method
-        return NucleusJPAHelper.getJDOImplHelper().newObjectIdInstance(cls, key);
+        return EnhancementHelper.getInstance().newObjectIdInstance(cls, key);
     }
 
     // ------------------------------ Persistence --------------------------------
@@ -948,9 +929,9 @@ public class JPAAdapter implements ApiAdapter
      */
     public Object getCopyOfPersistableObject(Object obj, ObjectProvider op, int[] fieldNumbers)
     {
-        PersistenceCapable pc = (PersistenceCapable)obj;
-        PersistenceCapable copy = pc.jdoNewInstance((javax.jdo.spi.StateManager)op);
-        copy.jdoCopyFields(pc, fieldNumbers);
+        Persistable pc = (Persistable)obj;
+        Persistable copy = pc.dnNewInstance((StateManager)op);
+        copy.dnCopyFields(pc, fieldNumbers);
         return copy;
     }
 
@@ -959,12 +940,12 @@ public class JPAAdapter implements ApiAdapter
      */
     public void copyFieldsFromPersistableObject(Object pc, int[] fieldNumbers, Object pc2)
     {
-        ((PersistenceCapable)pc2).jdoCopyFields(pc, fieldNumbers);
+        ((Persistable)pc2).dnCopyFields(pc, fieldNumbers);
     }
 
     public void copyPkFieldsToPersistableObjectFromId(Object pc, Object id, FieldManager fm)
     {
-        ObjectIdFieldConsumer consumer = new AppIdObjectIdFieldConsumer(this, fm);
-        ((PersistenceCapable)pc).jdoCopyKeyFieldsFromObjectId(consumer, id);
+        Persistable.ObjectIdFieldConsumer consumer = new AppIdObjectIdFieldConsumer(this, fm);
+        ((Persistable)pc).dnCopyKeyFieldsFromObjectId(consumer, id);
     }
 }

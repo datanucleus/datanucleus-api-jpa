@@ -18,17 +18,6 @@ Contributors:
 package org.datanucleus.api.jpa;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
-import javax.jdo.JDODataStoreException;
-import javax.jdo.JDOException;
-import javax.jdo.JDOFatalUserException;
-import javax.jdo.JDOObjectNotFoundException;
-import javax.jdo.JDOOptimisticVerificationException;
-import javax.jdo.JDOUserException;
-import javax.jdo.spi.JDOImplHelper;
-import javax.jdo.spi.PersistenceCapable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -36,6 +25,7 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 
 import org.datanucleus.ExecutionContext;
+import org.datanucleus.enhancer.Persistable;
 import org.datanucleus.exceptions.NucleusCanRetryException;
 import org.datanucleus.exceptions.NucleusDataStoreException;
 import org.datanucleus.exceptions.NucleusException;
@@ -43,6 +33,7 @@ import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.exceptions.NucleusOptimisticException;
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.StateManager;
 import org.datanucleus.store.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.store.query.QueryTimeoutException;
 import org.datanucleus.util.ClassUtils;
@@ -54,10 +45,18 @@ import org.datanucleus.util.Localiser;
 public class NucleusJPAHelper
 {
     /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
-        org.datanucleus.ClassConstants.NUCLEUS_CONTEXT_LOADER);
+    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation", org.datanucleus.ClassConstants.NUCLEUS_CONTEXT_LOADER);
 
     // ------------------------------ Object Management --------------------------------
+
+    public static Object getObjectId(Object obj)
+    {
+        if (obj instanceof Persistable)
+        {
+            return ((Persistable)obj).dnGetObjectId();
+        }
+        return null;
+    }
 
     /**
      * Accessor for the EntityManager for the supplied (persistable) object.
@@ -67,14 +66,9 @@ public class NucleusJPAHelper
      */
     public static EntityManager getEntityManager(Object obj)
     {
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            JPAPersistenceManager pm = (JPAPersistenceManager) ((PersistenceCapable)obj).jdoGetPersistenceManager();
-            if (pm == null)
-            {
-                return null;
-            }
-            return pm.getEntityManager();
+            return (JPAEntityManager) ((Persistable)obj).dnGetExecutionContext().getOwner();
         }
         return null;
     }
@@ -86,10 +80,9 @@ public class NucleusJPAHelper
      */
     public static boolean isPersistent(Object obj)
     {
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we swap over
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            return ((PersistenceCapable)obj).jdoIsPersistent();
+            return ((Persistable)obj).dnIsPersistent();
         }
         return false;
     }
@@ -101,10 +94,9 @@ public class NucleusJPAHelper
      */
     public static boolean isDeleted(Object obj)
     {
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we swap over
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            return ((PersistenceCapable)obj).jdoIsDeleted();
+            return ((Persistable)obj).dnIsDeleted();
         }
         return false;
     }
@@ -116,10 +108,9 @@ public class NucleusJPAHelper
      */
     public static boolean isDetached(Object obj)
     {
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we swap over
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            return ((PersistenceCapable)obj).jdoIsDetached();
+            return ((Persistable)obj).dnIsDetached();
         }
         return false;
     }
@@ -131,10 +122,9 @@ public class NucleusJPAHelper
      */
     public static boolean isTransactional(Object obj)
     {
-        // TODO Change this to org.datanucleus.api.jpa.Persistable when we swap over
-        if (obj instanceof PersistenceCapable)
+        if (obj instanceof Persistable)
         {
-            return ((PersistenceCapable)obj).jdoIsTransactional();
+            return ((Persistable)obj).dnIsTransactional();
         }
         return false;
     }
@@ -201,13 +191,13 @@ public class NucleusJPAHelper
         }
         try
         {
-            Field fld = ClassUtils.getFieldForClass(obj.getClass(), "jdoDetachedState");
+            Field fld = ClassUtils.getFieldForClass(obj.getClass(), "dnDetachedState");
             fld.setAccessible(true);
             return (Object[]) fld.get(obj);
         }
         catch (Exception e)
         {
-            throw new NucleusException("Exception accessing jdoDetachedState field", e);
+            throw new NucleusException("Exception accessing dnDetachedState field", e);
         }
     }
 
@@ -219,22 +209,22 @@ public class NucleusJPAHelper
      */
     public static String[] getDirtyFields(Object obj, EntityManager em)
     {
-        if (obj == null || !(obj instanceof PersistenceCapable))
+        if (obj == null || !(obj instanceof Persistable))
         {
             return null;
         }
-        PersistenceCapable pc = (PersistenceCapable)obj;
+        Persistable pc = (Persistable)obj;
 
         if (isDetached(pc))
         {
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
 
             // Temporarily attach a StateManager to access the detached field information
-            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.jdoGetObjectId(), null);
-            pc.jdoReplaceStateManager((javax.jdo.spi.StateManager) op);
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
+            pc.dnReplaceStateManager((StateManager) op);
             op.retrieveDetachState(op);
             String[] dirtyFieldNames = op.getDirtyFieldNames();
-            pc.jdoReplaceStateManager(null);
+            pc.dnReplaceStateManager(null);
 
             return dirtyFieldNames;
         }
@@ -258,22 +248,21 @@ public class NucleusJPAHelper
      */
     public static String[] getLoadedFields(Object obj, EntityManager em)
     {
-        if (obj == null || !(obj instanceof PersistenceCapable))
+        if (obj == null || !(obj instanceof Persistable))
         {
             return null;
         }
-        PersistenceCapable pc = (PersistenceCapable)obj;
+        Persistable pc = (Persistable)obj;
 
         if (isDetached(pc))
         {
             // Temporarily attach a StateManager to access the detached field information
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
-            pc.jdoGetObjectId();
-            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.jdoGetObjectId(), null);
-            pc.jdoReplaceStateManager((javax.jdo.spi.StateManager) op);
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
+            pc.dnReplaceStateManager((StateManager) op);
             op.retrieveDetachState(op);
             String[] loadedFieldNames = op.getLoadedFieldNames();
-            pc.jdoReplaceStateManager(null);
+            pc.dnReplaceStateManager(null);
 
             return loadedFieldNames;
         }
@@ -286,71 +275,6 @@ public class NucleusJPAHelper
                 return null;
             }
             return sm.getLoadedFieldNames();
-        }
-    }
-
-    /**
-     * Convenience method to convert a JDO exception into a JPA exception.
-     * If the incoming exception has a "failed object" then create the new exception with
-     * a failed object. Otherwise if the incoming exception has nested exceptions then
-     * create this exception with those nested exceptions. Else create this exception with
-     * the incoming exception as its nested exception.
-     * TODO When our JPA impl doesnt depend on JDO remove this
-     * @param jdoe JDOException
-     * @return The JPAException
-     */
-    public static PersistenceException getJPAExceptionForJDOException(JDOException jdoe)
-    {
-        if (jdoe instanceof JDODataStoreException)
-        {
-            // JPA doesnt have "datastore" exceptions so just give a PersistenceException
-            if (jdoe.getNestedExceptions() != null)
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe.getCause());
-            }
-            else
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe);
-            }
-        }
-        else if (jdoe instanceof JDOObjectNotFoundException)
-        {
-            return new EntityNotFoundException(jdoe.getMessage());
-        }
-        else if (jdoe instanceof JDOUserException)
-        {
-            // JPA doesnt have "user" exceptions so just give a PersistenceException
-            if (jdoe.getNestedExceptions() != null)
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe.getCause());
-            }
-            else
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe);
-            }
-        }
-        else if (jdoe instanceof JDOOptimisticVerificationException)
-        {
-            if (jdoe.getNestedExceptions() != null)
-            {
-                return new OptimisticLockException(jdoe.getMessage(), jdoe.getCause());
-            }
-            else
-            {
-                return new OptimisticLockException(jdoe.getMessage(), jdoe);
-            }
-        }
-        else
-        {
-            // JPA doesnt have "internal" exceptions so just give a PersistenceException
-            if (jdoe.getNestedExceptions() != null)
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe.getCause());
-            }
-            else
-            {
-                return new PersistenceException(jdoe.getMessage(), jdoe);
-            }
         }
     }
 
@@ -437,29 +361,5 @@ public class NucleusJPAHelper
                 return new PersistenceException(ne.getMessage(), ne);
             }
         }
-    }
-
-    /**
-     * Get the JDOImplHelper instance.
-     * This must be done in a doPrivileged block.
-     * @return The JDOImplHelper.
-     */
-    @SuppressWarnings("unchecked")
-    public static JDOImplHelper getJDOImplHelper() 
-    {
-        return (JDOImplHelper) AccessController.doPrivileged(new PrivilegedAction()
-            {
-                public Object run()
-                {
-                    try
-                    {
-                        return JDOImplHelper.getInstance();
-                    }
-                    catch (SecurityException e)
-                    {
-                        throw new JDOFatalUserException(LOCALISER.msg("026000"), e);
-                    }
-                }
-            });
     }
 }

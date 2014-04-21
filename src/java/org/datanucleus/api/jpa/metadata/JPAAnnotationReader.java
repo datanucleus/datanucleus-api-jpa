@@ -1274,10 +1274,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             return null;
         }
 
-        // TODO Change this when JPA is enhanced using methods starting "datanucleus"
-        if (member.getName().startsWith("jdo"))
+        if (member.getName().startsWith("dn"))
         {
-            // ignore JDO fields/methods added during enhancement
+            // ignore enhanced fields/methods added during enhancement
             return null;
         }
 

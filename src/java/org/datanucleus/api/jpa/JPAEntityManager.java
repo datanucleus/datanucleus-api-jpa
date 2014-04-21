@@ -125,8 +125,7 @@ public class JPAEntityManager implements EntityManager
      * @param contextType The Persistence Context type
      * @param syncType The Synchronisation type
      */
-    public JPAEntityManager(JPAEntityManagerFactory theEMF, PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType,
-            SynchronizationType syncType)
+    public JPAEntityManager(JPAEntityManagerFactory theEMF, PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType, SynchronizationType syncType)
     {
         this.emf = theEMF;
         this.persistenceContextType = contextType;
@@ -140,7 +139,7 @@ public class JPAEntityManager implements EntityManager
             options = new HashMap();
             options.put(ExecutionContext.OPTION_JTA_AUTOJOIN, "false");
         }
-        ec = nucleusCtx.getExecutionContext(new JPAPersistenceManager(this), options);
+        ec = nucleusCtx.getExecutionContext(this, options);
 
         if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
             TransactionType.RESOURCE_LOCAL.toString()))
