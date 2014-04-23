@@ -65,7 +65,6 @@ import org.datanucleus.api.jpa.criteria.CriteriaUpdateImpl;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.identity.IdentityUtils;
-import org.datanucleus.identity.OIDFactory;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.IdentityType;
@@ -352,7 +351,7 @@ public class JPAEntityManager implements EntityManager
                     if (!IdentityUtils.isDatastoreIdentity(id))
                     {
                         // Create an OID
-                        id = OIDFactory.getInstance(ec.getNucleusContext(), acmd.getFullClassName(), primaryKey);
+                        id = ec.getNucleusContext().getIdentityManager().getDatastoreId(acmd.getFullClassName(), primaryKey);
                     }
                 }
                 else if (!acmd.getObjectidClass().equals(primaryKey.getClass().getName()))
