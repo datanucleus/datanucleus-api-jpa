@@ -50,8 +50,6 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-
-
 import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
@@ -66,7 +64,7 @@ import org.datanucleus.api.jpa.criteria.CriteriaQueryImpl;
 import org.datanucleus.api.jpa.criteria.CriteriaUpdateImpl;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
-import org.datanucleus.identity.OID;
+import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.identity.OIDFactory;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
@@ -351,7 +349,7 @@ public class JPAEntityManager implements EntityManager
                 Object id = primaryKey;
                 if (acmd.getIdentityType() == IdentityType.DATASTORE)
                 {
-                    if (!(primaryKey instanceof OID))
+                    if (!IdentityUtils.isDatastoreIdentity(id))
                     {
                         // Create an OID
                         id = OIDFactory.getInstance(ec.getNucleusContext(), acmd.getFullClassName(), primaryKey);
