@@ -356,7 +356,7 @@ public class JPAEntityManager implements EntityManager
                 }
                 else if (!acmd.getObjectidClass().equals(primaryKey.getClass().getName()))
                 {
-                    if (acmd.usesSingleFieldIdentityClass() && ec.getNucleusContext().getIdentityKeyTranslator() == null)
+                    if (acmd.usesSingleFieldIdentityClass() && ec.getNucleusContext().getIdentityManager().getIdentityKeyTranslator() == null)
                     {
                         if (ec.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_FIND_OBJECT_TYPE_CONVERSION))
                         {
