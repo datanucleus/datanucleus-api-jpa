@@ -342,6 +342,7 @@ public class JPAEntityManager implements EntityManager
                 throwException(new EntityNotFoundException());
             }
 
+            // TODO Much of this logic should move into ExecutionContext.newObjectId, but see getReference(...) also
             try
             {
                 // Get the identity
@@ -495,6 +496,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
+            // Assumes that ec.newObjectId will throw an exception if we have an IntId case passed in but with a String key
             throw new IllegalArgumentException(ne);
         }
 
