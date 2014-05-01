@@ -2272,6 +2272,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         boolean storeInLob = false;
         Class targetEntity = null;
         boolean addJoin = false;
+        boolean unique = false;
 
         for (int i=0;annotations != null && i<annotations.length;i++)
         {
@@ -2355,6 +2356,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     nullValue = "none";
                 }
                 orphanRemoval = (Boolean)annotationValues.get("orphanRemoval");
+                if (StringUtils.isWhitespace(mappedBy))
+                {
+                    // Default to UNIQUE constraint on the FK
+                    unique = true;
+                }
             }
             else if (annName.equals(JPAAnnotationUtils.ONE_TO_MANY))
             {
@@ -2554,6 +2560,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         if (storeInLob)
         {
             fmd.setStoreInLob();
+        }
+        if (unique)
+        {
+            fmd.setUnique(unique);
         }
 
         // Container fields : If the field is a container then add its container element
