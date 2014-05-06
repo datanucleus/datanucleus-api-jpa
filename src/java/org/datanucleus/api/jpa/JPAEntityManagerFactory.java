@@ -56,6 +56,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.datanucleus.AbstractNucleusContext;
+import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolverImpl;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.FetchGroup;
@@ -956,9 +957,17 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public <T> T unwrap(Class<T> cls)
     {
-        if (NucleusContext.class.isAssignableFrom(cls))
+        if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
         {
             return (T) nucleusCtx;
+        }
+        if (ClassConstants.STORE_MANAGER.isAssignableFrom(cls))
+        {
+            return (T) nucleusCtx.getStoreManager();
+        }
+        if (ClassConstants.METADATA_MANAGER.isAssignableFrom(cls))
+        {
+            return (T) nucleusCtx.getMetaDataManager();
         }
 
         throw new PersistenceException("Not yet supported unwrapping of " + cls.getName());

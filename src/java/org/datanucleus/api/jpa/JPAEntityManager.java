@@ -464,6 +464,18 @@ public class JPAEntityManager implements EntityManager
         {
             return (T) ec;
         }
+        if (ClassConstants.STORE_MANAGER.isAssignableFrom(cls))
+        {
+            return (T) ec.getStoreManager();
+        }
+        if (ClassConstants.METADATA_MANAGER.isAssignableFrom(cls))
+        {
+            return (T) ec.getMetaDataManager();
+        }
+        if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
+        {
+            return (T) ec.getNucleusContext();
+        }
 
         return (T)throwException(new PersistenceException("Not yet supported"));
     }
