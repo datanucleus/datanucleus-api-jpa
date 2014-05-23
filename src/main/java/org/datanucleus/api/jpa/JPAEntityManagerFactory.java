@@ -92,11 +92,12 @@ import org.datanucleus.util.Localiser;
  */
 public class JPAEntityManagerFactory implements EntityManagerFactory, PersistenceUnitUtil, JPAEntityGraphRegistrationListener, Serializable
 {
-    static final long serialVersionUID = -2306972481580259021L;
+    static
+    {
+        Localiser.registerBundle("org.datanucleus.api.jpa.Localisation", JPAEntityManagerFactory.class.getClassLoader());
+    }
 
-    /** Localiser for messages. */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation",
-        JPAEntityManagerFactory.class.getClassLoader());
+    static final long serialVersionUID = -2306972481580259021L;
 
     /** Logger for enhancing. */
     public static final NucleusLogger LOGGER = NucleusLogger.getLoggerInstance("DataNucleus.JPA");
@@ -156,7 +157,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (!validProvider)
         {
             // Not a valid provider
-            throw new NotProviderException(LOCALISER.msg("EMF.NotProviderForPersistenceUnit", unitInfo.getPersistenceUnitName()));
+            throw new NotProviderException(Localiser.msg("EMF.NotProviderForPersistenceUnit", unitInfo.getPersistenceUnitName()));
         }
 
         // Create a PersistenceUnitMetaData
@@ -257,7 +258,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             }
             else
             {
-                LOGGER.warn(LOCALISER.msg("EMF.ContainerJTAWithNoNonJTADataSource"));
+                LOGGER.warn(Localiser.msg("EMF.ContainerJTAWithNoNonJTADataSource"));
             }
         }
 
@@ -431,7 +432,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (!validProvider)
         {
             // Not a valid provider
-            throw new NotProviderException(LOCALISER.msg("EMF.NotProviderForPersistenceUnit", (pumd != null ? pumd.getName() : null)));
+            throw new NotProviderException(Localiser.msg("EMF.NotProviderForPersistenceUnit", (pumd != null ? pumd.getName() : null)));
         }
 
         // Cache the unit definition
@@ -1163,8 +1164,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (files == null)
         {
             // No "persistence.xml" files found
-            LOGGER.warn(LOCALISER.msg("EMF.NoPersistenceXML"));
-            //throw new NoPersistenceXmlException(LOCALISER.msg("EMF.NoPersistenceXML"));
+            LOGGER.warn(Localiser.msg("EMF.NoPersistenceXML"));
+            //throw new NoPersistenceXmlException(Localiser.msg("EMF.NoPersistenceXML"));
         }
         else
         {
@@ -1198,7 +1199,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (pumd == null)
         {
             // No "persistence-unit" of the same name as requested so nothing to manage the persistence of
-            LOGGER.warn(LOCALISER.msg("EMF.PersistenceUnitNotFound", unitName));
+            LOGGER.warn(Localiser.msg("EMF.PersistenceUnitNotFound", unitName));
         }
         else
         {

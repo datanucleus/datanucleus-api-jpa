@@ -44,6 +44,7 @@ import org.datanucleus.metadata.MetaDataManagerImpl;
 import org.datanucleus.metadata.MetadataFileType;
 import org.datanucleus.metadata.PackageMetaData;
 import org.datanucleus.metadata.xml.MetaDataParser;
+import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
 
 /**
@@ -350,7 +351,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
             // Not found, so add to known classes/interfaces without MetaData
             if (NucleusLogger.METADATA.isDebugEnabled())
             {
-                NucleusLogger.METADATA.debug(LOCALISER.msg("044043", c.getName())); 
+                NucleusLogger.METADATA.debug(Localiser.msg("044043", c.getName())); 
             }
             classesWithoutPersistenceInfo.add(c.getName());
 

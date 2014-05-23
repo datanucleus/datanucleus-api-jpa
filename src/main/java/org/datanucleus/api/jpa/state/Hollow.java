@@ -24,6 +24,7 @@ import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.IllegalStateTransitionException;
 import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.util.Localiser;
 
 /**
  * Class representing the life cycle state of Hollow.
@@ -113,7 +114,7 @@ class Hollow extends LifeCycleState
         Transaction tx = op.getExecutionContext().getTransaction();
         if (!tx.isActive() && !tx.getNontransactionalRead())
         {
-            throw new NucleusUserException(LOCALISER.msg("027000"), op.getInternalObjectId());
+            throw new NucleusUserException(Localiser.msg("027000"), op.getInternalObjectId());
         }
 
         if (!tx.getOptimistic() && tx.isActive())
@@ -136,7 +137,7 @@ class Hollow extends LifeCycleState
         Transaction tx = op.getExecutionContext().getTransaction();
         if (!tx.isActive() && !tx.getNontransactionalWrite())
         {
-            throw new NucleusUserException(LOCALISER.msg("027001"), op.getInternalObjectId());
+            throw new NucleusUserException(Localiser.msg("027001"), op.getInternalObjectId());
         }
         return changeState(op, tx.isActive() ? P_DIRTY : P_NONTRANS);
     }

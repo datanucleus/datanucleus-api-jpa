@@ -37,16 +37,12 @@ import org.datanucleus.state.StateManager;
 import org.datanucleus.store.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.store.query.QueryTimeoutException;
 import org.datanucleus.util.ClassUtils;
-import org.datanucleus.util.Localiser;
 
 /**
  * Helper for persistence operations with JPA.
  */
 public class NucleusJPAHelper
 {
-    /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation", org.datanucleus.ClassConstants.NUCLEUS_CONTEXT_LOADER);
-
     // ------------------------------ Object Management --------------------------------
 
     public static Object getObjectId(Object obj)

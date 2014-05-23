@@ -57,10 +57,6 @@ import org.datanucleus.util.StringUtils;
  */
 public class JPAQuery<X> implements TypedQuery<X>
 {
-    /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation", 
-        JPAEntityManagerFactory.class.getClassLoader());
-
     /** Underlying EntityManager handling persistence. */
     JPAEntityManager em;
 
@@ -115,7 +111,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         if (query.getType() == org.datanucleus.store.query.Query.SELECT)
         {
-            throw new IllegalStateException(LOCALISER.msg("Query.ExecuteUpdateForSelectInvalid"));
+            throw new IllegalStateException(Localiser.msg("Query.ExecuteUpdateForSelectInvalid"));
         }
 
         try
@@ -167,7 +163,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         if (query.getType() != org.datanucleus.store.query.Query.SELECT)
         {
-            throw new IllegalStateException(LOCALISER.msg("Query.GetResultForUpdateInvalid"));
+            throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
         }
 
         try
@@ -221,7 +217,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         if (query.getType() != org.datanucleus.store.query.Query.SELECT)
         {
-            throw new IllegalStateException(LOCALISER.msg("Query.GetResultForUpdateInvalid"));
+            throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
         }
 
         try
@@ -272,7 +268,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         if (startPosition < 0)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.StartPositionInvalid"));
+            throw new IllegalArgumentException(Localiser.msg("Query.StartPositionInvalid"));
         }
 
         this.startPosition = startPosition;
@@ -296,7 +292,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         if (max < 0)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.MaxResultsInvalid"));
+            throw new IllegalArgumentException(Localiser.msg("Query.MaxResultsInvalid"));
         }
 
         this.maxResults = max;

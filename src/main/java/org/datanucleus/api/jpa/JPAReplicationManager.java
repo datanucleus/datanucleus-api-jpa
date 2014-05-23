@@ -41,10 +41,6 @@ import org.datanucleus.util.StringUtils;
  */
 public class JPAReplicationManager
 {
-    /** Localisation utility for output messages. */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation", 
-        JPAEntityManagerFactory.class.getClassLoader());
-
     /** EMF for the source datastore. */
     final EntityManagerFactory emfSource;
 
@@ -63,11 +59,11 @@ public class JPAReplicationManager
     {
         if (emf1 == null || !emf1.isOpen())
         {
-            throw new NucleusException(LOCALISER.msg("012050"));
+            throw new NucleusException(Localiser.msg("012050"));
         }
         else if (emf2 == null || !emf2.isOpen())
         {
-            throw new NucleusException(LOCALISER.msg("012050"));
+            throw new NucleusException(Localiser.msg("012050"));
         }
 
         emfSource = emf1;
@@ -121,14 +117,14 @@ public class JPAReplicationManager
     {
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012052", emfSource, emfTarget, 
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012052", emfSource, emfTarget, 
                 StringUtils.objectArrayToString(types)));
         }
 
         // Detach from datastore 1
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012053"));
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012053"));
         }
         EntityManager em1 = emfSource.createEntityManager();
         EntityTransaction tx1 = em1.getTransaction();
@@ -173,14 +169,14 @@ public class JPAReplicationManager
     {
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012052", emfSource, emfTarget, 
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012052", emfSource, emfTarget, 
                 StringUtils.objectArrayToString(classNames)));
         }
 
         // Detach from datastore 1
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012053"));
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012053"));
         }
         EntityManager em1 = emfSource.createEntityManager();
         EntityTransaction tx1 = em1.getTransaction();
@@ -225,14 +221,14 @@ public class JPAReplicationManager
     {
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012051", emfSource, emfTarget,
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012051", emfSource, emfTarget,
                 StringUtils.objectArrayToString(oids)));
         }
 
         // Detach from datastore 1
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012053"));
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012053"));
         }
         EntityManager em1 = emfSource.createEntityManager();
         EntityTransaction tx1 = em1.getTransaction();
@@ -292,7 +288,7 @@ public class JPAReplicationManager
         // Attach to datastore 2
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012054"));
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012054"));
         }
 
         EntityManager em2 = emfTarget.createEntityManager();
@@ -316,7 +312,7 @@ public class JPAReplicationManager
         }
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug(LOCALISER.msg("012055"));
+            NucleusLogger.PERSISTENCE.debug(Localiser.msg("012055"));
         }
     }
 }

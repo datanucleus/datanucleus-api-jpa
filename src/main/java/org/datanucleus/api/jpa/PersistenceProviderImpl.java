@@ -61,10 +61,6 @@ import org.datanucleus.util.Localiser;
  */
 public class PersistenceProviderImpl implements PersistenceProvider, ProviderUtil
 {
-    /** Localiser for messages. */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation",
-        JPAEntityManagerFactory.class.getClassLoader());
-
     /**
      * Constructor.
      */
@@ -421,7 +417,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         if (files == null)
         {
             // No "persistence.xml" files found
-            throw new PersistenceException(LOCALISER.msg("EMF.NoPersistenceXML"));
+            throw new PersistenceException(Localiser.msg("EMF.NoPersistenceXML"));
         }
 
         // Extract the persistence unit we require

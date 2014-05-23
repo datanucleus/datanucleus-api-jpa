@@ -89,10 +89,6 @@ import org.datanucleus.util.TypeConversionHelper;
  */
 public class JPAEntityManager implements EntityManager
 {
-    /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation",
-        JPAEntityManagerFactory.class.getClassLoader());
-
     protected boolean closed = false;
 
     /** The underlying ExecutionContext managing the persistence. */
@@ -552,7 +548,7 @@ public class JPAEntityManager implements EntityManager
         assertEntity(entity);
         if (ec.getApiAdapter().isDetached(entity))
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsDetached",
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
                 StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
         }
         if (!contains(entity))
@@ -619,7 +615,7 @@ public class JPAEntityManager implements EntityManager
                 // The JPA spec is very confused about when this exception is thrown, however the JPA TCK
                 // invokes this operation multiple times over the same instance
                 // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
-                throwException(new EntityExistsException(LOCALISER.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
+                throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
             }
         }
 
@@ -650,7 +646,7 @@ public class JPAEntityManager implements EntityManager
                     // The JPA spec is very confused about when this exception is thrown, however the JPA TCK
                     // invokes this operation multiple times over the same instance
                     // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
-                    throwException(new EntityExistsException(LOCALISER.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
+                    throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
                 }
             }
         }
@@ -694,7 +690,7 @@ public class JPAEntityManager implements EntityManager
         assertEntity(entity);
         if (ec.getApiAdapter().isDeleted(entity))
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsDeleted", 
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDeleted", 
                 StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
         }
 
@@ -722,7 +718,7 @@ public class JPAEntityManager implements EntityManager
             assertEntity(entity);
             if (ec.getApiAdapter().isDeleted(entity))
             {
-                throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsDeleted", 
+                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDeleted", 
                     StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
             }
         }
@@ -843,11 +839,11 @@ public class JPAEntityManager implements EntityManager
         assertEntity(entity);
         if (ec.getApiAdapter().getExecutionContext(entity) != ec)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
         }
         if (!ec.exists(entity))
         {
-            throwException(new EntityNotFoundException(LOCALISER.msg("EM.EntityNotInDatastore", StringUtils.toJVMIDString(entity))));
+            throwException(new EntityNotFoundException(Localiser.msg("EM.EntityNotInDatastore", StringUtils.toJVMIDString(entity))));
         }
         if (properties != null)
         {
@@ -902,7 +898,7 @@ public class JPAEntityManager implements EntityManager
         // What if the object doesnt exist in the datastore ? IllegalArgumentException. Spec says nothing
         if (ec.getApiAdapter().isDetached(entity))
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsDetached",
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
                 StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
         }
 
@@ -930,7 +926,7 @@ public class JPAEntityManager implements EntityManager
             // What if the object doesn't exist in the datastore ? IllegalArgumentException. Spec says nothing
             if (ec.getApiAdapter().isDetached(entity))
             {
-                throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsDetached",
+                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
                     StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
             }
         }
@@ -998,11 +994,11 @@ public class JPAEntityManager implements EntityManager
         assertEntity(entity);
         if (ec.getApiAdapter().getExecutionContext(entity) != ec)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
         }
         if (ec.getApiAdapter().isDetached(entity))
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
         }
 
         ObjectProvider sm = ec.findObjectProvider(entity);
@@ -1021,7 +1017,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (tx == null)
         {
-            throw new IllegalStateException(LOCALISER.msg("EM.TransactionNotLocal"));
+            throw new IllegalStateException(Localiser.msg("EM.TransactionNotLocal"));
         }
 
         return tx;
@@ -1039,7 +1035,7 @@ public class JPAEntityManager implements EntityManager
         if (tx != null)
         {
             // Not in the JPA spec but why would anyone call this with local txns?
-            throw new IllegalStateException(LOCALISER.msg("EM.TransactionLocal"));
+            throw new IllegalStateException(Localiser.msg("EM.TransactionLocal"));
         }
 
         // Extract the ExecutionContext transaction (JTATransactionImpl) and force the lookup+join
@@ -1161,7 +1157,7 @@ public class JPAEntityManager implements EntityManager
 
         if (queryName == null)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.NamedQueryNotFound", queryName));
+            throw new IllegalArgumentException(Localiser.msg("Query.NamedQueryNotFound", queryName));
         }
 
         // Find the Query for the specified class
@@ -1169,7 +1165,7 @@ public class JPAEntityManager implements EntityManager
         QueryMetaData qmd = ec.getMetaDataManager().getMetaDataForQuery(null, clr, queryName);
         if (qmd == null)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.NamedQueryNotFound", queryName));
+            throw new IllegalArgumentException(Localiser.msg("Query.NamedQueryNotFound", queryName));
         }
 
         // Create the Query
@@ -1201,7 +1197,7 @@ public class JPAEntityManager implements EntityManager
                     catch (Exception e)
                     {
                         // Result class not found so throw exception (not defined in the JPA spec)
-                        throw new IllegalArgumentException(LOCALISER.msg("Query.ResultClassNotFound", qmd.getName(), resultClassName));
+                        throw new IllegalArgumentException(Localiser.msg("Query.ResultClassNotFound", qmd.getName(), resultClassName));
                     }
                 }
                 else if (qmd.getResultMetaDataName() != null)
@@ -1209,7 +1205,7 @@ public class JPAEntityManager implements EntityManager
                     QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(qmd.getResultMetaDataName());
                     if (qrmd == null)
                     {
-                        throw new IllegalArgumentException(LOCALISER.msg("Query.ResultSetMappingNotFound", qmd.getResultMetaDataName()));
+                        throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", qmd.getResultMetaDataName()));
                     }
                     internalQuery.setResultMetaData(qrmd);
                     return new JPAQuery(this, internalQuery, qmd.getLanguage());
@@ -1221,7 +1217,7 @@ public class JPAEntityManager implements EntityManager
             }
             else
             {
-                throw new IllegalArgumentException(LOCALISER.msg("Query.LanguageNotSupportedByStore", qmd.getLanguage()));
+                throw new IllegalArgumentException(Localiser.msg("Query.LanguageNotSupportedByStore", qmd.getLanguage()));
             }
         }
         catch (NucleusException ne)
@@ -1281,7 +1277,7 @@ public class JPAEntityManager implements EntityManager
             QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(resultSetMapping);
             if (qrmd == null)
             {
-                throw new IllegalArgumentException(LOCALISER.msg("Query.ResultSetMappingNotFound", resultSetMapping));
+                throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", resultSetMapping));
             }
             internalQuery.setResultMetaData(qrmd);
             return new JPAQuery(this, internalQuery, QueryLanguage.SQL.toString());
@@ -1302,7 +1298,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (procName == null)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.NamedStoredProcedureQueryNotFound", procName));
+            throw new IllegalArgumentException(Localiser.msg("Query.NamedStoredProcedureQueryNotFound", procName));
         }
 
         // Find the Query for the specified stored procedure "name"
@@ -1310,7 +1306,7 @@ public class JPAEntityManager implements EntityManager
         StoredProcQueryMetaData qmd = ec.getMetaDataManager().getMetaDataForStoredProcQuery(null, clr, procName);
         if (qmd == null)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("Query.NamedStoredProcedureQueryNotFound", procName));
+            throw new IllegalArgumentException(Localiser.msg("Query.NamedStoredProcedureQueryNotFound", procName));
         }
 
         // Create the Stored Procedure query
@@ -1347,7 +1343,7 @@ public class JPAEntityManager implements EntityManager
                     qrmds[i] = ec.getMetaDataManager().getMetaDataForQueryResult(resultSetMappingName);
                     if (qrmds[i] == null)
                     {
-                        throw new IllegalArgumentException(LOCALISER.msg("Query.ResultSetMappingNotFound", resultSetMappingName));
+                        throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", resultSetMappingName));
                     }
                     i++;
                 }
@@ -1440,7 +1436,7 @@ public class JPAEntityManager implements EntityManager
                     qrmds[i] = ec.getMetaDataManager().getMetaDataForQueryResult(resultSetMappings[i]);
                     if (qrmds[i] == null)
                     {
-                        throw new IllegalArgumentException(LOCALISER.msg("Query.ResultSetMappingNotFound", resultSetMappings[i]));
+                        throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", resultSetMappings[i]));
                     }
                 }
                 ((AbstractStoredProcedureQuery)internalQuery).setResultMetaData(qrmds);
@@ -1543,7 +1539,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (closed)
         {
-            throw new IllegalStateException(LOCALISER.msg("EM.IsClosed"));
+            throw new IllegalStateException(Localiser.msg("EM.IsClosed"));
         }
     }
 
@@ -1555,7 +1551,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (!isTransactionActive())
         {
-            throw new TransactionRequiredException(LOCALISER.msg("EM.TransactionRequired"));
+            throw new TransactionRequiredException(Localiser.msg("EM.TransactionRequired"));
         }
     }
 
@@ -1581,7 +1577,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (lock != null && lock != LockModeType.NONE && !isTransactionActive())
         {
-            throw new TransactionRequiredException(LOCALISER.msg("EM.TransactionRequired"));
+            throw new TransactionRequiredException(Localiser.msg("EM.TransactionRequired"));
         }
     }
 
@@ -1594,7 +1590,7 @@ public class JPAEntityManager implements EntityManager
     {
         if (entity == null)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityNotAnEntity", entity));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityNotAnEntity", entity));
         }
 
         Class cls = null;
@@ -1615,7 +1611,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throw new IllegalArgumentException(LOCALISER.msg("EM.EntityNotAnEntity", cls.getName()), ne);
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityNotAnEntity", cls.getName()), ne);
         }
     }
 
@@ -1628,7 +1624,7 @@ public class JPAEntityManager implements EntityManager
         if (isContainerManaged() && persistenceContextType == PersistenceContextType.TRANSACTION && 
             !isTransactionActive())
         {
-            throw new TransactionRequiredException(LOCALISER.msg("EM.TransactionRequired"));
+            throw new TransactionRequiredException(Localiser.msg("EM.TransactionRequired"));
         }
     }
 

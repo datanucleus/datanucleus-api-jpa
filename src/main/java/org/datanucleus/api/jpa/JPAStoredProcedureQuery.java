@@ -33,7 +33,6 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.StoredProcQueryParameterMode;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
 import org.datanucleus.store.query.NoQueryResultsException;
-import org.datanucleus.util.Localiser;
 
 /**
  * Implementation of a StoredProcedureQuery.
@@ -41,10 +40,6 @@ import org.datanucleus.util.Localiser;
  */
 public class JPAStoredProcedureQuery extends JPAQuery implements StoredProcedureQuery
 {
-    /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.api.jpa.Localisation", 
-        JPAEntityManagerFactory.class.getClassLoader());
-
     /** Procedure name. */
     String procName;
 

@@ -64,7 +64,6 @@ import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-
 import javax.persistence.AttributeConverter;
 import javax.persistence.Index;
 import javax.persistence.NamedStoredProcedureQuery;
@@ -130,6 +129,7 @@ import org.datanucleus.metadata.annotations.Member;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
 import org.datanucleus.util.ClassUtils;
+import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
@@ -844,7 +844,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else
                 {
-                    NucleusLogger.METADATA.debug(LOCALISER.msg("044203", cls.getName(), annotations[i].getName()));
+                    NucleusLogger.METADATA.debug(Localiser.msg("044203", cls.getName(), annotations[i].getName()));
                 }
             }
 
@@ -853,7 +853,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 entityName = ClassUtils.getClassNameForClass(cls);
             }
 
-            NucleusLogger.METADATA.debug(LOCALISER.msg("044200", cls.getName(), "JPA"));
+            NucleusLogger.METADATA.debug(Localiser.msg("044200", cls.getName(), "JPA"));
 
             cmd.setTable(table);
             cmd.setCatalog(catalog);
@@ -1046,7 +1046,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (StringUtils.isWhitespace(queries[j].name()))
                     {
-                        throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                        throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(queries[j].name());
                     qmd.setLanguage(QueryLanguage.JPQL.toString());
@@ -1063,7 +1063,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 if (StringUtils.isWhitespace((String)annotationValues.get("name")))
                 {
-                    throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                    throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                 }
                 QueryMetaData qmd = new QueryMetaData((String)annotationValues.get("name"));
                 qmd.setLanguage(QueryLanguage.JPQL.toString());
@@ -1136,7 +1136,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (StringUtils.isWhitespace(procs[j].name()))
                     {
-                        throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                        throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     StoredProcQueryMetaData spqmd = new StoredProcQueryMetaData(procs[j].name());
                     if (procs[j].resultClasses() != null && procs[j].resultClasses().length > 0)
@@ -1177,7 +1177,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                 if (StringUtils.isWhitespace((String)annotationValues.get("name")))
                 {
-                    throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                    throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                 }
                 StoredProcQueryMetaData spqmd = new StoredProcQueryMetaData((String)annotationValues.get("name"));
                 spqmd.setProcedureName((String)annotationValues.get("procedureName"));

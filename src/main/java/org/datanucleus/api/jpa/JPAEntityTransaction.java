@@ -36,9 +36,6 @@ import org.datanucleus.util.Localiser;
  */
 public class JPAEntityTransaction implements EntityTransaction
 {
-    /** Localisation utility for output messages */
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation", NucleusJPAHelper.class.getClassLoader());
-
     /** The underlying transaction */
     org.datanucleus.Transaction tx;
 
@@ -91,9 +88,9 @@ public class JPAEntityTransaction implements EntityTransaction
             // This is thrown by the underlying transaction but we want to have a RollbackException here so intercept it
             if (NucleusLogger.TRANSACTION.isDebugEnabled())
             {
-                NucleusLogger.TRANSACTION.debug(LOCALISER.msg("015020"));
+                NucleusLogger.TRANSACTION.debug(Localiser.msg("015020"));
             }
-            throw new RollbackException(LOCALISER.msg("015020"));
+            throw new RollbackException(Localiser.msg("015020"));
         }
 
         try
@@ -112,7 +109,7 @@ public class JPAEntityTransaction implements EntityTransaction
             {
                 pe = cause;
             }
-            throw new RollbackException(LOCALISER.msg("015007"), pe);
+            throw new RollbackException(Localiser.msg("015007"), pe);
         }
         catch (NucleusException ne)
         {
@@ -263,7 +260,7 @@ public class JPAEntityTransaction implements EntityTransaction
     {
         if (!tx.isActive())
         {
-            throw new IllegalStateException(LOCALISER.msg("015040"));
+            throw new IllegalStateException(Localiser.msg("015040"));
         }
     }
 
@@ -275,7 +272,7 @@ public class JPAEntityTransaction implements EntityTransaction
     {
         if (tx.isActive())
         {
-            throw new IllegalStateException(LOCALISER.msg("015032"));
+            throw new IllegalStateException(Localiser.msg("015032"));
         }
     }
 

@@ -24,6 +24,7 @@ import org.datanucleus.Transaction;
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.util.Localiser;
 
 /**
  * Class representing the life cycle state of PersistentNewDeleted.
@@ -49,7 +50,7 @@ class PersistentNewDeleted extends LifeCycleState
      **/
     public LifeCycleState transitionMakeNontransactional(ObjectProvider op)
     {
-        throw new NucleusUserException(LOCALISER.msg("027003"), op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027003"), op.getInternalObjectId());
     }
 
     /**
@@ -60,7 +61,7 @@ class PersistentNewDeleted extends LifeCycleState
      **/
     public LifeCycleState transitionMakeTransient(ObjectProvider op, boolean useFetchPlan, boolean detachAllOnCommit)
     {
-        throw new NucleusUserException(LOCALISER.msg("027004"), op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027004"), op.getInternalObjectId());
     }
 
     /**
@@ -122,7 +123,7 @@ class PersistentNewDeleted extends LifeCycleState
      **/
     public LifeCycleState transitionWriteField(ObjectProvider op)
     {
-        throw new NucleusUserException(LOCALISER.msg("027006"), op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027006"), op.getInternalObjectId());
     }
 
     /**

@@ -27,7 +27,6 @@ import javax.persistence.AttributeConverter;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
-
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.api.jpa.JPAEntityGraph;
 import org.datanucleus.api.jpa.JPAGraph;
@@ -77,6 +76,7 @@ import org.datanucleus.metadata.xml.AbstractMetaDataHandler;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
 import org.datanucleus.util.ClassUtils;
+import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
@@ -149,7 +149,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
 
         if (StringUtils.isWhitespace(className))
         {
-            throw new InvalidClassMetaDataException(LOCALISER, "044061", pmd.getName());
+            throw new InvalidClassMetaDataException("044061", pmd.getName());
         }
         ClassMetaData cmd = new ClassMetaData(pmd, className);
         cmd.setEntityName(getAttr(attrs, "name"));
@@ -598,7 +598,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     String name = getAttr(attrs, "name");
                     if (StringUtils.isWhitespace(name))
                     {
-                        throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                        throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(name);
                     qmd.setLanguage(QueryLanguage.JPQL.toString());
@@ -625,7 +625,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     String name = getAttr(attrs, "name");
                     if (StringUtils.isWhitespace(name))
                     {
-                        throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                        throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(name);
                     qmd.setLanguage(QueryLanguage.SQL.toString());
@@ -652,7 +652,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     String name = getAttr(attrs, "name");
                     if (StringUtils.isWhitespace(name))
                     {
-                        throw new InvalidClassMetaDataException(LOCALISER, "044154", cmd.getFullClassName());
+                        throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     StoredProcQueryMetaData spqmd = new StoredProcQueryMetaData(name);
                     spqmd.setProcedureName(getAttr(attrs, "procedure-name"));
@@ -2232,14 +2232,14 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             }
             else
             {
-                String message = LOCALISER.msg("044037", qName);
+                String message = Localiser.msg("044037", qName);
                 NucleusLogger.METADATA.error(message);
                 throw new RuntimeException(message);
             }
         }
         catch(RuntimeException ex)
         {
-            NucleusLogger.METADATA.error(LOCALISER.msg("044042", qName, getStack(), uri), ex);
+            NucleusLogger.METADATA.error(Localiser.msg("044042", qName, getStack(), uri), ex);
             throw ex;
         }
     }

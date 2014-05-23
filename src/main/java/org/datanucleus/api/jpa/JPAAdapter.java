@@ -36,16 +36,12 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.state.LifeCycleState;
-import org.datanucleus.util.Localiser;
 
 /**
  * Adapter for the JPA API, to allow the DataNucleus core runtime to expose multiple APIs to clients.
  */
 public class JPAAdapter implements ApiAdapter
 {
-    protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
-        NucleusJPAHelper.class.getClassLoader());
-
     protected final static Set<String> defaultPersistentTypeNames = new HashSet<String>();
 
     static
