@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +76,8 @@ public class JPAQuery<X> implements TypedQuery<X>
 
     /** The current max number of results. */
     private int maxResults = -1;
+
+    Set<Parameter<?>> parameters = null;
 
     JPAFetchPlan fetchPlan;
 
@@ -452,15 +453,47 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
      public <T> TypedQuery<X> setParameter(Parameter<T> param, T value)
      {
+         if (param == null)
+         {
+             throw new IllegalArgumentException("Parameter object is null");
+         }
+         if (parameters == null)
+         {
+             parameters = new HashSet<Parameter<?>>();
+         }
+         parameters.add(param);
+
          if (param.getName() != null)
          {
-             setParameter(param.getName(), value);
+             try
+             {
+                 query.setImplicitParameter(param.getName(), value);
+             }
+             catch (QueryInvalidParametersException ipe)
+             {
+                 throw new IllegalArgumentException(ipe.getMessage(), ipe);
+             }
+             return this;
          }
          else
          {
-             setParameter(param.getPosition(), value);
+             try
+             {
+                 if (language.equals(QueryLanguage.SQL.toString()))
+                 {
+                     query.setImplicitParameter(param.getPosition(), value);
+                 }
+                 else
+                 {
+                     query.setImplicitParameter("" + param.getPosition(), value);
+                 }
+             }
+             catch (QueryInvalidParametersException ipe)
+             {
+                 throw new IllegalArgumentException(ipe.getMessage(), ipe);
+             }
+             return this;
          }
-         return this;
      }
 
     /**
@@ -476,6 +509,11 @@ public class JPAQuery<X> implements TypedQuery<X>
         try
         {
             query.setImplicitParameter(name, value);
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(name, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -504,6 +542,11 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, value);
             }
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(position, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -535,6 +578,11 @@ public class JPAQuery<X> implements TypedQuery<X>
         try
         {
             query.setImplicitParameter(name, paramValue);
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(name, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -554,22 +602,30 @@ public class JPAQuery<X> implements TypedQuery<X>
     public TypedQuery<X> setParameter(String name, Calendar value, TemporalType temporalType)
     {
         Object paramValue = value;
-        if (temporalType == TemporalType.DATE)
+        if (value != null)
         {
-            paramValue = value.getTime();
-        }
-        else if (temporalType == TemporalType.TIME)
-        {
-            paramValue = new Time(value.getTime().getTime());
-        }
-        else if (temporalType == TemporalType.TIMESTAMP)
-        {
-            paramValue = new Timestamp(value.getTime().getTime());
+            if (temporalType == TemporalType.DATE)
+            {
+                paramValue = value.getTime();
+            }
+            else if (temporalType == TemporalType.TIME)
+            {
+                paramValue = new Time(value.getTime().getTime());
+            }
+            else if (temporalType == TemporalType.TIMESTAMP)
+            {
+                paramValue = new Timestamp(value.getTime().getTime());
+            }
         }
 
         try
         {
             query.setImplicitParameter(name, paramValue);
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(name, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -589,13 +645,16 @@ public class JPAQuery<X> implements TypedQuery<X>
     public TypedQuery<X> setParameter(int position, Date value, TemporalType temporalType)
     {
         Object paramValue = value;
-        if (temporalType == TemporalType.TIME && !(value instanceof Time))
+        if (value != null)
         {
-            paramValue = new Time(value.getTime());
-        }
-        else if (temporalType == TemporalType.TIMESTAMP && !(value instanceof Timestamp))
-        {
-            paramValue = new Timestamp(value.getTime());
+            if (temporalType == TemporalType.TIME && !(value instanceof Time))
+            {
+                paramValue = new Time(value.getTime());
+            }
+            else if (temporalType == TemporalType.TIMESTAMP && !(value instanceof Timestamp))
+            {
+                paramValue = new Timestamp(value.getTime());
+            }
         }
 
         try
@@ -608,6 +667,11 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, paramValue);
             }
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(position, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -627,17 +691,20 @@ public class JPAQuery<X> implements TypedQuery<X>
     public TypedQuery<X> setParameter(int position, Calendar value, TemporalType temporalType)
     {
         Object paramValue = value;
-        if (temporalType == TemporalType.DATE)
+        if (value != null)
         {
-            paramValue = value.getTime();
-        }
-        else if (temporalType == TemporalType.TIME)
-        {
-            paramValue = new Time(value.getTime().getTime());
-        }
-        else if (temporalType == TemporalType.TIMESTAMP)
-        {
-            paramValue = new Timestamp(value.getTime().getTime());
+            if (temporalType == TemporalType.DATE)
+            {
+                paramValue = value.getTime();
+            }
+            else if (temporalType == TemporalType.TIME)
+            {
+                paramValue = new Time(value.getTime().getTime());
+            }
+            else if (temporalType == TemporalType.TIMESTAMP)
+            {
+                paramValue = new Timestamp(value.getTime().getTime());
+            }
         }
 
         try
@@ -650,6 +717,11 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, paramValue);
             }
+            if (parameters == null)
+            {
+                parameters = new HashSet<Parameter<?>>();
+            }
+            parameters.add(new JPAQueryParameter<>(position, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -733,28 +805,14 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Set<Parameter<?>> getParameters()
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             return Collections.EMPTY_SET;
         }
 
-        Set paramKeys = query.getImplicitParameters().keySet();
-        Set<Parameter<?>> parameters = new HashSet();
-        Iterator iter = paramKeys.iterator();
-        while (iter.hasNext())
-        {
-            Object paramKey = iter.next();
-            Object value = query.getImplicitParameters().get(paramKey);
-            if (paramKey instanceof String)
-            {
-                parameters.add(new JPAQueryParameter((String)paramKey, value != null ? value.getClass() : null));
-            }
-            else if (paramKey instanceof Integer)
-            {
-                parameters.add(new JPAQueryParameter((Integer)paramKey, value != null ? value.getClass() : null));
-            }
-        }
-        return parameters;
+        Set<Parameter<?>> params = new HashSet<Parameter<?>>();
+        params.addAll(parameters);
+        return params;
     }
 
     /**
@@ -764,23 +822,15 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name + " and type=" + type.getName());
         }
-
-        Set paramKeys = query.getImplicitParameters().keySet();
-        Iterator iter = paramKeys.iterator();
-        while (iter.hasNext())
+        for (Parameter param : parameters)
         {
-            Object paramKey = iter.next();
-            if (paramKey instanceof String && ((String)paramKey).equals(name))
+            if (param.getName() != null && param.getName().equals(name))
             {
-                Object value = query.getImplicitParameters().get(paramKey);
-                if (value != null && type.isAssignableFrom(value.getClass()))
-                {
-                    return new JPAQueryParameter((String)paramKey, type);
-                }
+                return param;
             }
         }
         throw new IllegalArgumentException("No parameter with name " + name + " and type=" + type.getName());
@@ -793,23 +843,15 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position=" + position + " and type=" + type.getName());
         }
-
-        Set paramKeys = query.getImplicitParameters().keySet();
-        Iterator iter = paramKeys.iterator();
-        while (iter.hasNext())
+        for (Parameter param : parameters)
         {
-            Object paramKey = iter.next();
-            if (paramKey instanceof Integer && ((Integer)paramKey).intValue() == position)
+            if (param.getPosition() != null && param.getPosition() == position)
             {
-                Object value = query.getImplicitParameters().get(paramKey);
-                if (value != null && type.isAssignableFrom(value.getClass()))
-                {
-                    return new JPAQueryParameter((Integer)paramKey, type);
-                }
+                return param;
             }
         }
         throw new IllegalArgumentException("No parameter at position=" + position + " and type=" + type.getName());
@@ -820,20 +862,15 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(int position)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position=" + position);
         }
-
-        Set paramKeys = query.getImplicitParameters().keySet();
-        Iterator iter = paramKeys.iterator();
-        while (iter.hasNext())
+        for (Parameter param : parameters)
         {
-            Object paramKey = iter.next();
-            if (paramKey instanceof Integer && ((Integer)paramKey).intValue() == position)
+            if (param.getPosition() != null && param.getPosition() == position)
             {
-                Object value = query.getImplicitParameters().get(paramKey);
-                return new JPAQueryParameter((Integer)paramKey, value != null ? value.getClass() : null);
+                return param;
             }
         }
         throw new IllegalArgumentException("No parameter at position=" + position);
@@ -844,20 +881,15 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(String name)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
         }
-
-        Set paramKeys = query.getImplicitParameters().keySet();
-        Iterator iter = paramKeys.iterator();
-        while (iter.hasNext())
+        for (Parameter param : parameters)
         {
-            Object paramKey = iter.next();
-            if (paramKey instanceof String && ((String)paramKey).equals(name))
+            if (param.getName() != null && param.getName().equals(name))
             {
-                Object value = query.getImplicitParameters().get(paramKey);
-                return new JPAQueryParameter((String)paramKey, value != null ? value.getClass() : null);
+                return param;
             }
         }
         throw new IllegalArgumentException("No parameter with name " + name);
@@ -871,9 +903,10 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> T getParameterValue(Parameter<T> param)
     {
+        // TODO Cater for numbered params being stored named when not SQL
         if (param.getName() != null)
         {
-            if (query.getImplicitParameters() == null)
+            if (parameters == null)
             {
                 throw new IllegalArgumentException("No parameter with name " + param.getName());
             }
@@ -885,14 +918,24 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         else
         {
-            if (query.getImplicitParameters() == null)
+            if (parameters == null)
             {
                 throw new IllegalArgumentException("No parameter at position " + param.getPosition());
             }
 
-            if (query.getImplicitParameters().containsKey(param.getPosition()))
+            if (language.equals(QueryLanguage.SQL.toString()))
             {
-                return (T)query.getImplicitParameters().get(param.getPosition());
+                if (query.getImplicitParameters().containsKey(param.getPosition()))
+                {
+                    return (T)query.getImplicitParameters().get(param.getPosition());
+                }
+            }
+            else
+            {
+                if (query.getImplicitParameters().containsKey("" + param.getPosition()))
+                {
+                    return (T)query.getImplicitParameters().get("" + param.getPosition());
+                }
             }
         }
         throw new IllegalStateException("No parameter matching " + param + " bound to this query");
@@ -903,14 +946,24 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(int position)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position " + position);
         }
 
-        if (query.getImplicitParameters().containsKey(position))
+        if (language.equals(QueryLanguage.SQL.toString()))
         {
-            return query.getImplicitParameters().get(position);
+            if (query.getImplicitParameters().containsKey(position))
+            {
+                return query.getImplicitParameters().get(position);
+            }
+        }
+        else
+        {
+            if (query.getImplicitParameters().containsKey("" + position))
+            {
+                return query.getImplicitParameters().get("" + position);
+            }
         }
         throw new IllegalArgumentException("No parameter at position " + position);
     }
@@ -920,7 +973,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(String name)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
         }
@@ -937,7 +990,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public boolean isBound(Parameter<?> param)
     {
-        if (query.getImplicitParameters() == null)
+        if (parameters == null)
         {
             return false;
         }
@@ -951,9 +1004,19 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         else
         {
-            if (query.getImplicitParameters().containsKey(param.getPosition()))
+            if (language.equals(QueryLanguage.SQL.toString()))
             {
-                return true;
+                if (query.getImplicitParameters().containsKey(param.getPosition()))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (query.getImplicitParameters().containsKey("" + param.getPosition()))
+                {
+                    return true;
+                }
             }
         }
         return false;
