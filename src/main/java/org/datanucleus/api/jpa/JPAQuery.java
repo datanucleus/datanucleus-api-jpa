@@ -42,11 +42,14 @@ import javax.persistence.TypedQuery;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.query.QueryUtils;
+import org.datanucleus.query.symbol.Symbol;
+import org.datanucleus.query.symbol.SymbolTable;
 import org.datanucleus.store.query.Query;
 import org.datanucleus.store.query.QueryInvalidParametersException;
 import org.datanucleus.store.query.NoQueryResultsException;
 import org.datanucleus.store.query.QueryNotUniqueException;
 import org.datanucleus.util.Localiser;
+import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
 /**
@@ -77,6 +80,8 @@ public class JPAQuery<X> implements TypedQuery<X>
     /** The current max number of results. */
     private int maxResults = -1;
 
+    boolean parametersLoaded = false;
+
     Set<Parameter<?>> parameters = null;
 
     JPAFetchPlan fetchPlan;
@@ -95,6 +100,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         this.flushMode = em.getFlushMode(); // Default to flush mode of EntityManager
         this.query.setCacheResults(false);
         this.fetchPlan = new JPAFetchPlan(query.getFetchPlan());
+
 //        this.lockMode = em.getLockMode();
     }
 
@@ -457,11 +463,6 @@ public class JPAQuery<X> implements TypedQuery<X>
          {
              throw new IllegalArgumentException("Parameter object is null");
          }
-         if (parameters == null)
-         {
-             parameters = new HashSet<Parameter<?>>();
-         }
-         parameters.add(new JPAQueryParameter(param));
 
          if (param.getName() != null)
          {
@@ -509,11 +510,6 @@ public class JPAQuery<X> implements TypedQuery<X>
         try
         {
             query.setImplicitParameter(name, value);
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(name, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -542,11 +538,6 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, value);
             }
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(position, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -578,11 +569,6 @@ public class JPAQuery<X> implements TypedQuery<X>
         try
         {
             query.setImplicitParameter(name, paramValue);
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(name, value != null ? value.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -621,11 +607,6 @@ public class JPAQuery<X> implements TypedQuery<X>
         try
         {
             query.setImplicitParameter(name, paramValue);
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(name, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -667,11 +648,6 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, paramValue);
             }
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(position, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -717,11 +693,6 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 query.setImplicitParameter("" + position, paramValue);
             }
-            if (parameters == null)
-            {
-                parameters = new HashSet<Parameter<?>>();
-            }
-            parameters.add(new JPAQueryParameter<>(position, paramValue != null ? paramValue.getClass() : null));
         }
         catch (QueryInvalidParametersException ipe)
         {
@@ -805,14 +776,75 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Set<Parameter<?>> getParameters()
     {
+        if (language.equals(QueryLanguage.SQL.toString()))
+        {
+            throw new IllegalStateException("Not supported on native query");
+        }
+
+        loadParameters();
         if (parameters == null)
         {
             return Collections.EMPTY_SET;
         }
+        else
+        {
+            Set<Parameter<?>> params = new HashSet<Parameter<?>>();
+            params.addAll(parameters);
+            return params;
+        }
+    }
 
-        Set<Parameter<?>> params = new HashSet<Parameter<?>>();
-        params.addAll(parameters);
-        return params;
+    protected void loadParameters()
+    {
+        if (parametersLoaded)
+        {
+            return;
+        }
+
+        // Load up parameters by compiling the query - TODO Generic compile would be enough
+        if (query.getCompilation() == null)
+        {
+            try
+            {
+                query.compile();
+            }
+            catch (Throwable thr)
+            {
+            }
+        }
+
+        if (query.getCompilation() != null)
+        {
+            SymbolTable symTbl = query.getCompilation().getSymbolTable();
+            for (String symName : symTbl.getSymbolNames())
+            {
+                Symbol sym = symTbl.getSymbol(symName);
+                if (sym.getType() == Symbol.PARAMETER)
+                {
+                    if (parameters == null)
+                    {
+                        parameters = new HashSet<Parameter<?>>();
+                    }
+
+                    // TODO Need better way of determining whether positional or named params rather than just if name is a number
+                    Parameter param = null;
+                    Integer pos = null;
+                    try
+                    {
+                        pos = Integer.valueOf(sym.getQualifiedName());
+                        param = new JPAQueryParameter(pos, sym.getValueType());
+                        NucleusLogger.GENERAL.info(">> param NUMBERED " + pos + " type=" + sym.getValueType());
+                    }
+                    catch (NumberFormatException nfe)
+                    {
+                        param = new JPAQueryParameter(sym.getQualifiedName(), sym.getValueType());
+                        NucleusLogger.GENERAL.info(">> param NAMED " + sym.getQualifiedName() + " type=" + sym.getValueType());
+                    }
+                    parameters.add(param);
+                }
+            }
+        }
+        parametersLoaded = true;
     }
 
     /**
@@ -822,6 +854,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name + " and type=" + type.getName());
@@ -843,6 +876,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position=" + position + " and type=" + type.getName());
@@ -862,6 +896,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(int position)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position=" + position);
@@ -881,6 +916,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(String name)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
@@ -903,7 +939,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> T getParameterValue(Parameter<T> param)
     {
-        // TODO Cater for numbered params being stored named when not SQL
+        loadParameters();
         if (param.getName() != null)
         {
             if (parameters == null)
@@ -946,6 +982,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(int position)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter at position " + position);
@@ -973,6 +1010,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(String name)
     {
+        loadParameters();
         if (parameters == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
@@ -990,6 +1028,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public boolean isBound(Parameter<?> param)
     {
+        loadParameters();
         if (parameters == null)
         {
             return false;
