@@ -854,6 +854,11 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type)
     {
+        if (language.equals(QueryLanguage.SQL.toString()))
+        {
+            throw new IllegalStateException("Not supported on native query");
+        }
+
         loadParameters();
         if (parameters == null)
         {
@@ -876,6 +881,11 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type)
     {
+        if (language.equals(QueryLanguage.SQL.toString()))
+        {
+            throw new IllegalStateException("Not supported on native query");
+        }
+
         loadParameters();
         if (parameters == null)
         {
@@ -896,6 +906,11 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(int position)
     {
+        if (language.equals(QueryLanguage.SQL.toString()))
+        {
+            throw new IllegalStateException("Not supported on native query");
+        }
+
         loadParameters();
         if (parameters == null)
         {
@@ -916,6 +931,11 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(String name)
     {
+        if (language.equals(QueryLanguage.SQL.toString()))
+        {
+            throw new IllegalStateException("Not supported on native query");
+        }
+
         loadParameters();
         if (parameters == null)
         {
@@ -939,10 +959,9 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> T getParameterValue(Parameter<T> param)
     {
-        loadParameters();
         if (param.getName() != null)
         {
-            if (parameters == null)
+            if (query.getImplicitParameters() == null)
             {
                 throw new IllegalArgumentException("No parameter with name " + param.getName());
             }
@@ -954,7 +973,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         else
         {
-            if (parameters == null)
+            if (query.getImplicitParameters() == null)
             {
                 throw new IllegalArgumentException("No parameter at position " + param.getPosition());
             }
@@ -982,8 +1001,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(int position)
     {
-        loadParameters();
-        if (parameters == null)
+        if (query.getImplicitParameters() == null)
         {
             throw new IllegalArgumentException("No parameter at position " + position);
         }
@@ -1010,8 +1028,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(String name)
     {
-        loadParameters();
-        if (parameters == null)
+        if (query.getImplicitParameters() == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
         }
@@ -1028,7 +1045,6 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public boolean isBound(Parameter<?> param)
     {
-        loadParameters();
         if (parameters == null)
         {
             return false;
