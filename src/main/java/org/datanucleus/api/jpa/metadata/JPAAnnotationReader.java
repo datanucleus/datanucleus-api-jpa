@@ -134,7 +134,7 @@ import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
 /**
- * Implementation for Annotation Reader for JDK 1.5 annotations using JPA's definition.
+ * Implementation for Annotation Reader for Java annotations using JPA's definition.
  * This reader also accepts certain DataNucleus extensions where the JPA annotations don't provide 
  * full definition of the data required.
  */
@@ -229,13 +229,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             ColumnMetaData[] pkColumnMetaData = null;
             Set<UniqueMetaData> uniques = null;
             Set<IndexMetaData> indexes = null;
-            HashSet<AbstractMemberMetaData> overriddenFields = null;
+            Set<AbstractMemberMetaData> overriddenFields = null;
             List<QueryResultMetaData> resultMappings = null;
-            HashSet<ExtensionMetaData> extensions = null;
+            Set<ExtensionMetaData> extensions = null;
 
             for (int i=0;i<annotations.length;i++)
             {
-                HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
                 String annName = annotations[i].getName();
                 if (annName.equals(JPAAnnotationUtils.ENTITY))
                 {
@@ -1028,12 +1028,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected void processNamedQueries(AbstractClassMetaData cmd, AnnotationObject[] annotations)
     {
-        HashSet<QueryMetaData> namedQueries = null;
-        HashSet<StoredProcQueryMetaData> namedStoredProcQueries = null;
+        Set<QueryMetaData> namedQueries = null;
+        Set<StoredProcQueryMetaData> namedStoredProcQueries = null;
 
         for (int i=0;i<annotations.length;i++)
         {
-            HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
             String annName = annotations[i].getName();
             if (annName.equals(JPAAnnotationUtils.NAMED_QUERIES))
             {
@@ -1316,7 +1316,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             for (int i=0;annotations != null && i<annotations.length;i++)
             {
                 String annName = annotations[i].getName();
-                HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
                 if (annName.equals(JPAAnnotationUtils.JOIN_COLUMNS))
                 {
                     // 1-1 FK columns, or 1-N FK columns, or N-1 FK columns
@@ -2208,8 +2208,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
 
             embmd.addMember(ammd);
-            ammd.addColumn(JPAAnnotationUtils.getColumnMetaDataForColumnAnnotation(ammd,
-                overriddenMember, column));
+            ammd.addColumn(JPAAnnotationUtils.getColumnMetaDataForColumnAnnotation(ammd, overriddenMember, column));
         }
     }
 
@@ -2266,7 +2265,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         String mappedBy = null;
         boolean orphanRemoval = false;
         CascadeType[] cascades = null;
-        HashSet<ExtensionMetaData> extensions = null;
+        Set<ExtensionMetaData> extensions = null;
         String valueStrategy = null;
         String valueGenerator = null;
         boolean storeInLob = false;
@@ -2277,7 +2276,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         for (int i=0;annotations != null && i<annotations.length;i++)
         {
             String annName = annotations[i].getName();
-            HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
             if (annName.equals(JPAAnnotationUtils.EMBEDDED))
             {
                 embedded = Boolean.TRUE;
@@ -2669,7 +2668,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         for (int i=0;annotations != null && i<annotations.length;i++)
         {
             String annName = annotations[i].getName();
-            HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
             if (annName.equals(JPAAnnotationUtils.COLUMN) || (parent instanceof KeyMetaData && annName.equals(JPAAnnotationUtils.MAP_KEY_COLUMN)))
             {
                 columnName = (String)annotationValues.get("name");
@@ -2699,7 +2698,18 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (fieldType == boolean.class || fieldType == Boolean.class)
                 {
-                    jdbcType = "SMALLINT";
+                    if (mgr.getNucleusContext().getConfiguration().getBooleanProperty("datanucleus.jpa.legacy.mapBooleanToSmallint", false))
+                    {
+                        // NOTE : This was present for up to DN 4.0 but now only available via property since not found a reason for it
+                        String memberName = "unknown";
+                        if (parent instanceof AbstractMemberMetaData)
+                        {
+                            memberName = ((AbstractMemberMetaData)parent).getFullFieldName();
+                        }
+                        NucleusLogger.METADATA.info("Member " + memberName + " has column of type " + fieldType.getName() + 
+                            " and being mapped to SMALLINT JDBC type. This is deprecated and could be removed in the future. Use @JdbcType instead");
+                        jdbcType = "SMALLINT";
+                    }
                 }
 
                 if (annotationValues.get("nullable") != null)
@@ -2843,11 +2853,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     private JoinMetaData[] newJoinMetaDataForClass(AbstractClassMetaData cmd, AnnotationObject[] annotations)
     {
-        HashSet<JoinMetaData> joins = new HashSet<JoinMetaData>();
+        Set<JoinMetaData> joins = new HashSet<JoinMetaData>();
         for (int i=0;annotations != null && i<annotations.length;i++)
         {
             String annName = annotations[i].getName();
-            HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
             if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
             {
                 SecondaryTable[] secTableAnns = (SecondaryTable[])annotationValues.get("value");
@@ -2998,7 +3008,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param pmd Package MetaData to add the sequence to
      * @param annotationValues The annotation info
      */
-    private void processSequenceGeneratorAnnotation(PackageMetaData pmd, HashMap<String, Object> annotationValues)
+    private void processSequenceGeneratorAnnotation(PackageMetaData pmd, Map<String, Object> annotationValues)
     {
         // Sequence generator, so store it against the package that we are under
         String name = (String)annotationValues.get("name");
@@ -3025,7 +3035,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param pmd Package MetaData to add the table generator to
      * @param annotationValues The annotation info
      */
-    private void processTableGeneratorAnnotation(PackageMetaData pmd, HashMap<String, Object> annotationValues)
+    private void processTableGeneratorAnnotation(PackageMetaData pmd, Map<String, Object> annotationValues)
     {
         TableGeneratorMetaData tgmd = pmd.newTableGeneratorMetadata((String)annotationValues.get("name"));
         tgmd.setTableName((String)annotationValues.get("table"));
