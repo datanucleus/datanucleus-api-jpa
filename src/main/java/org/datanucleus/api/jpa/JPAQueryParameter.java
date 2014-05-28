@@ -29,13 +29,6 @@ public class JPAQueryParameter<T> implements Parameter<T>
     Integer position = null;
     Class<T> type = null;
 
-    public JPAQueryParameter(Parameter param)
-    {
-        this.name = param.getName();
-        this.position = param.getPosition();
-        this.type = param.getParameterType();
-    }
-
     public JPAQueryParameter(String name, Class<T> type)
     {
         this.name = name;
