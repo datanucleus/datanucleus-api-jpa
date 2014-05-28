@@ -49,7 +49,6 @@ import org.datanucleus.store.query.QueryInvalidParametersException;
 import org.datanucleus.store.query.NoQueryResultsException;
 import org.datanucleus.store.query.QueryNotUniqueException;
 import org.datanucleus.util.Localiser;
-import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
 /**
@@ -826,19 +825,23 @@ public class JPAQuery<X> implements TypedQuery<X>
                         parameters = new HashSet<Parameter<?>>();
                     }
 
-                    // TODO Need better way of determining whether positional or named params rather than just if name is a number
                     Parameter param = null;
-                    Integer pos = null;
-                    try
+                    if (query.toString().indexOf("?" + sym.getQualifiedName()) >= 0)
                     {
-                        pos = Integer.valueOf(sym.getQualifiedName());
-                        param = new JPAQueryParameter(pos, sym.getValueType());
-                        NucleusLogger.GENERAL.info(">> param NUMBERED " + pos + " type=" + sym.getValueType());
+                        // Positional parameters
+                        try
+                        {
+                            param = new JPAQueryParameter(Integer.valueOf(sym.getQualifiedName()), sym.getValueType());
+                        }
+                        catch (NumberFormatException nfe)
+                        {
+                        }
+                        
                     }
-                    catch (NumberFormatException nfe)
+                    else
                     {
+                        // Named parameters
                         param = new JPAQueryParameter(sym.getQualifiedName(), sym.getValueType());
-                        NucleusLogger.GENERAL.info(">> param NAMED " + sym.getQualifiedName() + " type=" + sym.getValueType());
                     }
                     parameters.add(param);
                 }
