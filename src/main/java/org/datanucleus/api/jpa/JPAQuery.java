@@ -44,6 +44,7 @@ import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.query.QueryUtils;
 import org.datanucleus.query.symbol.Symbol;
 import org.datanucleus.query.symbol.SymbolTable;
+import org.datanucleus.store.query.AbstractJavaQuery;
 import org.datanucleus.store.query.Query;
 import org.datanucleus.store.query.QueryInvalidParametersException;
 import org.datanucleus.store.query.NoQueryResultsException;
@@ -800,12 +801,12 @@ public class JPAQuery<X> implements TypedQuery<X>
             return;
         }
 
-        // Load up parameters by compiling the query - TODO Generic compile would be enough
+        // Load up parameters by (generic) compiling the query
         if (query.getCompilation() == null)
         {
             try
             {
-                query.compile();
+                ((AbstractJavaQuery)query).compileGeneric(null);
             }
             catch (Throwable thr)
             {
