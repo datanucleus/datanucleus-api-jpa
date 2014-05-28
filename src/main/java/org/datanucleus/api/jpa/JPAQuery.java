@@ -461,7 +461,7 @@ public class JPAQuery<X> implements TypedQuery<X>
          {
              parameters = new HashSet<Parameter<?>>();
          }
-         parameters.add(param);
+         parameters.add(new JPAQueryParameter(param));
 
          if (param.getName() != null)
          {
