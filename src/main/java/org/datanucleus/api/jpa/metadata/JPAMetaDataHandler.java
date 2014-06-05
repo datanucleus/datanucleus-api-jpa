@@ -18,9 +18,10 @@ Contributors:
 package org.datanucleus.api.jpa.metadata;
 
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.persistence.AttributeConverter;
 
@@ -114,7 +115,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
         JPAGraph graph;
         Map<String, String> attributeNameBySubgroupName = new HashMap<String, String>();
     }
-    Stack<GraphHolder> graphHolderStack = new Stack();
+    Deque<GraphHolder> graphHolderStack = new ArrayDeque<GraphHolder>();
 
     /**
      * Constructor. Protected to prevent instantiation.
