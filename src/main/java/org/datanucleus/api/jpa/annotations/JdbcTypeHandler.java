@@ -17,7 +17,7 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.annotations;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.AbstractMemberMetaData;
@@ -32,7 +32,7 @@ public class JdbcTypeHandler implements MemberAnnotationHandler
 {
     public void processMemberAnnotation(AnnotationObject ann, AbstractMemberMetaData mmd, ClassLoaderResolver clr)
     {
-        HashMap<String, Object> annotationValues = ann.getNameValueMap();
+        Map<String, Object> annotationValues = ann.getNameValueMap();
         String jdbcType = (String)annotationValues.get("value");
         ColumnMetaData[] colmds = mmd.getColumnMetaData();
         if (colmds == null || colmds.length == 0)

@@ -3133,7 +3133,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             String annClassName = annotations[i].getName();
             if (annClassName.equals(JPAAnnotationUtils.CONVERTER))
             {
-                HashMap<String, Object> annotationValues = annotations[i].getNameValueMap();
+                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
                 boolean autoApply = (Boolean) annotationValues.get("autoApply");
                 TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
                 if (typeMgr.getTypeConverterForName(cls.getName()) == null)
