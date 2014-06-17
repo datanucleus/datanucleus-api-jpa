@@ -563,7 +563,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     resultExprs[i++] = resultExpr;
                 }
 
-                if (resultExprs != null && resultExprs.length == 1 && resultExprs[0] instanceof PrimaryExpression)
+                if (resultExprs.length == 1 && resultExprs[0] instanceof PrimaryExpression)
                 {
                     // Check for special case of "Object(p)" in result, which means no special result
                     String resultExprId = ((PrimaryExpression)resultExprs[0]).getId();

@@ -67,6 +67,10 @@ public class CoalesceExpression<T> extends ExpressionImpl<T> implements Coalesce
         {
             args = ((InvokeExpression)queryExpr).getArguments();
         }
+        else
+        {
+            args = new ArrayList();
+        }
         args.add(new Literal(val));
         queryExpr = new InvokeExpression(null, "COALESCE", args);
         return this;

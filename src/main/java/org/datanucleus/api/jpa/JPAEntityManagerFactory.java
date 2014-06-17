@@ -277,13 +277,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                 addClassTransformer = true;
             }
         }
-        if (overridingProps != null)
+
+        Object addCTVal = overridingProps.get(JPAPropertyNames.PROPERTY_JPA_ADD_CLASS_TRANSFORMER);
+        if (addCTVal != null && ((String)addCTVal).equalsIgnoreCase("true"))
         {
-            Object addCTVal = overridingProps.get(JPAPropertyNames.PROPERTY_JPA_ADD_CLASS_TRANSFORMER);
-            if (addCTVal != null && ((String)addCTVal).equalsIgnoreCase("true"))
-            {
-                addClassTransformer = true;
-            }
+            addClassTransformer = true;
         }
         if (addClassTransformer)
         {
@@ -414,25 +412,25 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     private void initialise(PersistenceUnitMetaData pumd, Map overridingProps, PluginManager pluginMgr)
     {
+        if (pumd == null)
+        {
+            throw new IllegalArgumentException("Persistence-unit supplied to initialise was null!");
+        }
+
         // Check the provider is ok for our use
         boolean validProvider = false;
-        if (pumd != null)
+        if (pumd.getProvider() == null || pumd.getProvider().equals(PersistenceProviderImpl.class.getName()))
         {
-            if (pumd.getProvider() == null ||
-                pumd.getProvider().equals(PersistenceProviderImpl.class.getName()))
-            {
-                validProvider = true;
-            }
+            validProvider = true;
         }
-        if (overridingProps != null &&
-            PersistenceProviderImpl.class.getName().equals(overridingProps.get("javax.persistence.provider")))
+        else if (overridingProps != null && PersistenceProviderImpl.class.getName().equals(overridingProps.get("javax.persistence.provider")))
         {
             validProvider = true;
         }
         if (!validProvider)
         {
             // Not a valid provider
-            throw new NotProviderException(Localiser.msg("EMF.NotProviderForPersistenceUnit", (pumd != null ? pumd.getName() : null)));
+            throw new NotProviderException(Localiser.msg("EMF.NotProviderForPersistenceUnit", pumd.getName()));
         }
 
         // Cache the unit definition

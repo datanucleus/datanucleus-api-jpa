@@ -33,7 +33,7 @@ import org.datanucleus.query.expression.DyadicExpression;
  * Representation of an IN expression, obtained from "QueryBuilder.in".
  * @param <X> type of the (member) expression that this is the IN expression for.
  */
-public class InPredicate<X> extends PredicateImpl implements Predicate, In<X>
+public class InPredicate<X> extends PredicateImpl implements In<X>
 {
     private static final long serialVersionUID = -831538482168317142L;
 

@@ -701,14 +701,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             for (int k=0;k<subgraphs.length;k++)
                             {
                                 String subgraphName = subgraphs[k].name();
-                                if (attributeNameBySubgraphName == null)
-                                {
-                                    NucleusLogger.METADATA.warn("EntityGraph " + graphName + 
-                                        " defined with subgraph name=" + subgraphName + 
-                                        " but no AttributeNode for that subgroup. Ignoring");
-                                    continue;
-                                }
-
                                 String attributeName = attributeNameBySubgraphName.get(subgraphName);
                                 JPASubgraph subgraph = (JPASubgraph) eg.addSubgraph(attributeName, subgraphs[k].type());
                                 NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
@@ -724,15 +716,18 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         NamedSubgraph[] subclassSubgraphs = graphs[j].subclassSubgraphs();
                         if (subclassSubgraphs != null && subclassSubgraphs.length > 0)
                         {
-                            for (int k=0;k<subgraphs.length;k++)
+                            if (subgraphs != null)
                             {
-                                JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subgraphs[k].type());
-                                NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
-                                if (subnodes != null && subnodes.length > 0)
+                                for (int k=0;k<subgraphs.length;k++)
                                 {
-                                    for (int l=0;l<subnodes.length;l++)
+                                    JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subgraphs[k].type());
+                                    NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
+                                    if (subnodes != null && subnodes.length > 0)
                                     {
-                                        subgraph.addAttributeNodes(subnodes[l].value());
+                                        for (int l=0;l<subnodes.length;l++)
+                                        {
+                                            subgraph.addAttributeNodes(subnodes[l].value());
+                                        }
                                     }
                                 }
                             }
@@ -775,14 +770,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int k=0;k<subgraphs.length;k++)
                         {
                             String subgraphName = subgraphs[k].name();
-                            if (attributeNameBySubgraphName == null)
-                            {
-                                NucleusLogger.METADATA.warn("EntityGraph " + graphName + 
-                                    " defined with subgraph name=" + subgraphName + 
-                                    " but no AttributeNode for that subgroup. Ignoring");
-                                continue;
-                            }
-
                             String attributeName = attributeNameBySubgraphName.get(subgraphName);
                             JPASubgraph subgraph = (JPASubgraph) eg.addSubgraph(attributeName, subgraphs[k].type());
                             NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
@@ -902,8 +889,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 inhmd = cmd.newInheritanceMetadata().setStrategyForTree(inheritanceStrategyForTree);
             }
 
-            if (discriminatorValue != null || discriminatorColumnName != null || 
-                    discriminatorColumnLength != null || discriminatorColumnType != null)
+            if (discriminatorValue != null || discriminatorColumnName != null || discriminatorColumnLength != null || discriminatorColumnType != null)
             {
                 // Add discriminator information to the inheritance of this class
                 DiscriminatorMetaData dismd = inhmd.newDiscriminatorMetadata();
@@ -1297,13 +1283,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
             // Check if this is marked as an element collection
             boolean elementCollection = false;
-            for (int i=0;i<annotations.length;i++)
+            if (annotations != null)
             {
-                String annName = annotations[i].getName();
-                if (annName.equals(JPAAnnotationUtils.ELEMENT_COLLECTION))
+                for (int i=0;i<annotations.length;i++)
                 {
-                    elementCollection = true;
-                    break;
+                    String annName = annotations[i].getName();
+                    if (annName.equals(JPAAnnotationUtils.ELEMENT_COLLECTION))
+                    {
+                        elementCollection = true;
+                        break;
+                    }
                 }
             }
 
@@ -2796,8 +2785,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             scale = typeScale;
         }
 
-        if (columnName == null && length == null && scale == null && insertable == null && updateable == null && 
-            allowsNull == null && unique == null && jdbcType == null && sqlType == null)
+        if (columnName == null && length == null && scale == null && insertable == null && updateable == null && allowsNull == null && unique == null && jdbcType == null)
         {
             // Nothing specified so don't provide ColumnMetaData and default to what we get
             return null;
@@ -3173,8 +3161,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     }
 
                     // Register the TypeConverter under the name of the AttributeConverter class
-                    TypeConverter conv = new JPATypeConverter(entityConv, javaType, dbType);
-                    typeMgr.registerConverter(cls.getName(), conv, autoApply, javaType.getName());
+                    if (javaType != null)
+                    {
+                        TypeConverter conv = new JPATypeConverter(entityConv, javaType, dbType);
+                        typeMgr.registerConverter(cls.getName(), conv, autoApply, javaType.getName());
+                    }
                 }
                 return true;
             }

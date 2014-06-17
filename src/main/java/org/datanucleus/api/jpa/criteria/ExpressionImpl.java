@@ -31,7 +31,7 @@ import org.datanucleus.query.expression.Literal;
 /**
  * Implementation of JPA2 Criteria "Expression".
  */
-public class ExpressionImpl<T> implements Selection<T>, Expression<T>, Serializable
+public class ExpressionImpl<T> implements Expression<T>, Serializable
 {
     static final long serialVersionUID = -9180595377551709140L;
 
