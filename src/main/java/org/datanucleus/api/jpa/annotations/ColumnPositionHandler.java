@@ -42,9 +42,7 @@ public class ColumnPositionHandler implements MemberAnnotationHandler
             mmd.addColumn(colmd);
             return;
         }
-        else
-        {
-            colmds[0].setPosition(position);
-        }
+
+        colmds[0].setPosition(position);
     }
 }

@@ -219,9 +219,6 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
         {
             return parent.toString() + "." + ((PrimaryExpression)queryExpr).getId();
         }
-        else
-        {
-            return ((PrimaryExpression)queryExpr).getId();
-        }
+        return ((PrimaryExpression)queryExpr).getId();
     }
 }

@@ -20,11 +20,11 @@ package org.datanucleus.api.jpa.exceptions;
 /**
  * Exception thrown when trying to create an EntityManagerFactory for a
  * persistence-unit and we cant find a "persistence-unit" of the specified name.
- * 
- * @version $Revision: 1.1 $
  */
 public class NoPersistenceUnitException extends RuntimeException
 {
+    private static final long serialVersionUID = -584714740332668630L;
+
     public NoPersistenceUnitException(String msg)
     {
         super(msg);

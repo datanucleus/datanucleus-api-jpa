@@ -38,6 +38,8 @@ import org.datanucleus.api.jpa.metamodel.SingularAttributeImpl;
  */
 public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>
 {
+    private static final long serialVersionUID = 6370220293015162441L;
+
     private final JoinType joinType;
 
     private Predicate onExpr;
@@ -73,7 +75,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>
      */
     public Attribute<? super Z, ?> getAttribute()
     {
-        return (Attribute<? super Z, ?>)attribute;
+        return attribute;
     }
 
     /* (non-Javadoc)

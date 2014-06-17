@@ -28,6 +28,7 @@ import org.datanucleus.query.expression.Literal;
  */
 public class TreatRootImpl extends RootImpl
 {
+    private static final long serialVersionUID = 2629753905370910693L;
     RootImpl path;
     Class type;
 

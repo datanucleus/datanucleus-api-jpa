@@ -423,32 +423,30 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             overrideMmd = nestedEmbMmd;
             return mmd;
         }
+
+        AbstractMemberMetaData mmd = null;
+        if (propertyAccess)
+        {
+            mmd = new PropertyMetaData(embmd, memberName);
+        }
         else
         {
-            AbstractMemberMetaData mmd = null;
-            if (propertyAccess)
-            {
-                mmd = new PropertyMetaData(embmd, memberName);
-            }
-            else
-            {
-                mmd = new FieldMetaData(embmd, memberName);
-            }
-            mmd.setParent(embmd);
-
-            if (columnName != null)
-            {
-                mmd.setColumn(columnName);
-            }
-            mmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
-            if (defaultCascadePersist)
-            {
-                // This file has <persistence-unit-defaults> set to cascade-persist all fields
-                mmd.setCascadePersist(true);
-            }
-            overrideMmd = mmd;
-            return mmd;
+            mmd = new FieldMetaData(embmd, memberName);
         }
+        mmd.setParent(embmd);
+
+        if (columnName != null)
+        {
+            mmd.setColumn(columnName);
+        }
+        mmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
+        if (defaultCascadePersist)
+        {
+            // This file has <persistence-unit-defaults> set to cascade-persist all fields
+            mmd.setCascadePersist(true);
+        }
+        overrideMmd = mmd;
+        return mmd;
     }
 
     /**

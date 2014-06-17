@@ -138,10 +138,8 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 return ((Long)result).intValue();
             }
-            else
-            {
-                throw new NucleusException("Invalid return from query for an update/delete. Expected Long");
-            }
+
+            throw new NucleusException("Invalid return from query for an update/delete. Expected Long");
         }
         catch (NoQueryResultsException nqre)
         {
@@ -192,10 +190,8 @@ public class JPAQuery<X> implements TypedQuery<X>
                 l.add(res);
                 return l;
             }
-            else
-            {
-                return (List)query.executeWithMap(null); // Params defined using setParameter() earlier
-            }
+
+            return (List)query.executeWithMap(null); // Params defined using setParameter() earlier
         }
         catch (NoQueryResultsException nqre)
         {
@@ -385,7 +381,7 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 JPAEntityManagerFactory emf = (JPAEntityManagerFactory)em.getEntityManagerFactory();
                 String tmpEntityGraphName = emf.getDefinedEntityGraphName();
-                emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                emf.registerEntityGraph(eg, tmpEntityGraphName);
                 egName = tmpEntityGraphName;
             }
             query.getFetchPlan().setGroup(egName);
@@ -399,7 +395,7 @@ public class JPAQuery<X> implements TypedQuery<X>
             {
                 JPAEntityManagerFactory emf = (JPAEntityManagerFactory)em.getEntityManagerFactory();
                 String tmpEntityGraphName = emf.getDefinedEntityGraphName();
-                emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                emf.registerEntityGraph(eg, tmpEntityGraphName);
                 egName = tmpEntityGraphName;
             }
             query.getFetchPlan().addGroup(egName);
@@ -476,25 +472,23 @@ public class JPAQuery<X> implements TypedQuery<X>
              }
              return this;
          }
-         else
+
+         try
          {
-             try
+             if (language.equals(QueryLanguage.SQL.toString()))
              {
-                 if (language.equals(QueryLanguage.SQL.toString()))
-                 {
-                     query.setImplicitParameter(param.getPosition(), value);
-                 }
-                 else
-                 {
-                     query.setImplicitParameter("" + param.getPosition(), value);
-                 }
+                 query.setImplicitParameter(param.getPosition(), value);
              }
-             catch (QueryInvalidParametersException ipe)
+             else
              {
-                 throw new IllegalArgumentException(ipe.getMessage(), ipe);
+                 query.setImplicitParameter("" + param.getPosition(), value);
              }
-             return this;
          }
+         catch (QueryInvalidParametersException ipe)
+         {
+             throw new IllegalArgumentException(ipe.getMessage(), ipe);
+         }
+         return this;
      }
 
     /**
@@ -786,12 +780,10 @@ public class JPAQuery<X> implements TypedQuery<X>
         {
             return Collections.EMPTY_SET;
         }
-        else
-        {
-            Set<Parameter<?>> params = new HashSet<Parameter<?>>();
-            params.addAll(parameters);
-            return params;
-        }
+
+        Set<Parameter<?>> params = new HashSet<Parameter<?>>();
+        params.addAll(parameters);
+        return params;
     }
 
     protected void loadParameters()

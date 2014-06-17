@@ -29,6 +29,7 @@ import org.datanucleus.exceptions.NucleusException;
  */
 public class JPAFetchPlan implements Serializable
 {
+    private static final long serialVersionUID = 7955990781412643432L;
     private final org.datanucleus.FetchPlan fp;
 
     /**

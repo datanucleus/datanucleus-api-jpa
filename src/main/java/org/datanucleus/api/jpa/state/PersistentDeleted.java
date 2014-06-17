@@ -106,13 +106,10 @@ class PersistentDeleted extends LifeCycleState
 
             return changeState(op, P_NONTRANS);
         }
-        else
-        {
-            op.clearNonPrimaryKeyFields();
-            op.clearSavedFields();
-            return changeState(op, HOLLOW);
-        }
 
+        op.clearNonPrimaryKeyFields();
+        op.clearSavedFields();
+        return changeState(op, HOLLOW);
     }
 
     /**

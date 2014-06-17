@@ -423,10 +423,7 @@ public class JPACallbackHandler implements CallbackHandler
                         {
                             throw (RuntimeException) e.getTargetException();
                         }
-                        else
-                        {
-                            throw new RuntimeException(e.getTargetException());
-                        }
+                        throw new RuntimeException(e.getTargetException());
                     }
                     return null;
                 }
@@ -509,10 +506,7 @@ public class JPACallbackHandler implements CallbackHandler
                         {
                             throw (RuntimeException) e.getTargetException();
                         }
-                        else
-                        {
-                            throw new RuntimeException(e.getTargetException());
-                        }
+                        throw new RuntimeException(e.getTargetException());
                     }
                     return null;
                 }

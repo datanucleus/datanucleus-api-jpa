@@ -42,6 +42,7 @@ import org.datanucleus.state.LifeCycleState;
  */
 public class JPAAdapter implements ApiAdapter
 {
+    private static final long serialVersionUID = 7676231809409935625L;
     protected final static Set<String> defaultPersistentTypeNames = new HashSet<String>();
 
     static
@@ -273,89 +274,63 @@ public class JPAAdapter implements ApiAdapter
                 // Detached Dirty
                 return "detached-dirty";
             }
-            else
-            {
-                // Detached Not Dirty
-                return "detached-clean";
-            }
+            // Detached Not Dirty
+            return "detached-clean";
         }
-        else
+
+        if (isPersistent(pc))
         {
-            if (isPersistent(pc))
+            if (isTransactional(pc))
             {
-                if (isTransactional(pc))
+                if (isDirty(pc))
                 {
-                    if (isDirty(pc))
+                    if (isNew(pc))
                     {
-                        if (isNew(pc))
+                        if (isDeleted(pc))
                         {
-                            if (isDeleted(pc))
-                            {
-                                // Persistent Transactional Dirty New Deleted
-                                return "persistent-new-deleted";
-                            }
-                            else
-                            {
-                                // Persistent Transactional Dirty New Not Deleted
-                                return "persistent-new";
-                            }
+                            // Persistent Transactional Dirty New Deleted
+                            return "persistent-new-deleted";
                         }
-                        else
-                        {
-                            if (isDeleted(pc))
-                            {
-                                // Persistent Transactional Dirty Not New Deleted
-                                return "persistent-deleted";
-                            }
-                            else
-                            {
-                                // Persistent Transactional Dirty Not New Not Deleted
-                                return "persistent-dirty";
-                            }
-                        }
+                        // Persistent Transactional Dirty New Not Deleted
+                        return "persistent-new";
                     }
-                    else
+
+                    if (isDeleted(pc))
                     {
-                        // Persistent Transactional Not Dirty
-                        return "persistent-clean";
+                        // Persistent Transactional Dirty Not New Deleted
+                        return "persistent-deleted";
                     }
+                    // Persistent Transactional Dirty Not New Not Deleted
+                    return "persistent-dirty";
                 }
-                else
-                {
-                    if (isDirty(pc))
-                    {
-                        // Persistent Nontransactional Dirty
-                        return "persistent-nontransactional-dirty";
-                    }
-                    else
-                    {
-                        // Persistent Nontransactional Not Dirty
-                        return "hollow/persistent-nontransactional";
-                    }
-                }
+
+                // Persistent Transactional Not Dirty
+                return "persistent-clean";
             }
-            else
+
+            if (isDirty(pc))
             {
-                if (isTransactional(pc))
-                {
-                    if (isDirty(pc))
-                    {
-                        // Not Persistent Transactional Dirty
-                        return "transient-dirty";
-                    }
-                    else
-                    {
-                        // Not Persistent Transactional Not Dirty
-                        return "transient-clean";
-                    }
-                }
-                else
-                {
-                    // Not Persistent Not Transactional
-                    return "transient";
-                }
+                // Persistent Nontransactional Dirty
+                return "persistent-nontransactional-dirty";
             }
+            // Persistent Nontransactional Not Dirty
+            return "hollow/persistent-nontransactional";
         }
+
+        if (isTransactional(pc))
+        {
+            if (isDirty(pc))
+            {
+                // Not Persistent Transactional Dirty
+                return "transient-dirty";
+            }
+
+            // Not Persistent Transactional Not Dirty
+            return "transient-clean";
+        }
+
+        // Not Persistent Not Transactional
+        return "transient";
     }
 
     /* (non-Javadoc)

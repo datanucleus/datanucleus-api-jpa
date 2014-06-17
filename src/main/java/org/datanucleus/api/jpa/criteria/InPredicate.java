@@ -35,6 +35,8 @@ import org.datanucleus.query.expression.DyadicExpression;
  */
 public class InPredicate<X> extends PredicateImpl implements Predicate, In<X>
 {
+    private static final long serialVersionUID = -831538482168317142L;
+
     ExpressionImpl<? extends X> expr;
 
     List<Expression<? extends X>> values;
@@ -133,7 +135,7 @@ public class InPredicate<X> extends PredicateImpl implements Predicate, In<X>
         {
             values = new ArrayList<Expression<? extends X>>();
         }
-        values.add((ExpressionImpl<? extends X>) value);
+        values.add(value);
         queryExpr = null; // Reset it for recalculation
 
         return this;

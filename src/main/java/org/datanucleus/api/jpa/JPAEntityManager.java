@@ -164,7 +164,7 @@ public class JPAEntityManager implements EntityManager
 
     public boolean isContainerManaged()
     {
-        return ((JPAEntityManagerFactory)emf).isContainerManaged();
+        return emf.isContainerManaged();
     }
 
     /**
@@ -275,12 +275,12 @@ public class JPAEntityManager implements EntityManager
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties)
     {
-        return (T)find(entityClass, primaryKey, null, properties);
+        return find(entityClass, primaryKey, null, properties);
     }
 
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lock)
     {
-        return (T)find(entityClass, primaryKey, null, null);
+        return find(entityClass, primaryKey, null, null);
     }
 
     /**
@@ -309,8 +309,8 @@ public class JPAEntityManager implements EntityManager
                     String egName = eg.getName();
                     if (eg.getName() == null)
                     {
-                        tmpEntityGraphName = ((JPAEntityManagerFactory)emf).getDefinedEntityGraphName();
-                        ((JPAEntityManagerFactory)emf).registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                        tmpEntityGraphName = emf.getDefinedEntityGraphName();
+                        emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
                         egName = tmpEntityGraphName;
                     }
                     ec.getFetchPlan().setGroup(egName);
@@ -322,8 +322,8 @@ public class JPAEntityManager implements EntityManager
                     String egName = eg.getName();
                     if (eg.getName() == null)
                     {
-                        tmpEntityGraphName = ((JPAEntityManagerFactory)emf).getDefinedEntityGraphName();
-                        ((JPAEntityManagerFactory)emf).registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
+                        tmpEntityGraphName = emf.getDefinedEntityGraphName();
+                        emf.registerEntityGraph((JPAEntityGraph) eg, tmpEntityGraphName);
                         egName = tmpEntityGraphName;
                     }
                     ec.getFetchPlan().addGroup(egName);
@@ -427,7 +427,7 @@ public class JPAEntityManager implements EntityManager
         {
             if (tmpEntityGraphName != null)
             {
-                ((JPAEntityManagerFactory)emf).deregisterEntityGraph(tmpEntityGraphName);
+                emf.deregisterEntityGraph(tmpEntityGraphName);
             }
             ec.getFetchPlan().setGroup(FetchPlan.DEFAULT);
         }
@@ -1061,11 +1061,9 @@ public class JPAEntityManager implements EntityManager
             // Not explicitly mentioned in JPA spec what to do for local txn
             return tx.isActive();
         }
-        else
-        {
-            JTATransactionImpl ecTx = (JTATransactionImpl) ec.getTransaction();
-            return ecTx.isJoined();
-        }
+
+        JTATransactionImpl ecTx = (JTATransactionImpl) ec.getTransaction();
+        return ecTx.isJoined();
     }
 
     // ------------------------------------ Query Methods --------------------------------------
@@ -1561,10 +1559,7 @@ public class JPAEntityManager implements EntityManager
         {
             return tx.isActive();
         }
-        else
-        {
-            return ((JTATransactionImpl) ec.getTransaction()).isJoined();
-        }
+        return ((JTATransactionImpl) ec.getTransaction()).isJoined();
     }
 
     /**
@@ -1713,7 +1708,7 @@ public class JPAEntityManager implements EntityManager
 
     public javax.persistence.EntityGraph<?> createEntityGraph(String graphName)
     {
-        EntityGraph<?> entityGraph = ((JPAEntityManagerFactory)emf).getNamedEntityGraph(graphName);
+        EntityGraph<?> entityGraph = emf.getNamedEntityGraph(graphName);
         if (entityGraph != null)
         {
             // TODO Do we need to re-register this with the EMF? or does the user?
@@ -1724,7 +1719,7 @@ public class JPAEntityManager implements EntityManager
 
     public EntityGraph<?> getEntityGraph(String graphName)
     {
-        EntityGraph<?> entityGraph = ((JPAEntityManagerFactory)emf).getNamedEntityGraph(graphName);
+        EntityGraph<?> entityGraph = emf.getNamedEntityGraph(graphName);
         if (entityGraph == null)
         {
             throw new IllegalArgumentException("There is no registered EntityGraph of name \"" + graphName + "\"");
@@ -1739,6 +1734,6 @@ public class JPAEntityManager implements EntityManager
         {
             throw new IllegalArgumentException("Provided class (\"" + entityClass.getName() + "\") is not an entity");
         }
-        return ((JPAEntityManagerFactory)emf).getEntityGraphsByType(entityClass);
+        return emf.getEntityGraphsByType(entityClass);
     }
 }

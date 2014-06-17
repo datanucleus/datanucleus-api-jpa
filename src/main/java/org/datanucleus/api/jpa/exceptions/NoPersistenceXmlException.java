@@ -20,11 +20,11 @@ package org.datanucleus.api.jpa.exceptions;
 /**
  * Exception thrown when trying to create an EntityManagerFactory for a
  * persistence-unit and we cant find any "persistence.xml" files.
- * 
- * @version $Revision: 1.1 $
  */
 public class NoPersistenceXmlException extends RuntimeException
 {
+    private static final long serialVersionUID = -835335835129811335L;
+
     public NoPersistenceXmlException(String msg)
     {
         super(msg);

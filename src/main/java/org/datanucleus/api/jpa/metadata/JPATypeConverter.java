@@ -28,6 +28,8 @@ import org.datanucleus.store.types.converters.TypeConverter;
  */
 public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
 {
+    private static final long serialVersionUID = -4533920769365489446L;
+
     /** The user-provided entity converter. */
     AttributeConverter<X, Y> entityConverter;
 

@@ -64,6 +64,7 @@ import org.datanucleus.query.expression.PrimaryExpression;
  */
 public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 {
+    private static final long serialVersionUID = -7138075290737454992L;
     protected java.util.Set<Join<X, ?>> joins;
     protected java.util.Set<Fetch<X, ?>> fetchJoins;
     protected Type<X> type;
@@ -524,28 +525,26 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             }
             return expr;
         }
+
+        List tuples = new ArrayList();
+        String alias = getAlias();
+        if (alias != null)
+        {
+            // Specified with an alias, so just use the alias
+            tuples.add(getAlias());
+        }
         else
         {
-            List tuples = new ArrayList();
-            String alias = getAlias();
-            if (alias != null)
+            String fieldName = attribute.getMetadata().getName();
+            if (parent != null)
             {
-                // Specified with an alias, so just use the alias
-                tuples.add(getAlias());
+                // TODO What about multiple field usage "a.b.c" ?
+                tuples.add(parent.getAlias());
+                tuples.add(fieldName);
+                return new PrimaryExpression(tuples);
             }
-            else
-            {
-                String fieldName = attribute.getMetadata().getName();
-                if (parent != null)
-                {
-                    // TODO What about multiple field usage "a.b.c" ?
-                    tuples.add(parent.getAlias());
-                    tuples.add(fieldName);
-                    return new PrimaryExpression(tuples);
-                }
-            }
-            return new PrimaryExpression(tuples);
         }
+        return new PrimaryExpression(tuples);
     }
 
     /**

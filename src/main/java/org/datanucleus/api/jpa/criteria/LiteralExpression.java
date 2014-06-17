@@ -29,6 +29,7 @@ import org.datanucleus.query.expression.Literal;
  */
 public class LiteralExpression<X> extends ExpressionImpl
 {
+    private static final long serialVersionUID = -867487639375209191L;
     X value;
 
     public LiteralExpression(CriteriaBuilderImpl cb, X value)

@@ -94,15 +94,13 @@ class PersistentNew extends LifeCycleState
         {
             return changeState(op, P_NONTRANS);
         }
-        else
+
+        if (op.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
         {
-            if (op.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
-            {
-                op.clearNonPrimaryKeyFields();
-            }
-			//op.restoreFields();
-            return changeState(op, HOLLOW);
+            op.clearNonPrimaryKeyFields();
         }
+        //op.restoreFields();
+        return changeState(op, HOLLOW);
     }
 
     /**

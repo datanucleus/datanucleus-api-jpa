@@ -31,6 +31,8 @@ import org.datanucleus.query.expression.Literal;
  */
 public class CoalesceExpression<T> extends ExpressionImpl<T> implements Coalesce<T>
 {
+    private static final long serialVersionUID = -2906713117803554462L;
+
     public CoalesceExpression(CriteriaBuilderImpl cb, Class<T> cls) 
     {
         super(cb, cls);

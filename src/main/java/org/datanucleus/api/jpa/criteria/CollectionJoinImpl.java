@@ -30,6 +30,8 @@ import org.datanucleus.api.jpa.metamodel.CollectionAttributeImpl;
  */
 public class CollectionJoinImpl<Z, E> extends PluralJoinImpl<Z,java.util.Collection<E>,E> implements CollectionJoin<Z, E>
 {
+    private static final long serialVersionUID = -4796767580325361976L;
+
     public CollectionJoinImpl(CriteriaBuilderImpl cb, FromImpl parent, CollectionAttributeImpl attr, JoinType joinType)
     {
         super(cb, parent, attr, joinType);

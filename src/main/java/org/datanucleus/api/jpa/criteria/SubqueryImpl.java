@@ -44,6 +44,8 @@ import org.datanucleus.query.expression.VariableExpression;
  */
 public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
 {
+    private static final long serialVersionUID = 6197187043693743756L;
+
     protected CriteriaQueryImpl<?> parent;
 
     protected CriteriaQueryImpl<T> delegate;

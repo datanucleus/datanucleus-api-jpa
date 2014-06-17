@@ -150,16 +150,10 @@ public class NucleusJPAHelper
                 {
                     return "persistent-deleted";
                 }
-                else
-                {
-                    return "persistent";
-                }
-            }
-            else
-            {
-                // Likely HOLLOW for some reason
                 return "persistent";
             }
+            // Likely HOLLOW for some reason
+            return "persistent";
         }
 
         return "transient";
@@ -224,16 +218,10 @@ public class NucleusJPAHelper
 
             return dirtyFieldNames;
         }
-        else
-        {
-            ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
-            ObjectProvider sm = ec.findObjectProvider(pc);
-            if (sm == null)
-            {
-                return null;
-            }
-            return sm.getDirtyFieldNames();
-        }
+
+        ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+        ObjectProvider op = ec.findObjectProvider(pc);
+        return op == null ? null : op.getDirtyFieldNames();
     }
 
     /**
@@ -262,16 +250,10 @@ public class NucleusJPAHelper
 
             return loadedFieldNames;
         }
-        else
-        {
-            ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
-            ObjectProvider sm = ec.findObjectProvider(pc);
-            if (sm == null)
-            {
-                return null;
-            }
-            return sm.getLoadedFieldNames();
-        }
+
+        ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+        ObjectProvider op = ec.findObjectProvider(pc);
+        return op == null ? null : op.getLoadedFieldNames();
     }
 
     /**
@@ -301,10 +283,7 @@ public class NucleusJPAHelper
             {
                 return new PersistenceException(ne.getMessage(), ne.getCause());
             }
-            else
-            {
-                return new PersistenceException(ne.getMessage(), ne);
-            }
+            return new PersistenceException(ne.getMessage(), ne);
         }
         else if (ne instanceof NucleusCanRetryException)
         {
@@ -313,10 +292,7 @@ public class NucleusJPAHelper
             {
                 return new PersistenceException(ne.getMessage(), ne.getCause());
             }
-            else
-            {
-                return new PersistenceException(ne.getMessage(), ne);
-            }
+            return new PersistenceException(ne.getMessage(), ne);
         }
         else if (ne instanceof NucleusObjectNotFoundException)
         {
@@ -329,10 +305,7 @@ public class NucleusJPAHelper
             {
                 return new PersistenceException(ne.getMessage(), ne.getCause());
             }
-            else
-            {
-                return new PersistenceException(ne.getMessage(), ne);
-            }
+            return new PersistenceException(ne.getMessage(), ne);
         }
         else if (ne instanceof NucleusOptimisticException)
         {
@@ -340,10 +313,7 @@ public class NucleusJPAHelper
             {
                 return new OptimisticLockException(ne.getMessage(), ne.getCause());
             }
-            else
-            {
-                return new OptimisticLockException(ne.getMessage(), ne);
-            }
+            return new OptimisticLockException(ne.getMessage(), ne);
         }
         else
         {
@@ -352,10 +322,7 @@ public class NucleusJPAHelper
             {
                 return new PersistenceException(ne.getMessage(), ne.getCause());
             }
-            else
-            {
-                return new PersistenceException(ne.getMessage(), ne);
-            }
+            return new PersistenceException(ne.getMessage(), ne);
         }
     }
 }

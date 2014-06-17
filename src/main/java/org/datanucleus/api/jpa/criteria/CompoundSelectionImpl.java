@@ -30,6 +30,7 @@ import javax.persistence.criteria.Selection;
  */
 public class CompoundSelectionImpl<X> extends ExpressionImpl<X> implements CompoundSelection<X>
 {
+    private static final long serialVersionUID = -7491400572084985089L;
     private final List<Selection<?>> args;
 
     public CompoundSelectionImpl(CriteriaBuilderImpl cb, Class<X> cls, Selection<?>...args) 

@@ -39,6 +39,8 @@ import org.datanucleus.api.jpa.metamodel.PluralAttributeImpl;
  */
 public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>, V> implements MapJoin<Z, K, V>
 {
+    private static final long serialVersionUID = -3496521920475333402L;
+
     public MapJoinImpl(CriteriaBuilderImpl cb, FromImpl parent, PluralAttributeImpl attr, JoinType joinType)
     {
         super(cb, parent, attr, joinType);

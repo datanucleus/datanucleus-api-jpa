@@ -26,6 +26,7 @@ import javax.persistence.metamodel.Type;
  */
 public class RootImpl<X> extends FromImpl<X, X> implements Root<X>
 {
+    private static final long serialVersionUID = 2822821218384976477L;
     private final EntityType<X> entity;
 
     public RootImpl(CriteriaBuilderImpl cb, EntityType<X> type)

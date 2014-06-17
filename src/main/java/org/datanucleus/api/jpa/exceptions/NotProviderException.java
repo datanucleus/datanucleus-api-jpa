@@ -20,11 +20,11 @@ package org.datanucleus.api.jpa.exceptions;
 /**
  * Exception thrown when trying to create an EntityManagerFactory for a
  * persistence-unit and we are not the required provider.
- * 
- * @version $Revision: 1.1 $
  */
 public class NotProviderException extends RuntimeException
 {
+    private static final long serialVersionUID = -3732366167129407904L;
+
     public NotProviderException(String msg)
     {
         super(msg);

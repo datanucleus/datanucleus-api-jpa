@@ -115,7 +115,7 @@ public abstract class JPAGraph<T>
         {
             attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
         }
-        JPAAttributeNode node = (JPAAttributeNode) attributeNodeMap.get(attribute.getName());
+        JPAAttributeNode node = attributeNodeMap.get(attribute.getName());
         if (node == null)
         {
             node = new JPAAttributeNode<T>(mmgr, this, attribute.getName());
@@ -138,7 +138,7 @@ public abstract class JPAGraph<T>
         {
             attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
         }
-        JPAAttributeNode node = (JPAAttributeNode) attributeNodeMap.get(attribute.getName());
+        JPAAttributeNode node = attributeNodeMap.get(attribute.getName());
         if (node == null)
         {
             node = new JPAAttributeNode<T>(mmgr, this, attribute.getName());
@@ -161,7 +161,7 @@ public abstract class JPAGraph<T>
         {
             attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
         }
-        JPAAttributeNode node = (JPAAttributeNode) attributeNodeMap.get(attributeName);
+        JPAAttributeNode node = attributeNodeMap.get(attributeName);
         if (node == null)
         {
             node = new JPAAttributeNode<T>(mmgr, this, attributeName);
@@ -184,7 +184,7 @@ public abstract class JPAGraph<T>
         {
             attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
         }
-        JPAAttributeNode node = (JPAAttributeNode) attributeNodeMap.get(attributeName);
+        JPAAttributeNode node = attributeNodeMap.get(attributeName);
         if (node == null)
         {
             node = new JPAAttributeNode<T>(mmgr, this, attributeName);

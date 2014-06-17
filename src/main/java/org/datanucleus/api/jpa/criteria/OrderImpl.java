@@ -37,7 +37,7 @@ public class OrderImpl implements Order
      */
     public OrderImpl(Expression<?> expr, boolean asc)
     {
-        this.expr = (ExpressionImpl<?>) expr;
+        this.expr = expr;
         this.ascending = asc;
     }
 

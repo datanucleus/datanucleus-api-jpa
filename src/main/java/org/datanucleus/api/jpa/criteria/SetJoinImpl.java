@@ -33,6 +33,8 @@ import org.datanucleus.api.jpa.metamodel.SetAttributeImpl;
  */
 public class SetJoinImpl<Z, E> extends PluralJoinImpl<Z, java.util.Set<E>, E> implements SetJoin<Z, E>
 {
+    private static final long serialVersionUID = 6175048298635145121L;
+
     public SetJoinImpl(CriteriaBuilderImpl cb, FromImpl parent, SetAttributeImpl attr, JoinType joinType)
     {
         super(cb, parent, attr, joinType);

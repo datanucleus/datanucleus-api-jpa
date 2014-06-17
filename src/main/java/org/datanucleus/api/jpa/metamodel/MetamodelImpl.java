@@ -258,12 +258,10 @@ public class MetamodelImpl implements Metamodel
             {
                 return (Type<X>)basicTypes.get(cls.getName());
             }
-            else
-            {
-                Type<X> basic = new TypeImpl<X>(cls);
-                basicTypes.put(cls.getName(), basic);
-                return basic;
-            }
+
+            Type<X> basic = new TypeImpl<X>(cls);
+            basicTypes.put(cls.getName(), basic);
+            return basic;
         }
     }
 }

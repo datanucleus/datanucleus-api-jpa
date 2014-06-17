@@ -42,9 +42,7 @@ public class JdbcTypeHandler implements MemberAnnotationHandler
             mmd.addColumn(colmd);
             return;
         }
-        else
-        {
-            colmds[0].setJdbcType(jdbcType);
-        }
+
+        colmds[0].setJdbcType(jdbcType);
     }
 }

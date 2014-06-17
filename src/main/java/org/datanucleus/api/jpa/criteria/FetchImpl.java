@@ -37,6 +37,7 @@ import org.datanucleus.api.jpa.metamodel.AttributeImpl;
  */
 public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
 {
+    private static final long serialVersionUID = 1615652791594292349L;
     protected Set<Fetch<X,?>> fetches;
     protected JoinType joinType;
 
@@ -49,7 +50,7 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      */
     public FetchImpl(CriteriaBuilderImpl cb, FromImpl<?, Z> parent, AttributeImpl<? super Z, X> attr, JoinType joinType)
     {
-        super(cb, parent, attr, (Class<X>)attr.getJavaType());
+        super(cb, parent, attr, attr.getJavaType());
         this.joinType = joinType;
     }
 
@@ -123,7 +124,7 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      */
     public Attribute<? super Z, ?> getAttribute()
     {
-        return (Attribute<? super Z, ?>)attribute;
+        return attribute;
     }
 
     /* (non-Javadoc)

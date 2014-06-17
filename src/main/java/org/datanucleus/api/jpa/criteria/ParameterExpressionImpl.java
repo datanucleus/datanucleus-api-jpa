@@ -24,6 +24,7 @@ import javax.persistence.criteria.ParameterExpression;
  */
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T>
 {
+    private static final long serialVersionUID = -5284474509507056048L;
     private String name;
     private int position = -1;
 
@@ -77,9 +78,6 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
         {
             return ":" + name;
         }
-        else
-        {
-            return ":UNKNOWN";
-        }
+        return ":UNKNOWN";
     }
 }

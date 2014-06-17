@@ -23,6 +23,7 @@ package org.datanucleus.api.jpa;
  */
 public class SingletonEMFException extends RuntimeException
 {
+    private static final long serialVersionUID = 4134092631249438748L;
     JPAEntityManagerFactory emf = null;
 
     /**

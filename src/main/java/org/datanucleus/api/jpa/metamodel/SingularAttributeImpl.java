@@ -105,9 +105,6 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         {
              return BindableType.ENTITY_TYPE;
         }
-        else
-        {
-            return BindableType.SINGULAR_ATTRIBUTE;
-        }
+        return BindableType.SINGULAR_ATTRIBUTE;
     }
 }

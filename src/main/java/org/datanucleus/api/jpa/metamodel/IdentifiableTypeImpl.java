@@ -80,27 +80,25 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
             }
             return attr;
         }
-        else
-        {
-            Class pkCls = model.getClassLoaderResolver().classForName(cmd.getObjectidClass());
-            if (cls.isAssignableFrom(pkCls))
-            {
-                // User passed in the type of the id
-                SingularAttribute attr = (SingularAttribute) attributes.get(mmd.getName());
-                if (attr == null)
-                {
-                    IdentifiableType supertype = getSupertype();
-                    if (supertype != null)
-                    {
-                        // Relay to the supertype
-                        return supertype.getId(cls);
-                    }
-                }
-                return attr;
-            }
 
-            throw new IllegalArgumentException("PK member is not of specified type (" + cls.getName() + "). Should be " + mmd.getTypeName());            
+        Class pkCls = model.getClassLoaderResolver().classForName(cmd.getObjectidClass());
+        if (cls.isAssignableFrom(pkCls))
+        {
+            // User passed in the type of the id
+            SingularAttribute attr = (SingularAttribute) attributes.get(mmd.getName());
+            if (attr == null)
+            {
+                IdentifiableType supertype = getSupertype();
+                if (supertype != null)
+                {
+                    // Relay to the supertype
+                    return supertype.getId(cls);
+                }
+            }
+            return attr;
         }
+
+        throw new IllegalArgumentException("PK member is not of specified type (" + cls.getName() + "). Should be " + mmd.getTypeName());            
     }
 
     /* (non-Javadoc)
@@ -145,7 +143,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
     public IdentifiableType<? super X> getSupertype()
     {
         AbstractClassMetaData superCmd = cmd.getSuperAbstractClassMetaData();
-        Class superCls = ((MetamodelImpl)model).getClassLoaderResolver().classForName(superCmd.getFullClassName());
+        Class superCls = model.getClassLoaderResolver().classForName(superCmd.getFullClassName());
         return (IdentifiableType<? super X>)model.managedType(superCls);
     }
 

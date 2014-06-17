@@ -181,21 +181,19 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         {
             return LoadState.UNKNOWN;
         }
-        else
+
+        String[] loadedFields = op.getLoadedFieldNames();
+        if (loadedFields != null)
         {
-            String[] loadedFields = op.getLoadedFieldNames();
-            if (loadedFields != null)
+            for (int i=0;i<loadedFields.length;i++)
             {
-                for (int i=0;i<loadedFields.length;i++)
+                if (loadedFields[i].equals(memberName))
                 {
-                    if (loadedFields[i].equals(memberName))
-                    {
-                        return LoadState.LOADED;
-                    }
+                    return LoadState.LOADED;
                 }
             }
-            return LoadState.NOT_LOADED;
         }
+        return LoadState.NOT_LOADED;
     }
 
     /**
@@ -260,37 +258,35 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         {
             return LoadState.UNKNOWN;
         }
-        else
-        {
-            boolean allLoaded = true;
-            AbstractClassMetaData cmd =
-                ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
-            int[] dfgFieldNumbers = cmd.getDFGMemberPositions();
-            for (int i=0;i<dfgFieldNumbers.length;i++)
-            {
-                AbstractMemberMetaData mmd= cmd.getMetaDataForManagedMemberAtAbsolutePosition(dfgFieldNumbers[i]);
-                String[] loadedFields = op.getLoadedFieldNames();
 
-                boolean memberLoaded = false;
-                if (loadedFields != null)
+        boolean allLoaded = true;
+        AbstractClassMetaData cmd =
+                ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
+        int[] dfgFieldNumbers = cmd.getDFGMemberPositions();
+        for (int i=0;i<dfgFieldNumbers.length;i++)
+        {
+            AbstractMemberMetaData mmd= cmd.getMetaDataForManagedMemberAtAbsolutePosition(dfgFieldNumbers[i]);
+            String[] loadedFields = op.getLoadedFieldNames();
+
+            boolean memberLoaded = false;
+            if (loadedFields != null)
+            {
+                for (int j=0;j<loadedFields.length;j++)
                 {
-                    for (int j=0;j<loadedFields.length;j++)
+                    if (loadedFields[j].equals(mmd.getName()))
                     {
-                        if (loadedFields[j].equals(mmd.getName()))
-                        {
-                            memberLoaded = true;
-                            break;
-                        }
+                        memberLoaded = true;
+                        break;
                     }
                 }
-                if (!memberLoaded)
-                {
-                    allLoaded = false;
-                    break;
-                }
             }
-            return (allLoaded ? LoadState.LOADED : LoadState.NOT_LOADED);
+            if (!memberLoaded)
+            {
+                allLoaded = false;
+                break;
+            }
         }
+        return (allLoaded ? LoadState.LOADED : LoadState.NOT_LOADED);
     }
 
     /* (non-Javadoc)

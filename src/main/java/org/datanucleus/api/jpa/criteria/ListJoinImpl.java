@@ -33,6 +33,8 @@ import org.datanucleus.api.jpa.metamodel.ListAttributeImpl;
  */
 public class ListJoinImpl<Z, E> extends PluralJoinImpl<Z,java.util.List<E>,E> implements ListJoin<Z, E>
 {
+    private static final long serialVersionUID = 3656855953397784490L;
+
     /**
      * Constructor for a list join.
      * @param cb Criteria Builder

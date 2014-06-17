@@ -26,6 +26,7 @@ import org.datanucleus.query.expression.DyadicExpression;
  */
 public class ConcatExpression extends ExpressionImpl<String>
 {
+    private static final long serialVersionUID = 1077351002419048933L;
     Expression<String> expr1;
     Expression<String> expr2;
 

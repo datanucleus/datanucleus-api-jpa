@@ -53,6 +53,8 @@ import org.datanucleus.util.NucleusLogger;
  */
 public class JPAMetaDataManager extends MetaDataManagerImpl
 {
+    private static final long serialVersionUID = 3591790314245592821L;
+
     /** EventListeners. Use a list to preserve ordering. */
     protected List eventListeners = new ArrayList();
 
@@ -321,7 +323,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         }
 
         // Check for MetaData loaded when we loaded the "persistence-unit"
-        AbstractClassMetaData acmd = (AbstractClassMetaData)classMetaDataByClass.get(c.getName());
+        AbstractClassMetaData acmd = classMetaDataByClass.get(c.getName());
         if (acmd != null)
         {
             return acmd;

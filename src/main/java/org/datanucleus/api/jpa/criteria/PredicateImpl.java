@@ -33,6 +33,8 @@ import org.datanucleus.query.expression.Expression.DyadicOperator;
  */
 public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
 {
+    private static final long serialVersionUID = 8514831195383224552L;
+
     protected List<Predicate> exprs = null;
 
     boolean negated = false;

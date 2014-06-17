@@ -584,7 +584,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     for (int j=0;j<mappings.length;j++)
                     {
                         QueryResultMetaData qrmd = new QueryResultMetaData(mappings[j].name());
-                        EntityResult[] entityResults = (EntityResult[])mappings[j].entities();
+                        EntityResult[] entityResults = mappings[j].entities();
                         if (entityResults != null)
                         {
                             for (int k=0;k<entityResults.length;k++)
@@ -602,7 +602,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 }
                             }
                         }
-                        ColumnResult[] colResults = (ColumnResult[])mappings[j].columns();
+                        ColumnResult[] colResults = mappings[j].columns();
                         if (colResults != null)
                         {
                             for (int k=0;k<colResults.length;k++)
@@ -2672,7 +2672,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (annName.equals(JPAAnnotationUtils.COLUMN) || (parent instanceof KeyMetaData && annName.equals(JPAAnnotationUtils.MAP_KEY_COLUMN)))
             {
                 columnName = (String)annotationValues.get("name");
-                typeLength = "" + (Integer)annotationValues.get("length");
+                typeLength = "" + annotationValues.get("length");
                 if (annotationValues.get("precision") != null)
                 {
                     int precisionValue = ((Integer)annotationValues.get("precision")).intValue();
@@ -3000,7 +3000,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
             }
         }
-        return (JoinMetaData[])joins.toArray(new JoinMetaData[joins.size()]);
+        return joins.toArray(new JoinMetaData[joins.size()]);
     }
 
     /**

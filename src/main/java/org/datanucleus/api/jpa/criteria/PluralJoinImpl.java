@@ -34,6 +34,8 @@ import org.datanucleus.api.jpa.metamodel.PluralAttributeImpl;
  */
 public class PluralJoinImpl<Z, C, E> extends JoinImpl<Z, E> implements PluralJoin<Z, C, E>
 {
+    private static final long serialVersionUID = 1700153438199489689L;
+
     /**
      * Constructor
      * @param cb Criteria Builder
