@@ -1125,6 +1125,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     StoredProcQueryMetaData spqmd = new StoredProcQueryMetaData(procs[j].name());
+                    spqmd.setProcedureName(procs[j].procedureName());
                     if (procs[j].resultClasses() != null && procs[j].resultClasses().length > 0)
                     {
                         Class[] resultClasses = procs[j].resultClasses();
