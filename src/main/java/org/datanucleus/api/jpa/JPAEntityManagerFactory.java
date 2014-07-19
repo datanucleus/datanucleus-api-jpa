@@ -66,6 +66,7 @@ import org.datanucleus.PersistenceNucleusContextImpl;
 import org.datanucleus.Configuration;
 import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.criteria.CriteriaBuilderImpl;
+import org.datanucleus.api.jpa.exceptions.NoPersistenceUnitException;
 import org.datanucleus.api.jpa.exceptions.NotProviderException;
 import org.datanucleus.api.jpa.metadata.JPAEntityGraphRegistrationListener;
 import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
@@ -386,6 +387,10 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             // Find all "META-INF/persistence.xml" files in the current thread loader CLASSPATH and parse them
             pluginMgr = PluginManager.createPluginManager(overridingProps, this.getClass().getClassLoader());
             unitMetaData = getPersistenceUnitMetaDataForName(unitName, pluginMgr, overridingProps);
+            if (unitMetaData == null)
+            {
+                throw new NoPersistenceUnitException("No persistence unit found with name " + unitName + ". Check that your persistence.xml is in META-INF from the root of the CLASSPATH");
+            }
         }
 
         // Set persistence context type (default to EXTENDED unless overridden)
