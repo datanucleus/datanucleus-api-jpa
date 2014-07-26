@@ -35,7 +35,7 @@ public class IndexHandler implements MemberAnnotationHandler
     {
         Map<String, Object> annotationValues = ann.getNameValueMap();
         String name = (String)annotationValues.get("name");
-        Boolean unique = (Boolean)annotationValues.get("name");
+        Boolean unique = (Boolean)annotationValues.get("unique");
         IndexMetaData idxmd = mmd.getIndexMetaData();
         if (idxmd == null)
         {
