@@ -2701,7 +2701,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         jdbcType = "SMALLINT";
                     }
                 }
-NucleusLogger.GENERAL.info(">> annName=" + annName + " nullable=" + annotationValues.get("nullable"));
+
                 if (annotationValues.get("nullable") != null)
                 {
                     allowsNull = annotationValues.get("nullable").toString();
