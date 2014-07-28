@@ -2701,7 +2701,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         jdbcType = "SMALLINT";
                     }
                 }
-
+NucleusLogger.GENERAL.info(">> annName=" + annName + " nullable=" + annotationValues.get("nullable"));
                 if (annotationValues.get("nullable") != null)
                 {
                     allowsNull = annotationValues.get("nullable").toString();
@@ -2819,7 +2819,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             // apmd.addColumn(colmd);
             // update column settings if primary key, cannot be null
-            colmd.setAllowsNull(Boolean.valueOf(apmd.isPrimaryKey() ? false : colmd.isAllowsNull()));
+            if (apmd.isPrimaryKey())
+            {
+                colmd.setAllowsNull(false);
+            }
         }
         else if (parent instanceof KeyMetaData)
         {
@@ -2829,7 +2832,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             {
                 apmd.setTable(table);
             }
-            colmd.setAllowsNull(colmd.isAllowsNull());
+//            colmd.setAllowsNull(colmd.isAllowsNull());
         }
         return colmd;
     }
