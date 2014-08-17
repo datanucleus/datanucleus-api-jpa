@@ -852,10 +852,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             cmd.setEmbeddedOnly(embeddedOnly);
             cmd.setCacheable(cacheable);
             cmd.setIdentityType(identityType);
-            if (isClassPersistable(cls.getSuperclass()))
-            {
-                cmd.setPersistableSuperclass(cls.getSuperclass().getName());
-            }
             if (excludeSuperClassListeners)
             {
                 cmd.excludeSuperClassListeners();
