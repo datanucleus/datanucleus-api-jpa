@@ -1825,7 +1825,9 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 }
                 else if (md instanceof AbstractMemberMetaData)
                 {
-                    // N-1, 1-1, 1-N (FK). Just set <column> for the field. Is this correct for 1-N FK ?
+                    // N-1, 1-1, 1-N (FK). Just set <column> for the field. 
+                    // TODO Cater for 1-N FK ?
+                    // TODO Make use of "table"
                     AbstractMemberMetaData fmd = (AbstractMemberMetaData)md;
                     ColumnMetaData colmd = new ColumnMetaData();
                     colmd.setName(getAttr(attrs, "name"));

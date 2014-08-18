@@ -1248,8 +1248,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param propertyAccessor if has persistent properties
      * @return The FieldMetaData/PropertyMetaData that was added (if any)
      */
-    protected AbstractMemberMetaData processMemberAnnotations(AbstractClassMetaData cmd, Member member, 
-            AnnotationObject[] annotations, boolean propertyAccessor)
+    protected AbstractMemberMetaData processMemberAnnotations(AbstractClassMetaData cmd, Member member, AnnotationObject[] annotations, boolean propertyAccessor)
     {
         if (Modifier.isTransient(member.getModifiers()))
         {
@@ -1257,7 +1256,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             return null;
         }
 
-        if (member.getName().startsWith("dn"))
+        if (member.getName().startsWith("dn")) // TODO Extract "dn" and put in enhancement contract class so changeable in one place
         {
             // ignore enhanced fields/methods added during enhancement
             return null;
@@ -1295,6 +1294,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
             // Process other annotations
             ColumnMetaData[] columnMetaData = null;
+            String columnTable = null;
             JoinMetaData joinmd = null;
             KeyMetaData keymd = null;
             boolean oneToMany = false;
@@ -1324,6 +1324,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         columnMetaData = new ColumnMetaData[cols.length];
                         for (int j=0;j<cols.length;j++)
                         {
+                            if (annotationValues.get("table") != null)
+                            {
+                                // Only currently using one table value
+                                columnTable = cols[j].table();
+                            }
                             columnMetaData[j] = new ColumnMetaData();
                             columnMetaData[j].setName(cols[j].name());
                             columnMetaData[j].setTarget(cols[j].referencedColumnName());
@@ -1346,6 +1351,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     String colInsertable = null;
                     String colUpdateable = null;
                     String colUnique = null;
+                    if (annotationValues.get("table") != null)
+                    {
+                        columnTable = annotationValues.get("table").toString();
+                    }
                     if (annotationValues.get("nullable") != null)
                     {
                         colNullable = annotationValues.get("nullable").toString();
@@ -1772,8 +1781,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (mmd.getOrderMetaData() != null)
                     {
-                        throw new NucleusException("@OrderBy found yet field=" + 
-                            cmd.getFullClassName() + "." + member.getName() +
+                        throw new NucleusException("@OrderBy found yet field=" + cmd.getFullClassName() + "." + member.getName() +
                             " already has ordering information!");
                     }
 
@@ -1790,9 +1798,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (mmd.getOrderMetaData() != null)
                     {
-                        throw new NucleusException("@OrderColumn found yet field=" + 
-                            cmd.getFullClassName() + "." + member.getName() +
-                        " already has ordering information!");
+                        throw new NucleusException("@OrderColumn found yet field=" + cmd.getFullClassName() + "." + member.getName() +
+                            " already has ordering information!");
                     }
 
                     String columnName = (String)annotationValues.get("name");
@@ -1874,15 +1881,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
                                 {
                                     // Not yet cached an instance of this converter so create one
-                                    AttributeConverter entityConv = 
-                                        (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                                    AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
 
                                     // Extract field and datastore types for this converter
                                     Class dbType = null;
                                     try
                                     {
-                                        Class returnCls = converterCls.getMethod("convertToDatabaseColumn", 
-                                            member.getType()).getReturnType();
+                                        Class returnCls = converterCls.getMethod("convertToDatabaseColumn", member.getType()).getReturnType();
                                         if (returnCls != Object.class)
                                         {
 										    dbType = returnCls;
@@ -1927,8 +1932,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
                             {
                                 // Not yet cached an instance of this converter so create one
-                                AttributeConverter entityConv = 
-                                    (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                                AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
 
                                 // Extract field and datastore types for this converter
                                 Class dbType = null;
@@ -1968,13 +1972,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 else
                 {
                     // 1-N with no join specified and unidirectional so JPA says it has to be via join (no 1-N uni FKs)
-                    mmd.setJoinMetaData(new JoinMetaData());
+                    joinmd = new JoinMetaData();
+                    mmd.setJoinMetaData(joinmd);
                 }
             }
             if (manyToMany && mmd.getJoinMetaData() == null && mmd.getMappedBy() == null)
             {
                 // M-N with no join specified and unidir so add the join for them
-                mmd.setJoinMetaData(new JoinMetaData());
+                joinmd = new JoinMetaData();
+                mmd.setJoinMetaData(joinmd);
             }
 
             if (mmd.getOrderMetaData() == null && Collection.class.isAssignableFrom(member.getType()))
@@ -2008,6 +2014,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         elemmd = new ElementMetaData();
                         mmd.setElementMetaData(elemmd);
                     }
+                    if (columnTable != null)
+                    {
+                        elemmd.setTable(columnTable);
+                    }
                     for (int i=0;i<columnMetaData.length;i++)
                     {
                         elemmd.addColumn(columnMetaData[i]);
@@ -2021,6 +2031,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         valmd = new ValueMetaData();
                         mmd.setValueMetaData(valmd);
+                    }
+                    if (columnTable != null)
+                    {
+                        valmd.setTable(columnTable);
                     }
                     for (int i=0;i<columnMetaData.length;i++)
                     {
@@ -2239,8 +2253,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param annotations Annotations for the field/property
      * @return The MetaData for the field/property
      */
-    private AbstractMemberMetaData newMetaDataForMember(AbstractClassMetaData cmd, Member field,
-            AnnotationObject[] annotations)
+    private AbstractMemberMetaData newMetaDataForMember(AbstractClassMetaData cmd, Member field, AnnotationObject[] annotations)
     {
         FieldPersistenceModifier modifier = null;
         Boolean dfg = null;
