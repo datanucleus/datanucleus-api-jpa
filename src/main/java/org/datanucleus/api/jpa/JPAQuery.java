@@ -101,6 +101,9 @@ public class JPAQuery<X> implements TypedQuery<X>
         this.query.setCacheResults(false);
         this.fetchPlan = new JPAFetchPlan(query.getFetchPlan());
 
+        // Enable closure of results at ExecutionContext close (i.e EntityManager close). User can turn it off by adding this hint as "false"
+        this.query.addExtension(Query.EXTENSION_CLOSE_RESULTS_AT_EC_CLOSE, "true");
+
 //        this.lockMode = em.getLockMode();
     }
 
