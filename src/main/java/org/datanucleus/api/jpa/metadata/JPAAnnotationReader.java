@@ -2474,46 +2474,46 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
 
         // Create the field
-        AbstractMemberMetaData fmd;
+        AbstractMemberMetaData mmd;
         if (field.isProperty())
         {
-            fmd = new PropertyMetaData(cmd, field.getName());
+            mmd = new PropertyMetaData(cmd, field.getName());
         }
         else
         {
-            fmd = new FieldMetaData(cmd, field.getName());
+            mmd = new FieldMetaData(cmd, field.getName());
         }
         if (modifier != null)
         {
-            fmd.setPersistenceModifier(modifier);
+            mmd.setPersistenceModifier(modifier);
         }
         if (pk != null)
         {
-            fmd.setPrimaryKey(pk);
+            mmd.setPrimaryKey(pk);
         }
         if (dfg != null)
         {
-            fmd.setDefaultFetchGroup(dfg);
+            mmd.setDefaultFetchGroup(dfg);
         }
         if (embedded != null)
         {
-            fmd.setEmbedded(embedded);
+            mmd.setEmbedded(embedded);
         }
-        fmd.setNullValue(NullValue.getNullValue(nullValue));
-        fmd.setMappedBy(mappedBy);
+        mmd.setNullValue(NullValue.getNullValue(nullValue));
+        mmd.setMappedBy(mappedBy);
 
         if (version != null)
         {
             // Tag this field as the version field
             VersionMetaData vermd = cmd.newVersionMetadata();
-            vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setFieldName(fmd.getName());
+            vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setFieldName(mmd.getName());
         }
 
-        cmd.addMember(fmd);
+        cmd.addMember(mmd);
 
         if (orphanRemoval)
         {
-            fmd.setCascadeRemoveOrphans(true);
+            mmd.setCascadeRemoveOrphans(true);
         }
         if (cascades != null)
         {
@@ -2521,31 +2521,31 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             {
                 if (cascades[i] == CascadeType.ALL)
                 {
-                    fmd.setCascadePersist(true);
-                    fmd.setCascadeUpdate(true);
-                    fmd.setCascadeDelete(true);
-                    fmd.setCascadeDetach(true);
-                    fmd.setCascadeRefresh(true);
+                    mmd.setCascadePersist(true);
+                    mmd.setCascadeUpdate(true);
+                    mmd.setCascadeDelete(true);
+                    mmd.setCascadeDetach(true);
+                    mmd.setCascadeRefresh(true);
                 }
                 else if (cascades[i] == CascadeType.PERSIST)
                 {
-                    fmd.setCascadePersist(true);
+                    mmd.setCascadePersist(true);
                 }
                 else if (cascades[i] == CascadeType.MERGE)
                 {
-                    fmd.setCascadeUpdate(true);
+                    mmd.setCascadeUpdate(true);
                 }
                 else if (cascades[i] == CascadeType.REMOVE)
                 {
-                    fmd.setCascadeDelete(true);
+                    mmd.setCascadeDelete(true);
                 }
                 else if (cascades[i] == CascadeType.REFRESH)
                 {
-                    fmd.setCascadeRefresh(true);
+                    mmd.setCascadeRefresh(true);
                 }
                 else if (cascades[i] == CascadeType.DETACH)
                 {
-                    fmd.setCascadeDetach(true);
+                    mmd.setCascadeDetach(true);
                 }
             }
         }
@@ -2553,22 +2553,22 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         // Value generation
         if (valueStrategy != null && valueGenerator != null)
         {
-            fmd.setSequence(valueGenerator);
-            fmd.setValueGeneratorName(valueGenerator);
+            mmd.setSequence(valueGenerator);
+            mmd.setValueGeneratorName(valueGenerator);
         }
         if (valueStrategy != null)
         {
-            fmd.setValueStrategy(valueStrategy);
+            mmd.setValueStrategy(valueStrategy);
         }
 
         // Type storage
         if (storeInLob)
         {
-            fmd.setStoreInLob();
+            mmd.setStoreInLob();
         }
         if (unique)
         {
-            fmd.setUnique(unique);
+            mmd.setUnique(unique);
         }
 
         // Container fields : If the field is a container then add its container element
@@ -2617,20 +2617,19 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         if (contmd != null)
         {
-            fmd.setContainer(contmd);
+            mmd.setContainer(contmd);
         }
         if (mapsId)
         {
-            // TODO Support MapsId if someone really wants to allow that (perfectly reasonable other ways of handling the mapping)
-            NucleusLogger.METADATA.warn("@MapsId specified on member " + fmd.getFullFieldName() + " yet not currently supported " + (mapsIdAttribute != null ? "(" + mapsIdAttribute + ")" : ""));
+            mmd.setMapsIdAttribute(mapsIdAttribute);
         }
 
         if (addJoin)
         {
-            if (fmd.getJoinMetaData() == null)
+            if (mmd.getJoinMetaData() == null)
             {
                 JoinMetaData joinmd = new JoinMetaData();
-                fmd.setJoinMetaData(joinmd);
+                mmd.setJoinMetaData(joinmd);
             }
         }
 
@@ -2641,11 +2640,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             while (iter.hasNext())
             {
                 ExtensionMetaData extmd = iter.next();
-                fmd.addExtension(extmd.getVendorName(), extmd.getKey(), extmd.getValue());
+                mmd.addExtension(extmd.getVendorName(), extmd.getKey(), extmd.getValue());
             }
         }
 
-        return fmd;
+        return mmd;
     }
 
     /**

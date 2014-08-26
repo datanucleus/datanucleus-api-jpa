@@ -1183,8 +1183,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 String mapsId = getAttr(attrs, "maps-id");
                 if (mapsId != null)
                 {
-                    // TODO Support "maps-id" attribute
-                    NucleusLogger.METADATA.warn("MapsId specified for member " + mmd.getFullFieldName() + " is currently ignored");
+                    mmd.setMapsIdAttribute(mapsId);
                 }
 
                 pushStack(mmd);
@@ -1202,8 +1201,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 String mapsId = getAttr(attrs, "maps-id");
                 if (mapsId != null)
                 {
-                    // TODO Support "maps-id" attribute
-                    NucleusLogger.METADATA.warn("MapsId specified for member " + mmd.getFullFieldName() + " is currently ignored");
+                    mmd.setMapsIdAttribute(mapsId);
                 }
 
                 pushStack(mmd);
