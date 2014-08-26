@@ -2262,6 +2262,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         String version = null;
         String nullValue = null;
         String mappedBy = null;
+        boolean mapsId = false;
+        String mapsIdAttribute = null;
         boolean orphanRemoval = false;
         CascadeType[] cascades = null;
         Set<ExtensionMetaData> extensions = null;
@@ -2399,6 +2401,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     nullValue = "none";
                 }
+            }
+            else if (annName.equals(JPAAnnotationUtils.MAPS_ID))
+            {
+                mapsIdAttribute = (String)annotationValues.get("value");
+                mapsId = true;
             }
             else if (annName.equals(JPAAnnotationUtils.ELEMENT_COLLECTION))
             {
@@ -2611,6 +2618,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         if (contmd != null)
         {
             fmd.setContainer(contmd);
+        }
+        if (mapsId)
+        {
+            // TODO Support MapsId if someone really wants to allow that (perfectly reasonable other ways of handling the mapping)
+            NucleusLogger.METADATA.warn("@MapsId specified on member " + fmd.getFullFieldName() + " yet not currently supported " + (mapsIdAttribute != null ? "(" + mapsIdAttribute + ")" : ""));
         }
 
         if (addJoin)

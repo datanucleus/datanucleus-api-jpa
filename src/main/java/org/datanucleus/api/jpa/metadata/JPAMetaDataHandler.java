@@ -1180,7 +1180,12 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     mmd.setTargetClassName(targetEntityName);
                 }
-                // TODO Support "maps-id" attribute
+                String mapsId = getAttr(attrs, "maps-id");
+                if (mapsId != null)
+                {
+                    // TODO Support "maps-id" attribute
+                    NucleusLogger.METADATA.warn("MapsId specified for member " + mmd.getFullFieldName() + " is currently ignored");
+                }
 
                 pushStack(mmd);
             }
@@ -1194,7 +1199,12 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     mmd.setTargetClassName(targetEntityName);
                 }
-                // TODO Support "maps-id" attribute
+                String mapsId = getAttr(attrs, "maps-id");
+                if (mapsId != null)
+                {
+                    // TODO Support "maps-id" attribute
+                    NucleusLogger.METADATA.warn("MapsId specified for member " + mmd.getFullFieldName() + " is currently ignored");
+                }
 
                 pushStack(mmd);
             }

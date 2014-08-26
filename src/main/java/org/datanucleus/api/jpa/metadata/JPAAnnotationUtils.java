@@ -62,6 +62,7 @@ import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.MapKeyJoinColumns;
 import javax.persistence.MapKeyTemporal;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.MapsId;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedEntityGraphs;
@@ -85,7 +86,6 @@ import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 import javax.persistence.Version;
-
 import javax.persistence.Convert;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
@@ -201,6 +201,8 @@ public class JPAAnnotationUtils
     public static final String MAP_KEY_ENUMERATED = MapKeyEnumerated.class.getName();
 
     public static final String MAP_KEY_TEMPORAL = MapKeyTemporal.class.getName();
+
+    public static final String MAPS_ID = MapsId.class.getName();
 
     public static final String ORDER_BY = OrderBy.class.getName();
 
