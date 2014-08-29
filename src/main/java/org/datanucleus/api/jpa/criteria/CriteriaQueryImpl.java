@@ -650,6 +650,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
 
             compilation = new QueryCompilation(candidateClass, candidateAlias, symtbl, resultExprs,
                 fromExprs, filterExpr, groupingExprs, havingExpr, orderExprs, null);
+            if (distinct)
+            {
+                compilation.setResultDistinct();
+            }
             compilation.setQueryLanguage("JPQL");
         }
 
