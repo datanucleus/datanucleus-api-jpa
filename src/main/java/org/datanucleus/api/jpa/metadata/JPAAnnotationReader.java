@@ -37,6 +37,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstraintMode;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Convert;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.EntityResult;
@@ -480,8 +481,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                         for (int j=0;j<overrides.length;j++)
                         {
-                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, 
-                                "#UNKNOWN." + overrides[j].name());
+                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
                             fmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
                             Column col = overrides[j].column();
                             // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
@@ -505,8 +505,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         overriddenFields = new HashSet<AbstractMemberMetaData>();
                     }
 
-                    AbstractMemberMetaData fmd = new FieldMetaData(cmd, 
-                        "#UNKNOWN." + (String)annotationValues.get("name"));
+                    AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
                     Column col = (Column)annotationValues.get("column");
                     // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
                     ColumnMetaData colmd = new ColumnMetaData();
@@ -532,8 +531,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                         for (int j=0;j<overrides.length;j++)
                         {
-                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, 
-                                "#UNKNOWN." + overrides[j].name());
+                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
                             JoinColumn[] cols = overrides[j].joinColumns();
                             for (int k=0;k<cols.length;k++)
                             {
@@ -557,8 +555,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         overriddenFields = new HashSet<AbstractMemberMetaData>();
                     }
 
-                    AbstractMemberMetaData fmd = new FieldMetaData(cmd,
-                        "#UNKNOWN." + (String)annotationValues.get("name"));
+                    AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
                     JoinColumn[] cols = (JoinColumn[])annotationValues.get("joinColumns");
                     for (int k=0;k<cols.length;k++)
                     {
@@ -585,13 +582,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         QueryResultMetaData qrmd = new QueryResultMetaData(mappings[j].name());
                         EntityResult[] entityResults = mappings[j].entities();
-                        if (entityResults != null)
+                        if (entityResults != null && entityResults.length > 0)
                         {
                             for (int k=0;k<entityResults.length;k++)
                             {
                                 String entityClassName = entityResults[k].entityClass().getName();
-                                qrmd.addPersistentTypeMapping(entityClassName, null,
-                                    entityResults[k].discriminatorColumn());
+                                qrmd.addPersistentTypeMapping(entityClassName, null, entityResults[k].discriminatorColumn());
                                 FieldResult[] fields = entityResults[k].fields();
                                 if (fields != null)
                                 {
@@ -603,7 +599,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                         }
                         ColumnResult[] colResults = mappings[j].columns();
-                        if (colResults != null)
+                        if (colResults != null && colResults.length > 0)
                         {
                             for (int k=0;k<colResults.length;k++)
                             {
@@ -612,6 +608,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
 
                         resultMappings.add(qrmd);
+
+                        ConstructorResult[] ctrResults = mappings[j].classes();
+                        if (ctrResults != null && ctrResults.length > 0)
+                        {
+                            NucleusLogger.METADATA.warn("You have specified a ConstructorResult on class " + cmd.getFullClassName() + " - this is not yet supported. Use the result class");
+                            // TODO Support this
+                        }
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPING))
@@ -623,13 +626,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                     QueryResultMetaData qrmd = new QueryResultMetaData((String)annotationValues.get("name"));
                     EntityResult[] entityResults = (EntityResult[])annotationValues.get("entities");
-                    if (entityResults != null)
+                    if (entityResults != null && entityResults.length > 0)
                     {
                         for (int j=0;j<entityResults.length;j++)
                         {
                             String entityClassName = entityResults[j].entityClass().getName();
-                            qrmd.addPersistentTypeMapping(entityClassName, null,
-                                entityResults[j].discriminatorColumn());
+                            qrmd.addPersistentTypeMapping(entityClassName, null, entityResults[j].discriminatorColumn());
                             FieldResult[] fields = entityResults[j].fields();
                             if (fields != null)
                             {
@@ -641,14 +643,22 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
                     }
                     ColumnResult[] colResults = (ColumnResult[])annotationValues.get("columns");
-                    if (colResults != null)
+                    if (colResults != null && colResults.length > 0)
                     {
                         for (int j=0;j<colResults.length;j++)
                         {
                             qrmd.addScalarColumn(colResults[j].name());
                         }
                     }
+
                     resultMappings.add(qrmd);
+
+                    ConstructorResult[] ctrResults = (ConstructorResult[]) annotationValues.get("classes");
+                    if (ctrResults != null && ctrResults.length > 0)
+                    {
+                        NucleusLogger.METADATA.warn("You have specified a ConstructorResult on class " + cmd.getFullClassName() + " - this is not yet supported. Use the result class");
+                        // TODO Support this
+                    }
                 }
                 else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
                 {
@@ -823,8 +833,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
                         for (int j=0;j<values.length;j++)
                         {
-                            ExtensionMetaData extmd = new ExtensionMetaData(values[j].vendorName(),
-                                values[j].key().toString(), values[j].value().toString());
+                            ExtensionMetaData extmd = new ExtensionMetaData(values[j].vendorName(), values[j].key().toString(), values[j].value().toString());
                             extensions.add(extmd);
                         }
                     }
