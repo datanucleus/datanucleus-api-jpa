@@ -607,14 +607,27 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                         }
 
-                        resultMappings.add(qrmd);
-
                         ConstructorResult[] ctrResults = mappings[j].classes();
                         if (ctrResults != null && ctrResults.length > 0)
                         {
-                            NucleusLogger.METADATA.warn("You have specified a ConstructorResult on class " + cmd.getFullClassName() + " - this is not yet supported. Use the result class");
-                            // TODO Support this
+                            for (int k=0;k<ctrResults.length;k++)
+                            {
+                                String ctrClassName = ctrResults[k].targetClass().getName();
+                                List<String> ctrColNames = null;
+                                ColumnResult[] cols = ctrResults[k].columns();
+                                if (cols != null && cols.length > 0)
+                                {
+                                    ctrColNames = new ArrayList<String>();
+                                    for (int l=0;l<cols.length;l++)
+                                    {
+                                        ctrColNames.add(cols[l].name());
+                                    }
+                                }
+                                qrmd.addConstructorTypeMapping(ctrClassName, ctrColNames);
+                            }
                         }
+
+                        resultMappings.add(qrmd);
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPING))
@@ -650,15 +663,27 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             qrmd.addScalarColumn(colResults[j].name());
                         }
                     }
-
-                    resultMappings.add(qrmd);
-
                     ConstructorResult[] ctrResults = (ConstructorResult[]) annotationValues.get("classes");
                     if (ctrResults != null && ctrResults.length > 0)
                     {
-                        NucleusLogger.METADATA.warn("You have specified a ConstructorResult on class " + cmd.getFullClassName() + " - this is not yet supported. Use the result class");
-                        // TODO Support this
+                        for (int j=0;j<ctrResults.length;j++)
+                        {
+                            String ctrClassName = ctrResults[j].targetClass().getName();
+                            List<String> ctrColNames = null;
+                            ColumnResult[] cols = ctrResults[j].columns();
+                            if (cols != null && cols.length > 0)
+                            {
+                                ctrColNames = new ArrayList<String>();
+                                for (int k=0;k<cols.length;k++)
+                                {
+                                    ctrColNames.add(cols[k].name());
+                                }
+                            }
+                            qrmd.addConstructorTypeMapping(ctrClassName, ctrColNames);
+                        }
                     }
+
+                    resultMappings.add(qrmd);
                 }
                 else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
                 {

@@ -742,7 +742,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             else if (localName.equals("constructor-result"))
             {
                 // TODO Support this
-                NucleusLogger.METADATA.info(">> Dont currently support constructor-result element");
+                NucleusLogger.METADATA.info(">> Dont currently support constructor-result element specified via XML");
             }
             else if (localName.equals("mapped-superclass"))
             {
