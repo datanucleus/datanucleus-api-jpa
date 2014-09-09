@@ -19,8 +19,10 @@ package org.datanucleus.api.jpa.metadata;
 
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.AttributeConverter;
@@ -65,6 +67,7 @@ import org.datanucleus.metadata.PropertyMetaData;
 import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.metadata.QueryResultMetaData;
+import org.datanucleus.metadata.QueryResultMetaData.ConstructorTypeColumn;
 import org.datanucleus.metadata.SequenceMetaData;
 import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
@@ -109,6 +112,11 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
 
     /** Current query result entity (persistent class), during parse process. */
     String queryResultEntityName = null;
+
+    /** Work-in-progress result constructor type mapping, during parse process. */
+    String ctrTypeClassName = null;
+    /** Work-in-progrss result constructor columns, during parse process. */
+    List<ConstructorTypeColumn> ctrTypeColumns = null;
 
     private class GraphHolder
     {
@@ -735,14 +743,28 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             }
             else if (localName.equals("column-result"))
             {
-                // Add a scalar column mapping
-                QueryResultMetaData qrmd = (QueryResultMetaData)getStack();
-                qrmd.addScalarColumn(getAttr(attrs, "name"));
+                if (ctrTypeClassName == null)
+                {
+                    // Add a scalar column mapping
+                    QueryResultMetaData qrmd = (QueryResultMetaData)getStack();
+                    qrmd.addScalarColumn(getAttr(attrs, "name"));
+                }
+                else
+                {
+                    // Add column to current work-in-progress constructor mapping
+                    if (ctrTypeColumns == null)
+                    {
+                        ctrTypeColumns = new ArrayList<ConstructorTypeColumn>();
+                    }
+                    ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
+                    String colClsName = getAttr(attrs, "class");
+                    Class ctrColCls = colClsName!=null ? clr.classForName(colClsName) : null;
+                    ctrTypeColumns.add(new ConstructorTypeColumn(getAttr(attrs, "name"), ctrColCls));
+                }
             }
             else if (localName.equals("constructor-result"))
             {
-                // TODO Support this
-                NucleusLogger.METADATA.info(">> Dont currently support constructor-result element specified via XML");
+                ctrTypeClassName = getAttr(attrs, "target-class");
             }
             else if (localName.equals("mapped-superclass"))
             {
@@ -2536,6 +2558,19 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 ((JPAMetaDataManager)mgr).registerEntityGraph(entityGraph);
                 graphHolderStack.clear();
             }
+        }
+
+        if (localName.equals("constructor-result"))
+        {
+            // Add query result constructor (and remove temporary data)
+            QueryResultMetaData qrmd = (QueryResultMetaData)getStack();
+            qrmd.addConstructorTypeMapping(ctrTypeClassName, ctrTypeColumns);
+            ctrTypeClassName = null;
+            ctrTypeColumns = null;
+        }
+        else if (localName.equals("entity-result"))
+        {
+            queryResultEntityName = null;
         }
 
         if (localName.equals("attribute-override") || localName.equals("association-override"))
