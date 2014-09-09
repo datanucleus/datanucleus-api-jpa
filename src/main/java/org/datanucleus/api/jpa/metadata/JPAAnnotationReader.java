@@ -115,6 +115,7 @@ import org.datanucleus.metadata.PropertyMetaData;
 import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.metadata.QueryResultMetaData;
+import org.datanucleus.metadata.QueryResultMetaData.ConstructorTypeColumn;
 import org.datanucleus.metadata.SequenceMetaData;
 import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
@@ -613,17 +614,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             for (int k=0;k<ctrResults.length;k++)
                             {
                                 String ctrClassName = ctrResults[k].targetClass().getName();
-                                List<String> ctrColNames = null;
+                                List<ConstructorTypeColumn> ctrCols = null;
                                 ColumnResult[] cols = ctrResults[k].columns();
                                 if (cols != null && cols.length > 0)
                                 {
-                                    ctrColNames = new ArrayList<String>();
+                                    ctrCols = new ArrayList<ConstructorTypeColumn>();
                                     for (int l=0;l<cols.length;l++)
                                     {
-                                        ctrColNames.add(cols[l].name());
+                                        ctrCols.add(new ConstructorTypeColumn(cols[j].name(), cols[j].type()));
                                     }
                                 }
-                                qrmd.addConstructorTypeMapping(ctrClassName, ctrColNames);
+                                qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
                             }
                         }
 
@@ -669,17 +670,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<ctrResults.length;j++)
                         {
                             String ctrClassName = ctrResults[j].targetClass().getName();
-                            List<String> ctrColNames = null;
+                            List<ConstructorTypeColumn> ctrCols = null;
                             ColumnResult[] cols = ctrResults[j].columns();
                             if (cols != null && cols.length > 0)
                             {
-                                ctrColNames = new ArrayList<String>();
+                                ctrCols = new ArrayList<ConstructorTypeColumn>();
                                 for (int k=0;k<cols.length;k++)
                                 {
-                                    ctrColNames.add(cols[k].name());
+                                    ctrCols.add(new ConstructorTypeColumn(cols[k].name(), cols[k].type()));
                                 }
                             }
-                            qrmd.addConstructorTypeMapping(ctrClassName, ctrColNames);
+                            qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
                         }
                     }
 
