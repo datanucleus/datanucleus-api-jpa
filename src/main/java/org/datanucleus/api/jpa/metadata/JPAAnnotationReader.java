@@ -621,7 +621,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                     ctrCols = new ArrayList<ConstructorTypeColumn>();
                                     for (int l=0;l<cols.length;l++)
                                     {
-                                        ctrCols.add(new ConstructorTypeColumn(cols[j].name(), cols[j].type()));
+                                        ctrCols.add(new ConstructorTypeColumn(cols[l].name(), cols[l].type()));
                                     }
                                 }
                                 qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
