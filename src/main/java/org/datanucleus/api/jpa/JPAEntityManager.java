@@ -79,6 +79,7 @@ import org.datanucleus.state.CallbackHandler;
 import org.datanucleus.state.DetachState;
 import org.datanucleus.state.LockManager;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
@@ -471,6 +472,10 @@ public class JPAEntityManager implements EntityManager
         if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
         {
             return (T) ec.getNucleusContext();
+        }
+        if (NucleusConnection.class.isAssignableFrom(cls))
+        {
+            return (T)ec.getStoreManager().getNucleusConnection(ec);
         }
 
         return (T)throwException(new PersistenceException("Not yet supported"));
