@@ -1291,7 +1291,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             return null;
         }
 
-        if (member.getName().startsWith("dn")) // TODO Extract "dn" and put in enhancement contract class so changeable in one place
+        if (member.getName().startsWith(mgr.getEnhancedMethodNamePrefix()))
         {
             // ignore enhanced fields/methods added during enhancement
             return null;
