@@ -66,7 +66,6 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.metadata.AbstractClassMetaData;
-import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.metadata.QueryMetaData;
@@ -83,7 +82,6 @@ import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
-import org.datanucleus.util.TypeConversionHelper;
 
 /**
  * EntityManager implementation for JPA.
@@ -333,48 +331,26 @@ public class JPAEntityManager implements EntityManager
                 ec.setProperties(properties);
             }
 
-            AbstractClassMetaData acmd = ec.getMetaDataManager().getMetaDataForClass(entityClass, ec.getClassLoaderResolver());
-            if (acmd == null)
+            AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entityClass, ec.getClassLoaderResolver());
+            if (cmd == null)
             {
                 throwException(new EntityNotFoundException());
             }
 
-            // TODO Much of this logic should move into ExecutionContext.newObjectId, but see getReference(...) also
             try
             {
                 // Get the identity
                 Object id = primaryKey;
-                if (acmd.getIdentityType() == IdentityType.DATASTORE)
+                if (cmd.getIdentityType() == IdentityType.DATASTORE)
                 {
                     if (!IdentityUtils.isDatastoreIdentity(id))
                     {
                         // Create an OID
-                        id = ec.getNucleusContext().getIdentityManager().getDatastoreId(acmd.getFullClassName(), primaryKey);
+                        id = ec.getNucleusContext().getIdentityManager().getDatastoreId(cmd.getFullClassName(), primaryKey);
                     }
                 }
-                else if (!acmd.getObjectidClass().equals(primaryKey.getClass().getName()))
+                else if (!primaryKey.getClass().getName().equals(cmd.getObjectidClass()))
                 {
-                    if (acmd.usesSingleFieldIdentityClass() && ec.getNucleusContext().getIdentityManager().getIdentityKeyTranslator() == null)
-                    {
-                        if (ec.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_FIND_OBJECT_TYPE_CONVERSION))
-                        {
-                            String[] pkNames = acmd.getPrimaryKeyMemberNames();
-                            AbstractMemberMetaData mmd = acmd.getMetaDataForMember(pkNames[0]);
-                            if (primaryKey instanceof Long && mmd.getType() != Long.class)
-                            {
-                                primaryKey = TypeConversionHelper.convertTo(primaryKey, mmd.getType());
-                            }
-                            else if (primaryKey instanceof Integer && mmd.getType() != Integer.class)
-                            {
-                                primaryKey = TypeConversionHelper.convertTo(primaryKey, mmd.getType());
-                            }
-                            else if (primaryKey instanceof Short && mmd.getType() != Short.class)
-                            {
-                                primaryKey = TypeConversionHelper.convertTo(primaryKey, mmd.getType());
-                            }
-                        }
-                    }
-
                     // primaryKey is just the key (when using single-field identity), so create a PK object
                     try
                     {
