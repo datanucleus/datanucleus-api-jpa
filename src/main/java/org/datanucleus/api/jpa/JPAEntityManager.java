@@ -1114,7 +1114,7 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Create an instance of Query for executing a named query (in JPQL or SQL).
+     * Create an instance of Query for executing a named query (in JPQL or native).
      * @param queryName the name of a query defined in metadata
      * @return the new query instance
      * @throws IllegalArgumentException if a query has not been defined with the given name
@@ -1125,7 +1125,7 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Create an instance of Query for executing a named query (in JPQL or SQL).
+     * Create an instance of Query for executing a named query (in JPQL or native).
      * @param queryName the name of a query defined in metadata
      * @return the new query instance
      * @throws IllegalArgumentException if a query has not been defined with the given name
@@ -1150,53 +1150,50 @@ public class JPAEntityManager implements EntityManager
         // Create the Query
         try
         {
+            if (!ec.getStoreManager().supportsQueryLanguage(qmd.getLanguage()))
+            {
+                throw new IllegalArgumentException(Localiser.msg("Query.LanguageNotSupportedByStore", qmd.getLanguage()));
+            }
+
             if (qmd.getLanguage().equals(QueryLanguage.JPQL.toString()))
             {
                 // "named-query" so return JPQL
-                org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                    qmd.getLanguage().toString(), ec, qmd.getQuery());
+                org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
                 return new JPAQuery(this, internalQuery, qmd.getLanguage());
             }
-            else if (qmd.getLanguage().equals(QueryLanguage.SQL.toString()))
+
+            // "named-native-query" so return native query
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
+            if (qmd.getResultClass() != null)
             {
-                // "named-native-query" so return SQL
-                org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                    qmd.getLanguage(), ec, qmd.getQuery());
-                if (qmd.getResultClass() != null)
+                // Named native query with result class
+                String resultClassName = qmd.getResultClass();
+                Class resultClass = null;
+                try
                 {
-                    // Named SQL query with result class
-                    String resultClassName = qmd.getResultClass();
-                    Class resultClass = null;
-                    try
-                    {
-                        resultClass = ec.getClassLoaderResolver().classForName(resultClassName);
-                        internalQuery.setResultClass(resultClass);
-                        return new JPAQuery(this, internalQuery, qmd.getLanguage());
-                    }
-                    catch (Exception e)
-                    {
-                        // Result class not found so throw exception (not defined in the JPA spec)
-                        throw new IllegalArgumentException(Localiser.msg("Query.ResultClassNotFound", qmd.getName(), resultClassName));
-                    }
-                }
-                else if (qmd.getResultMetaDataName() != null)
-                {
-                    QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(qmd.getResultMetaDataName());
-                    if (qrmd == null)
-                    {
-                        throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", qmd.getResultMetaDataName()));
-                    }
-                    internalQuery.setResultMetaData(qrmd);
+                    resultClass = ec.getClassLoaderResolver().classForName(resultClassName);
+                    internalQuery.setResultClass(resultClass);
                     return new JPAQuery(this, internalQuery, qmd.getLanguage());
                 }
-                else
+                catch (Exception e)
                 {
-                    return new JPAQuery(this, internalQuery, qmd.getLanguage());
+                    // Result class not found so throw exception (not defined in the JPA spec)
+                    throw new IllegalArgumentException(Localiser.msg("Query.ResultClassNotFound", qmd.getName(), resultClassName));
                 }
+            }
+            else if (qmd.getResultMetaDataName() != null)
+            {
+                QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(qmd.getResultMetaDataName());
+                if (qrmd == null)
+                {
+                    throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", qmd.getResultMetaDataName()));
+                }
+                internalQuery.setResultMetaData(qrmd);
+                return new JPAQuery(this, internalQuery, qmd.getLanguage());
             }
             else
             {
-                throw new IllegalArgumentException(Localiser.msg("Query.LanguageNotSupportedByStore", qmd.getLanguage()));
+                return new JPAQuery(this, internalQuery, qmd.getLanguage());
             }
         }
         catch (NucleusException ne)
@@ -1206,33 +1203,39 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Create an instance of Query for executing an SQL statement.
-     * @param sqlString a native SQL query string
+     * Create an instance of Query for executing a native query statement.
+     * @param queryString a native query string
      * @return the new query instance
      */
-    public Query createNativeQuery(String sqlString)
+    public Query createNativeQuery(String queryString)
     {
-        return createNativeQuery(sqlString, (Class)null);
+        return createNativeQuery(queryString, (Class)null);
     }
 
     /**
-     * Create an instance of Query for executing an SQL query.
-     * @param sqlString a native SQL query string
+     * Create an instance of Query for executing a "native" query.
+     * The native query language could be SQL (for RDBMS), or CQL (for Cassandra), or some other depending on the store.
+     * @param queryString a native query string
      * @param resultClass the class of the resulting instance(s)
      * @return the new query instance
      */
-    public Query createNativeQuery(String sqlString, Class resultClass)
+    public Query createNativeQuery(String queryString, Class resultClass)
     {
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.SQL.toString(), ec, sqlString);
+            String nativeQueryLanguage = ec.getStoreManager().getNativeQueryLanguage();
+            if (nativeQueryLanguage == null)
+            {
+                throw new IllegalArgumentException("This datastore does not support 'native' queries");
+            }
+
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(nativeQueryLanguage, ec, queryString);
             if (resultClass != null)
             {
                 internalQuery.setResultClass(resultClass);
             }
-            return new JPAQuery(this, internalQuery, QueryLanguage.SQL.toString());
+            return new JPAQuery(this, internalQuery, nativeQueryLanguage);
         }
         catch (NucleusException ne)
         {
@@ -1241,25 +1244,31 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Create an instance of Query for executing an SQL query.
-     * @param sqlString a native SQL query string
+     * Create an instance of Query for executing a native query.
+     * The native query language could be SQL (for RDBMS), or CQL (for Cassandra), or some other depending on the store.
+     * @param queryString a native query string
      * @param resultSetMapping the name of the result set mapping
      * @return the new query instance
      */
-    public Query createNativeQuery(String sqlString, String resultSetMapping)
+    public Query createNativeQuery(String queryString, String resultSetMapping)
     {
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.SQL.toString(), ec, sqlString);
+            String nativeQueryLanguage = ec.getStoreManager().getNativeQueryLanguage();
+            if (nativeQueryLanguage == null)
+            {
+                throw new IllegalArgumentException("This datastore does not support 'native' queries");
+            }
+
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(nativeQueryLanguage, ec, queryString);
             QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(resultSetMapping);
             if (qrmd == null)
             {
                 throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", resultSetMapping));
             }
             internalQuery.setResultMetaData(qrmd);
-            return new JPAQuery(this, internalQuery, QueryLanguage.SQL.toString());
+            return new JPAQuery(this, internalQuery, nativeQueryLanguage);
         }
         catch (NucleusException ne)
         {
