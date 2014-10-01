@@ -1727,7 +1727,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     String name = (String)annotationValues.get("name");
                     if (name != null)
                     {
-                        keymd.setMappedBy(name);
+                        keymd.setColumnName(name);
                     }
                     Class keyType = mmd.getMap() != null && mmd.getMap().getKeyType() != null ? clr.classForName(mmd.getMap().getKeyType()) : Object.class;
                     keymd.addColumn(newColumnMetaData(keymd, keyType, annotations));
