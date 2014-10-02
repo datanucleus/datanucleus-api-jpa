@@ -1724,13 +1724,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         keymd = new KeyMetaData();
                         mmd.setKeyMetaData(keymd);
                     }
-                    String name = (String)annotationValues.get("name");
-                    if (name != null)
-                    {
-                        keymd.setColumnName(name);
-                    }
+
                     Class keyType = mmd.getMap() != null && mmd.getMap().getKeyType() != null ? clr.classForName(mmd.getMap().getKeyType()) : Object.class;
-                    keymd.addColumn(newColumnMetaData(keymd, keyType, annotations));
+                    keymd.addColumn(newColumnMetaDataForAnnotation(keymd, keyType, annotationValues));
                 }
                 else if (annName.equals(JPAAnnotationUtils.MAP_KEY))
                 {
@@ -2129,8 +2125,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param type Type of this member
      * @param column The column details to override it with
      */
-    protected void processEmbeddedAttributeOverride(AbstractMemberMetaData mmd, String overriddenName,
-            Class type, Column column)
+    protected void processEmbeddedAttributeOverride(AbstractMemberMetaData mmd, String overriddenName, Class type, Column column)
     {
         // Get the EmbeddedMetaData, creating as necessary
         EmbeddedMetaData embmd = null;
@@ -2691,6 +2686,187 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * @param annotations Annotations on this field/property
      * @return MetaData for the column
      */
+    private ColumnMetaData newColumnMetaDataForAnnotation(MetaData parent, Class fieldType, Map<String, Object> annotationValues)
+    {
+        String columnName = null;
+        String target = null;
+        String targetField = null;
+        String jdbcType = null;
+        String sqlType = null;
+        String typePrecision = null;
+        String typeLength = null;
+        String typeScale = null;
+        String allowsNull = null;
+        String defaultValue = null;
+        String insertValue = null;
+        String insertable = null;
+        String updateable = null;
+        String unique = null;
+        String table = null;
+        String columnDdl = null;
+
+        columnName = (String)annotationValues.get("name");
+        typeLength = "" + annotationValues.get("length");
+        if (annotationValues.get("precision") != null)
+        {
+            int precisionValue = ((Integer)annotationValues.get("precision")).intValue();
+            if (precisionValue != 0)
+            {
+                typePrecision = "" + precisionValue;
+            }
+        }
+        if (annotationValues.get("scale") != null)
+        {
+            int scaleValue = ((Integer)annotationValues.get("scale")).intValue();
+            if (scaleValue != 0)
+            {
+                typeScale = "" + scaleValue;
+            }
+        }
+
+        if (fieldType == char.class || fieldType == Character.class)
+        {
+            // Char field needs to have length of 1 (JPA TCK)
+            jdbcType = "CHAR";
+            typeLength = "1";
+        }
+        else if (fieldType == boolean.class || fieldType == Boolean.class)
+        {
+            if (mgr.getNucleusContext().getConfiguration().getBooleanProperty("datanucleus.jpa.legacy.mapBooleanToSmallint", false))
+            {
+                // NOTE : This was present for up to DN 4.0 but now only available via property since not found a reason for it
+                String memberName = "unknown";
+                if (parent instanceof AbstractMemberMetaData)
+                {
+                    memberName = ((AbstractMemberMetaData)parent).getFullFieldName();
+                }
+                NucleusLogger.METADATA.info("Member " + memberName + " has column of type " + fieldType.getName() + 
+                        " and being mapped to SMALLINT JDBC type. This is deprecated and could be removed in the future. Use @JdbcType instead");
+                jdbcType = "SMALLINT";
+            }
+        }
+
+        if (annotationValues.get("nullable") != null)
+        {
+            allowsNull = annotationValues.get("nullable").toString();
+        }
+        if (annotationValues.get("insertable") != null)
+        {
+            insertable = annotationValues.get("insertable").toString();
+        }
+        if (annotationValues.get("updatable") != null)
+        {
+            // Note : "updatable" is spelt incorrectly in the JPA spec.
+            updateable = annotationValues.get("updatable").toString();
+        }
+        if (annotationValues.get("unique") != null)
+        {
+            unique = annotationValues.get("unique").toString();
+        }
+        if (annotationValues.get("table") != null)
+        {
+            // Column in secondary-table
+            String columnTable = (String)annotationValues.get("table");
+            if (!StringUtils.isWhitespace(columnTable))
+            {
+                table = columnTable;
+            }
+        }
+
+        String tmp = (String)annotationValues.get("columnDefinition");
+        if (!StringUtils.isWhitespace(tmp))
+        {
+            columnDdl = tmp;
+        }
+
+        // Set length/scale based on the field type
+        String length = null;
+        String scale = null;
+        if (Enum.class.isAssignableFrom(fieldType))
+        {
+            // Ignore scale on Enum
+            if (jdbcType != null && jdbcType.equals("VARCHAR"))
+            {
+                length = typeLength;
+            }
+            else if (typePrecision != null)
+            {
+                length = typePrecision;
+            }
+        }
+        else
+        {
+            if (String.class.isAssignableFrom(fieldType) || fieldType == Character.class || fieldType == char.class)
+            {
+                length = typeLength;
+            }
+            else
+            {
+                length = (typePrecision != null ? typePrecision : null);
+            }
+            scale = typeScale;
+        }
+
+        if (columnName == null && length == null && scale == null && insertable == null && updateable == null && allowsNull == null && unique == null && jdbcType == null)
+        {
+            // Nothing specified so don't provide ColumnMetaData and default to what we get
+            return null;
+        }
+
+        ColumnMetaData colmd = new ColumnMetaData();
+        colmd.setName(columnName);
+        colmd.setTarget(target);
+        colmd.setTargetMember(targetField);
+        colmd.setJdbcType(jdbcType);
+        colmd.setSqlType(sqlType);
+        colmd.setLength(length);
+        colmd.setScale(scale);
+        colmd.setAllowsNull(allowsNull);
+        colmd.setDefaultValue(defaultValue);
+        colmd.setInsertValue(insertValue);
+        colmd.setInsertable(insertable);
+        colmd.setUpdateable(updateable);
+        colmd.setUnique(unique);
+        if (columnDdl != null)
+        {
+            colmd.setColumnDdl(columnDdl);
+        }
+        if (parent instanceof AbstractMemberMetaData)
+        {
+            AbstractMemberMetaData apmd = (AbstractMemberMetaData) parent;
+            if (!StringUtils.isWhitespace(table))
+            {
+                apmd.setTable(table);
+            }
+            // apmd.addColumn(colmd);
+            // update column settings if primary key, cannot be null
+            if (apmd.isPrimaryKey())
+            {
+                colmd.setAllowsNull(false);
+            }
+        }
+        else if (parent instanceof KeyMetaData)
+        {
+            KeyMetaData keymd = (KeyMetaData) parent;
+            AbstractMemberMetaData mmd = (AbstractMemberMetaData) keymd.getParent();
+            if (!StringUtils.isWhitespace(table))
+            {
+                mmd.setTable(table);
+            }
+//            colmd.setAllowsNull(colmd.isAllowsNull());
+        }
+        return colmd;
+    }
+
+    /**
+     * Method to create a new ColumnMetaData.
+     * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
+     * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
+     * @param parent The parent MetaData object
+     * @param field The field/property
+     * @param annotations Annotations on this field/property
+     * @return MetaData for the column
+     */
     private ColumnMetaData newColumnMetaData(MetaData parent, Class fieldType, AnnotationObject[] annotations)
     {
         String columnName = null;
@@ -2714,7 +2890,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         {
             String annName = annotations[i].getName();
             Map<String, Object> annotationValues = annotations[i].getNameValueMap();
-            if (annName.equals(JPAAnnotationUtils.COLUMN) || (parent instanceof KeyMetaData && annName.equals(JPAAnnotationUtils.MAP_KEY_COLUMN)))
+            if (annName.equals(JPAAnnotationUtils.COLUMN))
             {
                 columnName = (String)annotationValues.get("name");
                 typeLength = "" + annotationValues.get("length");

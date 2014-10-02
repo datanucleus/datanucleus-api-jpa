@@ -1780,13 +1780,9 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     // </element-collection>
                     JoinMetaData joinmd = (JoinMetaData)md;
                     AbstractMemberMetaData mmd = (AbstractMemberMetaData)joinmd.getParent();
-                    ElementMetaData elemmd = mmd.getElementMetaData();
-                    if (elemmd == null)
-                    {
-                        elemmd = new ElementMetaData();
-                        mmd.setElementMetaData(elemmd);
-                    }
-                    elemmd.addColumn(colmd);
+
+                    // We don't know if this field is a collection or map so just put this as the column on the member and let it's population sort it out
+                    mmd.addColumn(colmd);
                 }
             }
             else if (localName.equals("map-key-column"))
@@ -1814,14 +1810,30 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     colmd.setColumnDdl(columnDdl);
                 }
-                AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
-                KeyMetaData keymd = mmd.getKeyMetaData();
-                if (keymd == null)
+
+                if (md instanceof JoinMetaData)
                 {
-                    keymd = new KeyMetaData();
-                    mmd.setKeyMetaData(keymd);
+                    JoinMetaData joinmd = (JoinMetaData)md;
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)joinmd.getParent();
+                    KeyMetaData keymd = mmd.getKeyMetaData();
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+                    keymd.addColumn(colmd);
                 }
-                keymd.addColumn(colmd);
+                else if (md instanceof AbstractMemberMetaData)
+                {
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
+                    KeyMetaData keymd = mmd.getKeyMetaData();
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+                    keymd.addColumn(colmd);
+                }
             }
             else if (localName.equals("map-key-join-column"))
             {
