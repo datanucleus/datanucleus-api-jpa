@@ -17,7 +17,7 @@
     </description>
 
     <properties>
-        <dn.core.version>4.0.0-m4</dn.core.version>
+        <dn.core.version>4.0.0-release</dn.core.version>
     </properties>
 
     <scm>
