@@ -134,7 +134,7 @@ public class JPAAdapter implements ApiAdapter
         }
         if (obj instanceof Persistable)
         {
-            return ((Persistable)obj).dnGetExecutionContext();
+            return (ExecutionContext) ((Persistable)obj).dnGetExecutionContext();
         }
         else if (obj instanceof JPAEntityManager)
         {
