@@ -25,7 +25,8 @@ import javax.persistence.OptimisticLockException;
 import javax.persistence.PersistenceException;
 
 import org.datanucleus.ExecutionContext;
-import org.datanucleus.enhancer.Persistable;
+import org.datanucleus.enhancement.Persistable;
+import org.datanucleus.enhancement.StateManager;
 import org.datanucleus.exceptions.NucleusCanRetryException;
 import org.datanucleus.exceptions.NucleusDataStoreException;
 import org.datanucleus.exceptions.NucleusException;
@@ -33,7 +34,6 @@ import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.exceptions.NucleusOptimisticException;
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.ObjectProvider;
-import org.datanucleus.state.StateManager;
 import org.datanucleus.store.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.store.query.QueryTimeoutException;
 import org.datanucleus.util.ClassUtils;
