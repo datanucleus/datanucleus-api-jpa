@@ -32,6 +32,8 @@ public class JPAPropertyNames
     public static final String PROPERTY_JPA_STANDARD_JDBC_USER = "javax.persistence.jdbc.user";
     public static final String PROPERTY_JPA_STANDARD_JDBC_PASSWORD = "javax.persistence.jdbc.password";
 
+    public static final String PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_CREATE_SCHEMAS = "javax.persistence.schema-generation.create-database-schemas";
+
     public static final String PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_DATABASE_ACTION = "javax.persistence.schema-generation.database.action";
     public static final String PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_SCRIPTS_ACTION = "javax.persistence.schema-generation.scripts.action";
 

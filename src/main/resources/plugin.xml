@@ -61,6 +61,8 @@ Contributors:
         <persistence-property name="javax.persistence.validation.factory"
             internal-name="datanucleus.validation.factory"/>
 
+        <persistence-property name="javax.persistence.schema-generation.create-database-schemas"
+            internal-name="datanucleus.generateSchema.create-schemas"/>
         <persistence-property name="javax.persistence.schema-generation.database.action"
             internal-name="datanucleus.generateSchema.database.mode"/>
         <persistence-property name="javax.persistence.schema-generation.scripts.action"
