@@ -20,81 +20,51 @@ Contributors:
 <plugin id="org.datanucleus.api.jpa" name="DataNucleus JPA" provider-name="DataNucleus">
     <!-- PERSISTENCE PROPERTIES -->
     <extension point="org.datanucleus.persistence_properties">
-        <persistence-property name="javax.persistence.jdbc.driver"
-            internal-name="datanucleus.ConnectionDriverName"/>
-        <persistence-property name="javax.persistence.jdbc.url"
-            internal-name="datanucleus.ConnectionURL"/>
-        <persistence-property name="javax.persistence.jdbc.user"
-            internal-name="datanucleus.ConnectionUserName"/>
-        <persistence-property name="javax.persistence.jdbc.password"
-            internal-name="datanucleus.ConnectionPassword"/>
-        <persistence-property name="javax.persistence.query.timeout"
-            internal-name="datanucleus.datastoreReadTimeout" value="0"
+        <!-- Map JPA properties to internal DataNucleus properties -->
+        <persistence-property name="javax.persistence.jdbc.driver" internal-name="datanucleus.ConnectionDriverName"/>
+        <persistence-property name="javax.persistence.jdbc.url" internal-name="datanucleus.ConnectionURL"/>
+        <persistence-property name="javax.persistence.jdbc.user" internal-name="datanucleus.ConnectionUserName"/>
+        <persistence-property name="javax.persistence.jdbc.password" internal-name="datanucleus.ConnectionPassword"/>
+        <persistence-property name="javax.persistence.query.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0"
             validator="org.datanucleus.properties.IntegerPropertyValidator"/>
-        <persistence-property name="javax.persistence.lock.timeout"
-            internal-name="datanucleus.datastoreReadTimeout" value="0"
+        <persistence-property name="javax.persistence.lock.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0"
             validator="org.datanucleus.properties.IntegerPropertyValidator"/>
-        <persistence-property name="javax.persistence.transactionType"
-            internal-name="datanucleus.TransactionType"
+        <persistence-property name="javax.persistence.transactionType" internal-name="datanucleus.TransactionType"
             validator="org.datanucleus.properties.CorePropertyValidator"/>
-        <persistence-property name="javax.persistence.jtaDataSource"
-            internal-name="datanucleus.ConnectionFactoryName"/>
-        <persistence-property name="javax.persistence.nonJtaDataSource"
-            internal-name="datanucleus.ConnectionFactory2Name"/>
+        <persistence-property name="javax.persistence.jtaDataSource" internal-name="datanucleus.ConnectionFactoryName"/>
+        <persistence-property name="javax.persistence.nonJtaDataSource" internal-name="datanucleus.ConnectionFactory2Name"/>
 
         <persistence-property name="javax.persistence.provider"/> <!-- Unused -->
-        <persistence-property name="javax.persistence.sharedCache.mode"
-            internal-name="datanucleus.cache.level2.mode"/>
-        <persistence-property name="javax.persistence.cache.retrieveMode"
-            internal-name="datanucleus.cache.level2.retrieveMode"/>
-        <persistence-property name="javax.persistence.cache.storeMode"
-            internal-name="datanucleus.cache.level2.storeMode"/>
+        <persistence-property name="javax.persistence.sharedCache.mode" internal-name="datanucleus.cache.level2.mode"/>
+        <persistence-property name="javax.persistence.cache.retrieveMode" internal-name="datanucleus.cache.level2.retrieveMode"/>
+        <persistence-property name="javax.persistence.cache.storeMode" internal-name="datanucleus.cache.level2.storeMode"/>
 
-        <persistence-property name="javax.persistence.validation.mode"
-            internal-name="datanucleus.validation.mode"/>
-        <persistence-property name="javax.persistence.validation.group.pre-persist"
-            internal-name="datanucleus.validation.group.pre-persist"/>
-        <persistence-property name="javax.persistence.validation.group.pre-update"
-            internal-name="datanucleus.validation.group.pre-update"/>
-        <persistence-property name="javax.persistence.validation.group.pre-remove"
-            internal-name="datanucleus.validation.group.pre-remove"/>
-        <persistence-property name="javax.persistence.validation.factory"
-            internal-name="datanucleus.validation.factory"/>
+        <persistence-property name="javax.persistence.validation.mode" internal-name="datanucleus.validation.mode"/>
+        <persistence-property name="javax.persistence.validation.group.pre-persist" internal-name="datanucleus.validation.group.pre-persist"/>
+        <persistence-property name="javax.persistence.validation.group.pre-update" internal-name="datanucleus.validation.group.pre-update"/>
+        <persistence-property name="javax.persistence.validation.group.pre-remove" internal-name="datanucleus.validation.group.pre-remove"/>
+        <persistence-property name="javax.persistence.validation.factory" internal-name="datanucleus.validation.factory"/>
 
-        <persistence-property name="javax.persistence.schema-generation.create-database-schemas"
-            internal-name="datanucleus.generateSchema.create-schemas"/>
-        <persistence-property name="javax.persistence.schema-generation.database.action"
-            internal-name="datanucleus.generateSchema.database.mode"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.action"
-            internal-name="datanucleus.generateSchema.scripts.mode"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.create-target"
-            internal-name="datanucleus.generateSchema.scripts.create.target"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.drop-target"
-            internal-name="datanucleus.generateSchema.scripts.drop.target"/>
-        <persistence-property name="javax.persistence.schema-generation.create-script-source"
-            internal-name="datanucleus.generateSchema.scripts.create.source"/>
-        <persistence-property name="javax.persistence.schema-generation.create-source"
-            internal-name="datanucleus.generateSchema.scripts.create.order"
+        <persistence-property name="javax.persistence.schema-generation.create-database-schemas" internal-name="datanucleus.generateSchema.create-schemas"/>
+        <persistence-property name="javax.persistence.schema-generation.database.action" internal-name="datanucleus.generateSchema.database.mode"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.action" internal-name="datanucleus.generateSchema.scripts.mode"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.create-target" internal-name="datanucleus.generateSchema.scripts.create.target"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.drop-target" internal-name="datanucleus.generateSchema.scripts.drop.target"/>
+        <persistence-property name="javax.persistence.schema-generation.create-script-source" internal-name="datanucleus.generateSchema.scripts.create.source"/>
+        <persistence-property name="javax.persistence.schema-generation.create-source" internal-name="datanucleus.generateSchema.scripts.create.order"
             validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
-        <persistence-property name="javax.persistence.schema-generation.drop-script-source"
-            internal-name="datanucleus.generateSchema.scripts.drop.source"/>
-        <persistence-property name="javax.persistence.schema-generation.drop-source"
-            internal-name="datanucleus.generateSchema.scripts.drop.order"
+        <persistence-property name="javax.persistence.schema-generation.drop-script-source" internal-name="datanucleus.generateSchema.scripts.drop.source"/>
+        <persistence-property name="javax.persistence.schema-generation.drop-source" internal-name="datanucleus.generateSchema.scripts.drop.order"
             validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
-        <persistence-property name="javax.persistence.sql-load-script-source"
-            internal-name="datanucleus.generateSchema.scripts.load"/>
+        <persistence-property name="javax.persistence.sql-load-script-source" internal-name="datanucleus.generateSchema.scripts.load"/>
 
-        <persistence-property name="datanucleus.jpa.addClassTransformer" value="false"
-            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
-        <persistence-property name="datanucleus.jpa.persistenceContextType"
-            validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
-        <persistence-property name="datanucleus.jpa.txnMarkForRollbackOnException" value="true"
-            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
-        <persistence-property name="datanucleus.jpa.findTypeConversion" value="true"
-            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <!-- DataNucleus JPA own properties -->
+        <persistence-property name="datanucleus.jpa.addClassTransformer" value="false" validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.jpa.persistenceContextType" validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
+        <persistence-property name="datanucleus.jpa.txnMarkForRollbackOnException" value="true" validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.jpa.findTypeConversion" value="true" validator="org.datanucleus.properties.BooleanPropertyValidator"/>
 
-        <persistence-property name="datanucleus.singletonEMFForName" value="false"
-            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.singletonEMFForName" value="false" validator="org.datanucleus.properties.BooleanPropertyValidator"/>
     </extension>
 
     <!-- ANNOTATIONS -->
@@ -119,8 +89,7 @@ Contributors:
 
     <!-- METADATA HANDLERS -->
     <extension point="org.datanucleus.metadata_handler">
-        <handler class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler" name="JPA"
-            entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
+        <handler class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler" name="JPA" entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
     </extension>
 
     <!-- METADATA MANAGER -->
@@ -135,18 +104,12 @@ Contributors:
 
     <!-- ENTITY RESOLVER -->
     <extension point="org.datanucleus.metadata_entityresolver">
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_1.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_0.xsd"
-             type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
+        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
+        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
+        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
         <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
         <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
         <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
@@ -160,5 +123,7 @@ Contributors:
             handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" 
             handler="org.datanucleus.api.jpa.annotations.ColumnPositionHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ValueGenerator" 
+            handler="org.datanucleus.api.jpa.annotations.ValueGeneratorHandler"/>
     </extension>
 </plugin>
