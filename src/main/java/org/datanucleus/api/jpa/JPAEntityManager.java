@@ -453,8 +453,16 @@ public class JPAEntityManager implements EntityManager
         {
             return (T)ec.getStoreManager().getNucleusConnection(ec);
         }
+        if (java.sql.Connection.class.isAssignableFrom(cls))
+        {
+            NucleusConnection nconn = ec.getStoreManager().getNucleusConnection(ec);
+            if (nconn instanceof java.sql.Connection)
+            {
+                return (T)nconn.getNativeConnection();
+            }
+        }
 
-        return (T)throwException(new PersistenceException("Not yet supported"));
+        return (T)throwException(new PersistenceException("We don't support accessing object of type " + cls.getName() + " using unwrap() method"));
     }
 
     /**
