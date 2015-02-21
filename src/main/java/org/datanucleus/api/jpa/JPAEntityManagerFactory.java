@@ -173,13 +173,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         name = unitInfo.getPersistenceUnitName();
         if (unitInfo.getTransactionType() == PersistenceUnitTransactionType.JTA)
         {
-            unitMetaData = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
-                TransactionType.JTA.toString(), rootURI);
+            unitMetaData = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(), TransactionType.JTA.toString(), rootURI);
         }
         else if (unitInfo.getTransactionType() == PersistenceUnitTransactionType.RESOURCE_LOCAL)
         {
-            unitMetaData = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
-                TransactionType.RESOURCE_LOCAL.toString(), rootURI);
+            unitMetaData = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(), TransactionType.RESOURCE_LOCAL.toString(), rootURI);
         }
         
         // Classes
@@ -312,8 +310,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         assertSingleton(unitMetaData.getName(), this);
 
         // Turn off loading of metadata from here if required
-        boolean allowMetadataLoad =
-            nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
+        boolean allowMetadataLoad = nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
         if (!allowMetadataLoad)
         {
             nucleusCtx.getMetaDataManager().setAllowMetaDataLoad(false);
@@ -455,8 +452,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         assertSingleton(pumd.getName(), this);
 
         // Turn off loading of metadata from here if required
-        boolean allowMetadataLoad =
-            nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
+        boolean allowMetadataLoad = nucleusCtx.getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME);
         if (!allowMetadataLoad)
         {
             nucleusCtx.getMetaDataManager().setAllowMetaDataLoad(false);
@@ -564,8 +560,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         // Register the same query under this name, ignoring any parameters
         org.datanucleus.store.query.Query intQuery = ((JPAQuery)query).getInternalQuery();
         Class candidateCls = intQuery.getCandidateClass();
-        AbstractClassMetaData candidateCmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(candidateCls,
-            nucleusCtx.getClassLoaderResolver(query.getClass().getClassLoader()));
+        AbstractClassMetaData candidateCmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(candidateCls, nucleusCtx.getClassLoaderResolver(query.getClass().getClassLoader()));
         QueryMetaData qmd = candidateCmd.newQueryMetadata(name);
         qmd.setLanguage(QueryLanguage.JPQL.toString());
         qmd.setQuery(intQuery.toString());
@@ -612,8 +607,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     public EntityManager createEntityManager(SynchronizationType syncType)
     {
         assertIsClosed();
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
-            TransactionType.RESOURCE_LOCAL.toString()))
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
         {
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
         }
@@ -635,8 +629,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     public EntityManager createEntityManager(SynchronizationType syncType, Map overridingProps)
     {
         assertIsClosed();
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
-            TransactionType.RESOURCE_LOCAL.toString()))
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
         {
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
         }
@@ -655,8 +648,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param syncType Synchronization type
      * @return The EntityManager
      */
-    protected EntityManager newEntityManager(PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType,
-            SynchronizationType syncType)
+    protected EntityManager newEntityManager(PersistenceNucleusContext nucleusCtx, PersistenceContextType contextType, SynchronizationType syncType)
     {
         return new JPAEntityManager(this, nucleusCtx, contextType, syncType);
     }
@@ -670,8 +662,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param pluginMgr Plugin Manager
      * @return The PersistenceManagerFactory
      */
-    protected PersistenceNucleusContext initialiseNucleusContext(PersistenceUnitMetaData unitMetaData, Map overridingProps,
-            PluginManager pluginMgr)
+    protected PersistenceNucleusContext initialiseNucleusContext(PersistenceUnitMetaData unitMetaData, Map overridingProps, PluginManager pluginMgr)
     {
         // Build map of properties for the NucleusContext, with all properties in lower-case
         // We use lower-case so we can detect presence of some properties, hence allowing case-insensitivity
@@ -769,8 +760,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             props.put(PropertyNames.PROPERTY_VALIDATION_MODE.toLowerCase(Locale.ENGLISH), unitMetaData.getValidationMode());
         }
         props.remove(JPAPropertyNames.PROPERTY_JPA_PERSISTENCE_CONTEXT_TYPE); // Processed above
-        if (!props.containsKey(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH)) &&
-            !props.containsKey("javax.jdo.option.transactiontype"))
+        if (!props.containsKey(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH)))
         {
             // Default to RESOURCE_LOCAL txns
             props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH), TransactionType.RESOURCE_LOCAL.toString());
@@ -778,14 +768,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         else
         {
             // let TransactionType.JTA imply ResourceType.JTA
-            String transactionType = props.get(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH)) != null ?
-                (String)props.get(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH)) : (String)props.get("javax.jdo.option.transactiontype");
+            String transactionType = (String)props.get(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH));
             if (TransactionType.JTA.toString().equalsIgnoreCase(transactionType))
             {
-                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH),
-                    ConnectionResourceType.JTA.toString());
-                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH),
-                    ConnectionResourceType.JTA.toString());
+                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH), ConnectionResourceType.JTA.toString());
+                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH), ConnectionResourceType.JTA.toString());
             }
         }
 
@@ -922,20 +909,19 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             return false;
         }
-        ObjectProvider sm = ec.findObjectProvider(entity);
-        if (sm == null)
+        ObjectProvider op = ec.findObjectProvider(entity);
+        if (op == null)
         {
             // Not managed
             return false;
         }
-        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(entity.getClass(),
-            nucleusCtx.getClassLoaderResolver(entity.getClass().getClassLoader()));
+        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(entity.getClass(), nucleusCtx.getClassLoaderResolver(entity.getClass().getClassLoader()));
         if (cmd == null)
         {
             // No metadata
             return false;
         }
-        return sm.isLoaded(cmd.getAbsolutePositionOfMember(attrName));
+        return op.isLoaded(cmd.getAbsolutePositionOfMember(attrName));
     }
 
     /* (non-Javadoc)
@@ -1020,12 +1006,10 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             // Maybe better to throw an exception but the JPA API says nothing
             return;
         }
-        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(
-            ((JPAEntityGraph)graph).getClassType(), nucleusCtx.getClassLoaderResolver(null));
+        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(((JPAEntityGraph)graph).getClassType(), nucleusCtx.getClassLoaderResolver(null));
         if (cmd == null)
         {
-            throw new IllegalStateException("Attempt to add graph " + graph + " for type=" + 
-                ((JPAEntityGraph)graph).getClassType() + " but is not a known Entity");
+            throw new IllegalStateException("Attempt to add graph " + graph + " for type=" + ((JPAEntityGraph)graph).getClassType() + " but is not a known Entity");
         }
 
         String name = (graphName != null ? graphName : cmd.getEntityName());
@@ -1267,8 +1251,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
     private static synchronized void assertSingleton(String name, JPAEntityManagerFactory emf)
     {
-        Boolean singleton =
-            emf.getNucleusContext().getConfiguration().getBooleanObjectProperty(JPAPropertyNames.PROPERTY_JPA_SINGLETON_EMF_FOR_NAME);
+        Boolean singleton = emf.getNucleusContext().getConfiguration().getBooleanObjectProperty(JPAPropertyNames.PROPERTY_JPA_SINGLETON_EMF_FOR_NAME);
         if (singleton != null && singleton)
         {
             // Check on singleton pattern
