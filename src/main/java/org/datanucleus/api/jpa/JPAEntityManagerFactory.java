@@ -350,7 +350,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (unitMetaDataCache == null)
         {
             // Create our cache so we save on lookups
-            unitMetaDataCache = new HashMap<String, PersistenceUnitMetaData>();
+            unitMetaDataCache = new ConcurrentHashMap<String, PersistenceUnitMetaData>();
         }
         unitMetaDataCache.put(name, pumd);
         Properties props = pumd.getProperties();
@@ -373,7 +373,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (unitMetaDataCache == null)
         {
             // Create our cache so we save on lookups
-            unitMetaDataCache = new HashMap<String, PersistenceUnitMetaData>();
+            unitMetaDataCache = new ConcurrentHashMap<String, PersistenceUnitMetaData>();
         }
 
         // Find the "persistence-unit" with this name
