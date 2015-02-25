@@ -39,8 +39,7 @@ import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
 
 /**
- * Implementation of JPA2 Criteria "Path".
- * 
+ * Implementation of JPA Criteria "Path".
  * @param <X> Type referenced by the path
  */
 public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
@@ -99,8 +98,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
             throw new IllegalArgumentException(this + " is BASIC and we cannot navigate to " + attrName);
         }
 
-        AttributeImpl<? super X, Y> next = (AttributeImpl<? super X, Y>) 
-           ((ManagedType<? super X>)type).getAttribute(attrName);
+        AttributeImpl<? super X, Y> next = (AttributeImpl<? super X, Y>) ((ManagedType<? super X>)type).getAttribute(attrName);
         return new PathImpl<X,Y>(cb, this, next, next.getJavaType());
     }
 
@@ -135,8 +133,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
     public Expression<Class<? extends X>> type()
     {
         // TODO Implement this
-        throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+        throw new UnsupportedOperationException("Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
     }
 
     /**

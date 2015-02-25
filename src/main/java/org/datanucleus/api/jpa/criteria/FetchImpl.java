@@ -18,6 +18,7 @@ Contributors:
 package org.datanucleus.api.jpa.criteria;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.criteria.Fetch;
@@ -28,10 +29,10 @@ import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 import org.datanucleus.api.jpa.metamodel.AttributeImpl;
+import org.datanucleus.api.jpa.metamodel.SingularAttributeImpl;
 
 /**
- * Implementation of JPA2 Criteria "Fetch".
- *
+ * Implementation of JPA Criteria "Fetch".
  * @param <Z> type from which joining
  * @param <X> type of the attribute being joined
  */
@@ -48,7 +49,7 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      * @param attr The type joining to
      * @param joinType Type of join (Inner/LeftOuter/RightOuter)
      */
-    public FetchImpl(CriteriaBuilderImpl cb, FromImpl<?, Z> parent, AttributeImpl<? super Z, X> attr, JoinType joinType)
+    public FetchImpl(CriteriaBuilderImpl cb, PathImpl<?, Z> parent, AttributeImpl<? super Z, X> attr, JoinType joinType)
     {
         super(cb, parent, attr, attr.getJavaType());
         this.joinType = joinType;
@@ -59,8 +60,13 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      */
     public <Y> Fetch<X, Y> fetch(PluralAttribute<? super X, ?, Y> attr, JoinType type)
     {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet supported");
+        Fetch<X, Y> fetch = new FetchImpl<X, Y>(cb, this, (AttributeImpl<? super X, Y>) attr, joinType);
+        if (fetches == null)
+        {
+            fetches = new HashSet<Fetch<X, ?>>();
+        }
+        fetches.add(fetch);
+        return fetch;
     }
 
     /* (non-Javadoc)
@@ -76,8 +82,13 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
      */
     public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> attr, JoinType type)
     {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet supported");
+        Fetch<X, Y> fetch = new FetchImpl<X, Y>(cb, this, (SingularAttributeImpl<X, Y>) attr, joinType);
+        if (fetches == null)
+        {
+            fetches = new HashSet<Fetch<X, ?>>();
+        }
+        fetches.add(fetch);
+        return fetch;
     }
 
     /* (non-Javadoc)
