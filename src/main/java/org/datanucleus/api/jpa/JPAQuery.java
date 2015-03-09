@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,7 @@ import javax.persistence.TypedQuery;
 
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.QueryLanguage;
+import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.query.QueryUtils;
 import org.datanucleus.query.symbol.Symbol;
 import org.datanucleus.query.symbol.SymbolTable;
@@ -1126,5 +1128,30 @@ public class JPAQuery<X> implements TypedQuery<X>
     public Object getNativeQuery()
     {
         return query.getNativeQuery();
+    }
+
+    /**
+     * Save this query as a named query with the specified name.
+     * @param name The name to refer to it under
+     */
+    public void saveAsNamedQuery(String name)
+    {
+        QueryMetaData qmd = new QueryMetaData(name);
+        qmd.setLanguage(language);
+        qmd.setQuery(query.toString());
+        qmd.setResultClass(query.getResultClassName());
+        qmd.setUnique(query.isUnique());
+        Map<String, Object> queryExts = query.getExtensions();
+        if (queryExts != null && !queryExts.isEmpty())
+        {
+            Iterator<Map.Entry<String, Object>> queryExtsIter = queryExts.entrySet().iterator();
+            while (queryExtsIter.hasNext())
+            {
+                Map.Entry<String, Object> queryExtEntry = queryExtsIter.next();
+                qmd.addExtension(queryExtEntry.getKey(), "" + queryExtEntry.getValue());
+            }
+        }
+
+        query.getExecutionContext().getMetaDataManager().registerNamedQuery(qmd);
     }
 }
