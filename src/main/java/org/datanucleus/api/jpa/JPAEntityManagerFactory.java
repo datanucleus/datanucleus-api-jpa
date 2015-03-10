@@ -1062,7 +1062,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                         // Add FetchGroup for the subgraph type under the same fetch group name as this graph uses
                         for (Map.Entry<Class, Subgraph> subgraphEntry : subgraphByTypeForNode.entrySet())
                         {
-                            FetchGroup subFG = new FetchGroup(nucleusCtx, eg.getName(), subgraphEntry.getKey());
+                            FetchGroup subFG = new FetchGroup(nucleusCtx, graphName, subgraphEntry.getKey());
                             List<AttributeNode> subgraphNodes = subgraphEntry.getValue().getAttributeNodes();
                             if (subgraphNodes != null)
                             {
@@ -1082,7 +1082,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                 // Add FetchGroup for the subclass type under the same fetch group name as this graph uses
                 for (Map.Entry<Class, Subgraph> subclassEntry : subclassSubgraphs.entrySet())
                 {
-                    FetchGroup subFG = new FetchGroup(nucleusCtx, eg.getName(), subclassEntry.getKey());
+                    FetchGroup subFG = new FetchGroup(nucleusCtx, graphName, subclassEntry.getKey());
                     List<AttributeNode> subgraphNodes = subclassEntry.getValue().getAttributeNodes();
                     if (subgraphNodes != null)
                     {
