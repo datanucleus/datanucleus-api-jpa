@@ -574,8 +574,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 }
             }
 
-            org.datanucleus.query.expression.Expression[] fromExprs = 
-                new org.datanucleus.query.expression.Expression[from.size()];
+            org.datanucleus.query.expression.Expression[] fromExprs = new org.datanucleus.query.expression.Expression[from.size()];
             Iterator iter = from.iterator();
             int i=0;
             while (iter.hasNext())
@@ -593,8 +592,25 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                             Class frmJoinCls = frmJoin.getType().getJavaType();
                             symtbl.addSymbol(new PropertySymbol(frmJoin.getAlias(), frmJoinCls));
                         }
+
+                        // TODO Do this for any number of levels of joins
+                        Set<JoinImpl> subJoins = ((FromImpl)frmJoin).getJoins();
+                        if (subJoins != null)
+                        {
+                            Iterator<JoinImpl> subFrmJoinIter = subJoins.iterator();
+                            while (subFrmJoinIter.hasNext())
+                            {
+                                JoinImpl subFrmJoin = subFrmJoinIter.next();
+                                if (subFrmJoin.getAlias() != null)
+                                {
+                                    Class subFrmJoinCls = subFrmJoin.getType().getJavaType();
+                                    symtbl.addSymbol(new PropertySymbol(subFrmJoin.getAlias(), subFrmJoinCls));
+                                }
+                            }
+                        }
                     }
                 }
+                // TODO What about frm.getFetches() ?
 
                 ClassExpression clsExpr = (ClassExpression)frm.getQueryExpression(true);
                 clsExpr.bind(symtbl);
