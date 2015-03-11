@@ -576,10 +576,14 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         {
             // "mydomain.MyClass {alias} JOIN ..."
             StringBuilder str = new StringBuilder();
-            str.append(getJavaType().getName());
-            if (getAlias() != null)
+            if (parent == null)
             {
-                str.append(" ").append(getAlias());
+                // If we have no parent then put "attr alias" at front
+                str.append(getJavaType().getName());
+                if (getAlias() != null)
+                {
+                    str.append(" ").append(getAlias());
+                }
             }
 
             if (joins != null)
@@ -619,6 +623,9 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                         str.append("ON ");
                         str.append(onPred.toString());
                     }
+
+                    // Add on any subjoins
+                    str.append(((FromImpl)join).toString(true));
                 }
             }
 
@@ -646,6 +653,9 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                     Attribute<? super X, ?> attr = join.getAttribute();
                     joinAttrName.append('.').append(attr.getName());
                     str.append(joinAttrName.toString()).append(" ");
+
+                    // Add on any subjoins
+                    str.append(((FromImpl)join).toString(true));
                 }
             }
 
