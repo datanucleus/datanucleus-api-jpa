@@ -103,15 +103,11 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
 
     public MapJoin<Z, K, V> on(Expression<Boolean> restriction)
     {
-        // TODO JPA2.1 addition
-        throw new UnsupportedOperationException(
-                "Not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        return (MapJoin<Z, K, V>) super.on(restriction);
     }
 
     public MapJoin<Z, K, V> on(Predicate... restrictions)
     {
-        // TODO JPA2.1 addition
-        throw new UnsupportedOperationException(
-                "Not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        return (MapJoin<Z, K, V>) super.on(restrictions);
     }
 }
