@@ -580,37 +580,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             while (iter.hasNext())
             {
                 FromImpl frm = (FromImpl)iter.next();
-                Set<JoinImpl> frmJoins = frm.getJoins();
-                if (frmJoins != null && !frmJoins.isEmpty())
-                {
-                    Iterator<JoinImpl> frmJoinIter = frmJoins.iterator();
-                    while (frmJoinIter.hasNext())
-                    {
-                        JoinImpl frmJoin = frmJoinIter.next();
-                        if (frmJoin.getAlias() != null)
-                        {
-                            Class frmJoinCls = frmJoin.getType().getJavaType();
-                            symtbl.addSymbol(new PropertySymbol(frmJoin.getAlias(), frmJoinCls));
-                        }
-
-                        // TODO Do this for any number of levels of joins
-                        Set<JoinImpl> subJoins = ((FromImpl)frmJoin).getJoins();
-                        if (subJoins != null)
-                        {
-                            Iterator<JoinImpl> subFrmJoinIter = subJoins.iterator();
-                            while (subFrmJoinIter.hasNext())
-                            {
-                                JoinImpl subFrmJoin = subFrmJoinIter.next();
-                                if (subFrmJoin.getAlias() != null)
-                                {
-                                    Class subFrmJoinCls = subFrmJoin.getType().getJavaType();
-                                    symtbl.addSymbol(new PropertySymbol(subFrmJoin.getAlias(), subFrmJoinCls));
-                                }
-                            }
-                        }
-                    }
-                }
-                // TODO What about frm.getFetches() ?
+                processFromJoinsForFrom(frm, symtbl);
 
                 ClassExpression clsExpr = (ClassExpression)frm.getQueryExpression(true);
                 clsExpr.bind(symtbl);
@@ -701,6 +671,28 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         }
 
         return compilation;
+    }
+
+    private void processFromJoinsForFrom(FromImpl frm, SymbolTable symtbl)
+    {
+        Set<JoinImpl> frmJoins = frm.getJoins();
+        if (frmJoins != null && !frmJoins.isEmpty())
+        {
+            Iterator<JoinImpl> frmJoinIter = frmJoins.iterator();
+            while (frmJoinIter.hasNext())
+            {
+                JoinImpl frmJoin = frmJoinIter.next();
+                if (frmJoin.getAlias() != null)
+                {
+                    Class frmJoinCls = frmJoin.getType().getJavaType();
+                    symtbl.addSymbol(new PropertySymbol(frmJoin.getAlias(), frmJoinCls));
+                }
+
+                // Recurse while there are nested joins
+                processFromJoinsForFrom(frmJoin, symtbl);
+            }
+        }
+        // TODO What about frm.getFetches() ?
     }
 
     /**
