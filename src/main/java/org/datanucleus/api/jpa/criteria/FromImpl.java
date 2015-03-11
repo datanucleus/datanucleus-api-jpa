@@ -584,7 +584,6 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 
             if (joins != null)
             {
-                str.append(" ");
                 Iterator<Join<X, ?>> iter = joins.iterator();
                 StringBuilder joinAttrName = new StringBuilder(getAlias());
                 while (iter.hasNext())
@@ -593,15 +592,15 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                     JoinType type = join.getJoinType();
                     if (type == JoinType.INNER)
                     {
-                        str.append("JOIN ");
+                        str.append(" JOIN ");
                     }
                     else if (type == JoinType.LEFT)
                     {
-                        str.append("LEFT JOIN ");
+                        str.append(" LEFT JOIN ");
                     }
                     else if (type == JoinType.RIGHT)
                     {
-                        str.append("RIGHT JOIN ");
+                        str.append(" RIGHT JOIN ");
                     }
 
                     Attribute<? super X, ?> attr = join.getAttribute();
@@ -625,7 +624,6 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 
             if (fetchJoins != null)
             {
-                str.append(" ");
                 Iterator<Fetch<X, ?>> iter = fetchJoins.iterator();
                 StringBuilder joinAttrName = new StringBuilder(getAlias());
                 while (iter.hasNext())
@@ -634,15 +632,15 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                     JoinType type = join.getJoinType();
                     if (type == JoinType.INNER)
                     {
-                        str.append("JOIN FETCH ");
+                        str.append(" JOIN FETCH ");
                     }
                     else if (type == JoinType.LEFT)
                     {
-                        str.append("LEFT JOIN FETCH ");
+                        str.append(" LEFT JOIN FETCH ");
                     }
                     else if (type == JoinType.RIGHT)
                     {
-                        str.append("RIGHT JOIN FETCH ");
+                        str.append(" RIGHT JOIN FETCH ");
                     }
 
                     Attribute<? super X, ?> attr = join.getAttribute();
