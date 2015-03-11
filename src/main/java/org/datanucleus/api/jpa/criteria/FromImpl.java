@@ -447,43 +447,12 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             ClassExpression expr = new ClassExpression(getAlias());
             if (joins != null && !joins.isEmpty())
             {
-                List tuples = new ArrayList();
-                tuples.add(getAlias());
-
                 Iterator<Join<X, ?>> iter = joins.iterator();
                 Expression currentExpr = expr;
                 while (iter.hasNext())
                 {
                     Join<X, ?> join = iter.next();
-                    org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
-                    if (join.getJoinType() == JoinType.LEFT)
-                    {
-                        jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
-                    }
-                    else if (join.getJoinType() == JoinType.RIGHT)
-                    {
-                        jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
-                    }
-
-                    Attribute attr = join.getAttribute();
-                    tuples.add(attr.getName());
-                    PrimaryExpression primExpr = new PrimaryExpression(new ArrayList(tuples));
-                    JoinExpression joinExpr = new JoinExpression(primExpr, join.getAlias(), jt);
-                    if (currentExpr instanceof ClassExpression)
-                    {
-                        ((ClassExpression)currentExpr).setJoinExpression(joinExpr);
-                    }
-                    else
-                    {
-                        ((JoinExpression)currentExpr).setJoinExpression(joinExpr);
-                    }
-                    if (join.getOn() != null)
-                    {
-                        PredicateImpl onExpr = (PredicateImpl) join.getOn();
-                        joinExpr.setOnExpression((DyadicExpression) onExpr.getQueryExpression());
-                    }
-
-                    currentExpr = joinExpr;
+                    currentExpr = processQueryExpressionForFromJoin(join, currentExpr, getAlias());
                 }
             }
 
@@ -497,30 +466,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                 while (iter.hasNext())
                 {
                     Fetch<X, ?> join = iter.next();
-                    org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
-                    if (join.getJoinType() == JoinType.LEFT)
-                    {
-                        jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
-                    }
-                    else if (join.getJoinType() == JoinType.RIGHT)
-                    {
-                        jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
-                    }
-
-                    Attribute attr = join.getAttribute();
-                    tuples.add(attr.getName());
-                    PrimaryExpression primExpr = new PrimaryExpression(new ArrayList(tuples));
-                    JoinExpression joinExpr = new JoinExpression(primExpr, null, jt);
-                    if (currentExpr instanceof ClassExpression)
-                    {
-                        ((ClassExpression)currentExpr).setJoinExpression(joinExpr);
-                    }
-                    else
-                    {
-                        ((JoinExpression)currentExpr).setJoinExpression(joinExpr);
-                    }
-
-                    currentExpr = joinExpr;
+                    currentExpr = processQueryExpressionForFromFetchJoin(join, currentExpr, getAlias());
                 }
             }
             return expr;
@@ -545,6 +491,85 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             }
         }
         return new PrimaryExpression(tuples);
+    }
+
+    private static Expression processQueryExpressionForFromJoin(Join join, Expression currentExpr, String alias)
+    {
+        org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
+        if (join.getJoinType() == JoinType.LEFT)
+        {
+            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
+        }
+        else if (join.getJoinType() == JoinType.RIGHT)
+        {
+            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
+        }
+
+        Attribute attr = join.getAttribute();
+        List tuples = new ArrayList();
+        tuples.add(alias);
+        tuples.add(attr.getName());
+
+        JoinExpression joinExpr = new JoinExpression(new PrimaryExpression(new ArrayList(tuples)), join.getAlias(), jt);
+        if (currentExpr instanceof ClassExpression)
+        {
+            ((ClassExpression)currentExpr).setJoinExpression(joinExpr);
+        }
+        else
+        {
+            ((JoinExpression)currentExpr).setJoinExpression(joinExpr);
+        }
+        if (join.getOn() != null)
+        {
+            PredicateImpl onExpr = (PredicateImpl) join.getOn();
+            joinExpr.setOnExpression((DyadicExpression) onExpr.getQueryExpression());
+        }
+        currentExpr = joinExpr;
+
+        FromImpl frm = (FromImpl)join;
+        Set<Join> subjoins = frm.getJoins();
+        if (subjoins != null)
+        {
+            Iterator<Join> iter = subjoins.iterator();
+            while (iter.hasNext())
+            {
+                Join subjoin = iter.next();
+                currentExpr = processQueryExpressionForFromJoin(subjoin, currentExpr, join.getAlias());
+            }
+        }
+
+        return currentExpr;
+    }
+
+    private static Expression processQueryExpressionForFromFetchJoin(Fetch fetch, Expression currentExpr, String alias)
+    {
+        org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
+        if (fetch.getJoinType() == JoinType.LEFT)
+        {
+            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
+        }
+        else if (fetch.getJoinType() == JoinType.RIGHT)
+        {
+            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
+        }
+
+        Attribute attr = fetch.getAttribute();
+        List tuples = new ArrayList();
+        tuples.add(alias);
+        tuples.add(attr.getName());
+        PrimaryExpression primExpr = new PrimaryExpression(new ArrayList(tuples));
+        JoinExpression joinExpr = new JoinExpression(primExpr, null, jt);
+        if (currentExpr instanceof ClassExpression)
+        {
+            ((ClassExpression)currentExpr).setJoinExpression(joinExpr);
+        }
+        else
+        {
+            ((JoinExpression)currentExpr).setJoinExpression(joinExpr);
+        }
+        currentExpr = joinExpr;
+
+        return currentExpr;
     }
 
     /**
@@ -576,37 +601,38 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         {
             // "mydomain.MyClass {alias} JOIN ..."
             StringBuilder str = new StringBuilder();
-            str.append(getJavaType().getName());
-            if (getAlias() != null)
+            if (parent == null)
             {
-                str.append(" ").append(getAlias());
+                // If we have no parent then put "attr alias" at front
+                str.append(getJavaType().getName());
+                if (getAlias() != null)
+                {
+                    str.append(" ").append(getAlias());
+                }
             }
 
             if (joins != null)
             {
-                str.append(" ");
                 Iterator<Join<X, ?>> iter = joins.iterator();
-                StringBuilder joinAttrName = new StringBuilder(getAlias());
                 while (iter.hasNext())
                 {
                     Join<X, ?> join = iter.next();
                     JoinType type = join.getJoinType();
                     if (type == JoinType.INNER)
                     {
-                        str.append("JOIN ");
+                        str.append(" JOIN ");
                     }
                     else if (type == JoinType.LEFT)
                     {
-                        str.append("LEFT JOIN ");
+                        str.append(" LEFT JOIN ");
                     }
                     else if (type == JoinType.RIGHT)
                     {
-                        str.append("RIGHT JOIN ");
+                        str.append(" RIGHT JOIN ");
                     }
 
                     Attribute<? super X, ?> attr = join.getAttribute();
-                    joinAttrName.append('.').append(attr.getName());
-                    str.append(joinAttrName.toString()).append(" ");
+                    str.append(getAlias()).append('.').append(attr.getName()).append(" ");
 
                     if (join.getAlias() != null)
                     {
@@ -620,12 +646,14 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                         str.append("ON ");
                         str.append(onPred.toString());
                     }
+
+                    // Add on any subjoins
+                    str.append(((FromImpl)join).toString(true));
                 }
             }
 
             if (fetchJoins != null)
             {
-                str.append(" ");
                 Iterator<Fetch<X, ?>> iter = fetchJoins.iterator();
                 StringBuilder joinAttrName = new StringBuilder(getAlias());
                 while (iter.hasNext())
@@ -634,20 +662,23 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                     JoinType type = join.getJoinType();
                     if (type == JoinType.INNER)
                     {
-                        str.append("JOIN FETCH ");
+                        str.append(" JOIN FETCH ");
                     }
                     else if (type == JoinType.LEFT)
                     {
-                        str.append("LEFT JOIN FETCH ");
+                        str.append(" LEFT JOIN FETCH ");
                     }
                     else if (type == JoinType.RIGHT)
                     {
-                        str.append("RIGHT JOIN FETCH ");
+                        str.append(" RIGHT JOIN FETCH ");
                     }
 
                     Attribute<? super X, ?> attr = join.getAttribute();
                     joinAttrName.append('.').append(attr.getName());
                     str.append(joinAttrName.toString()).append(" ");
+
+                    // Add on any subjoins
+                    str.append(((FromImpl)join).toString(true));
                 }
             }
 

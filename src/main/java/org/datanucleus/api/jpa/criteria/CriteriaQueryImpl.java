@@ -581,20 +581,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             while (iter.hasNext())
             {
                 FromImpl frm = (FromImpl)iter.next();
-                Set<JoinImpl> frmJoins = frm.getJoins();
-                if (frmJoins != null && !frmJoins.isEmpty())
-                {
-                    Iterator<JoinImpl> frmJoinIter = frmJoins.iterator();
-                    while (frmJoinIter.hasNext())
-                    {
-                        JoinImpl frmJoin = frmJoinIter.next();
-                        if (frmJoin.getAlias() != null)
-                        {
-                            Class frmJoinCls = frmJoin.getType().getJavaType();
-                            symtbl.addSymbol(new PropertySymbol(frmJoin.getAlias(), frmJoinCls));
-                        }
-                    }
-                }
+                processFromJoinsForFrom(frm, symtbl);
 
                 ClassExpression clsExpr = (ClassExpression)frm.getQueryExpression(true);
                 clsExpr.bind(symtbl);
@@ -685,6 +672,28 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         }
 
         return compilation;
+    }
+
+    private void processFromJoinsForFrom(FromImpl frm, SymbolTable symtbl)
+    {
+        Set<JoinImpl> frmJoins = frm.getJoins();
+        if (frmJoins != null && !frmJoins.isEmpty())
+        {
+            Iterator<JoinImpl> frmJoinIter = frmJoins.iterator();
+            while (frmJoinIter.hasNext())
+            {
+                JoinImpl frmJoin = frmJoinIter.next();
+                if (frmJoin.getAlias() != null)
+                {
+                    Class frmJoinCls = frmJoin.getType().getJavaType();
+                    symtbl.addSymbol(new PropertySymbol(frmJoin.getAlias(), frmJoinCls));
+                }
+
+                // Recurse while there are nested joins
+                processFromJoinsForFrom(frmJoin, symtbl);
+            }
+        }
+        // TODO What about frm.getFetches() ?
     }
 
     /**
