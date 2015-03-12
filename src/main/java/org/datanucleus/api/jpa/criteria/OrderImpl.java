@@ -72,8 +72,7 @@ public class OrderImpl implements Order
      */
     public org.datanucleus.query.expression.OrderExpression getQueryExpression()
     {
-        return new OrderExpression(((ExpressionImpl)expr).getQueryExpression(),
-            ascending ? "ascending" : "descending");
+        return new OrderExpression(((ExpressionImpl)expr).getQueryExpression(), ascending ? "ascending" : "descending");
     }
 
     /**

@@ -47,15 +47,11 @@ public class SetJoinImpl<Z, E> extends PluralJoinImpl<Z, java.util.Set<E>, E> im
 
     public SetJoin<Z, E> on(Expression<Boolean> restriction)
     {
-        // TODO JPA2.1 addition
-        throw new UnsupportedOperationException(
-                "Not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        return (SetJoin<Z, E>) super.on(restriction);
     }
 
     public SetJoin<Z, E> on(Predicate... restrictions)
     {
-        // TODO JPA2.1 addition
-        throw new UnsupportedOperationException(
-                "Not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        return (SetJoin<Z, E>) super.on(restrictions);
     }
 }

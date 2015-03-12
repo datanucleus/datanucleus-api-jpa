@@ -61,13 +61,11 @@ public class ListJoinImpl<Z, E> extends PluralJoinImpl<Z,java.util.List<E>,E> im
 
     public ListJoin<Z, E> on(Expression<Boolean> restriction)
     {
-        // TODO JPA2.1 addition
-        return null;
+        return (ListJoin<Z, E>) super.on(restriction);
     }
 
     public ListJoin<Z, E> on(Predicate... restrictions)
     {
-        // TODO JPA2.1 addition
-        return null;
+        return (ListJoin<Z, E>) super.on(restrictions);
     }
 }
