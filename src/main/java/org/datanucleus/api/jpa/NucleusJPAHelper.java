@@ -270,7 +270,7 @@ public class NucleusJPAHelper
         if (ne instanceof ReachableObjectNotCascadedException)
         {
             // Reachable object not persistent but field doesn't allow cascade-persist
-            throw new IllegalStateException(ne.getMessage());
+            throw new IllegalStateException(ne.getMessage(), ne);
         }
         else if (ne instanceof QueryTimeoutException)
         {
