@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.AccessType;
 import javax.persistence.AssociationOverride;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
@@ -279,6 +280,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         vermd.setIndexed(IndexedValue.getIndexedValue(indexed));
                     }
+                }
+                else if (annName.equals(JPAAnnotationUtils.ACCESS))
+                {
+                    AccessType access = (AccessType) annotationValues.get("value");
+                    cmd.setAccessViaField(access == AccessType.FIELD);
                 }
                 else if (annName.equals(JPAAnnotationUtils.TABLE))
                 {
@@ -1299,6 +1305,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
         if ((annotations != null && annotations.length > 0) || mgr.getApiAdapter().isMemberDefaultPersistent(member.getType()))
         {
+        	// TODO Move this logic to the calling code (AbstractAnnotationReader)
             if (!member.isProperty() && (annotations == null || annotations.length == 0) && propertyAccessor)
             {
                 return null;
@@ -1875,6 +1882,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     // M-N relation
                     manyToMany = true;
+                }
+                else if (annName.equals(JPAAnnotationUtils.ACCESS))
+                {
+                	// TODO Support this
                 }
                 else if (annName.equals(JPAAnnotationUtils.CONVERTS))
                 {
