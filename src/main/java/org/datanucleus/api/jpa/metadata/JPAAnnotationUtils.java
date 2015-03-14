@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.persistence.Access;
 import javax.persistence.AssociationOverride;
 import javax.persistence.AssociationOverrides;
 import javax.persistence.AttributeOverride;
@@ -111,6 +112,8 @@ public class JPAAnnotationUtils
     public static final String MAPPED_SUPERCLASS = MappedSuperclass.class.getName();
 
     public static final String EMBEDDABLE = Embeddable.class.getName();
+
+    public static final String ACCESS = Access.class.getName();
 
     public static final String EMBEDDED = Embedded.class.getName();
 
