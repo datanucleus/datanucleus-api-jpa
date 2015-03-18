@@ -1106,7 +1106,15 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     TypedQuery<X> setResultClass(Class resultClass)
     {
-        query.setResultClass(resultClass);
+        if (resultClass == Object[].class)
+        {
+            // Internal default when we have a result specified so ignore
+            query.setResultClass(null);
+        }
+        else
+        {
+            query.setResultClass(resultClass);
+        }
         return this;
     }
 
