@@ -60,7 +60,7 @@ import org.datanucleus.query.expression.SubqueryExpression;
 import org.datanucleus.query.expression.VariableExpression;
 
 /**
- * Implementation of JPA2 Criteria "CriteriaBuilder".
+ * Implementation of JPA "CriteriaBuilder".
  * Acts as a factory for expressions, and also for the criteria queries themselves.
  */
 public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
@@ -182,8 +182,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
         DyadicExpression dyExpr =
-            new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
         List args = new ArrayList();
         args.add(dyExpr);
         select.queryExpr = new InvokeExpression(null, "count", args);
@@ -307,9 +306,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_AND,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_AND, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -335,9 +332,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this, BooleanOperator.OR);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_OR,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_OR, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -349,9 +344,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_EQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -362,11 +355,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate equal(Expression<?> expr, Object obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_EQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -378,9 +368,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_NOTEQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_NOTEQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -391,11 +379,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate notEqual(Expression<?> expr, Object obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_NOTEQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_NOTEQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -423,9 +408,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GTEQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GTEQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -436,11 +419,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate ge(Expression<? extends Number> expr, Number obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GTEQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GTEQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -452,9 +432,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GT,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GT, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -465,11 +443,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y extends Comparable<? super Y>> Predicate greaterThan(Expression<? extends Y> expr, Y obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GT,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GT, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -481,9 +456,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GTEQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GTEQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -494,11 +467,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y extends Comparable<? super Y>> Predicate greaterThanOrEqualTo(Expression<? extends Y> expr, Y obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GTEQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GTEQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -510,9 +480,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GT,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GT, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -523,11 +491,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate gt(Expression<? extends Number> expr, Number obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_GT,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_GT, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -539,9 +504,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LTEQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LTEQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -552,11 +515,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate le(Expression<? extends Number> expr, Number obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LTEQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LTEQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -568,9 +528,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LT,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LT, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -581,11 +539,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y extends Comparable<? super Y>> Predicate lessThan(Expression<? extends Y> expr, Y obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LT,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LT, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -597,9 +552,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LTEQ,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LTEQ, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -610,11 +563,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y extends Comparable<? super Y>> Predicate lessThanOrEqualTo(Expression<? extends Y> expr, Y obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LTEQ,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LTEQ, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -626,9 +576,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LT,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LT, ((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -639,11 +587,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate lt(Expression<? extends Number> expr, Number obj)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_LT,
-                lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_LT, new Literal(obj));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -655,9 +600,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr0.getJavaType());
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_ADD, 
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_ADD, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -668,10 +611,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> sum(Expression<? extends N> expr, N obj)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_ADD, lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_ADD, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -682,10 +623,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> sum(N obj, Expression<? extends N> expr)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(lit, org.datanucleus.query.expression.Expression.OP_ADD,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(new Literal(obj), org.datanucleus.query.expression.Expression.OP_ADD, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -697,9 +636,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_DIV,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_DIV, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -710,10 +647,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<Number> quot(Expression<? extends Number> expr, Number obj)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_DIV, lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_DIV, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -724,10 +659,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<Number> quot(Number obj, Expression<? extends Number> expr)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(lit, org.datanucleus.query.expression.Expression.OP_DIV,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(new Literal(obj), org.datanucleus.query.expression.Expression.OP_DIV, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -739,9 +672,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>)expr0.getJavaType());
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_SUB,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_SUB, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -752,10 +683,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> diff(Expression<? extends N> expr, N obj)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_SUB, lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_SUB, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -766,10 +695,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> diff(N obj, Expression<? extends N> expr)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(lit, org.datanucleus.query.expression.Expression.OP_SUB,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(new Literal(obj), org.datanucleus.query.expression.Expression.OP_SUB, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -781,9 +708,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>)expr0.getJavaType());
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_MUL,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_MUL, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -794,10 +719,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> prod(Expression<? extends N> expr, N obj)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_MUL, lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_MUL, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -808,10 +731,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> prod(N obj, Expression<? extends N> expr)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(lit, org.datanucleus.query.expression.Expression.OP_MUL,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(new Literal(obj), org.datanucleus.query.expression.Expression.OP_MUL, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -823,9 +744,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_MOD,
-                ((ExpressionImpl)expr1).getQueryExpression());
+            new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_MOD, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -836,10 +755,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<Integer> mod(Expression<Integer> expr, Integer obj)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), 
-                org.datanucleus.query.expression.Expression.OP_MOD, lit);
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_MOD, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -850,10 +767,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<Integer> mod(Integer obj, Expression<Integer> expr)
     {
         ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
-        Literal lit = new Literal(obj);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(lit, org.datanucleus.query.expression.Expression.OP_MOD,
-                ((ExpressionImpl)expr).getQueryExpression());
+            new DyadicExpression(new Literal(obj), org.datanucleus.query.expression.Expression.OP_MOD, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
         return sumExpr;
     }
@@ -885,16 +800,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y extends Comparable<? super Y>> Predicate between(Expression<? extends Y> expr, Y obj0, Y obj1)
     {
         PredicateImpl pred = new PredicateImpl(this);
-
         org.datanucleus.query.expression.Expression theExpr = ((ExpressionImpl)expr).getQueryExpression();
-        Literal litLower = new Literal(obj0);
-        Literal litUpper = new Literal(obj1);
-        DyadicExpression lowerDyadic =
-            new DyadicExpression(theExpr, org.datanucleus.query.expression.Expression.OP_GTEQ, litLower);
-        DyadicExpression upperDyadic =
-            new DyadicExpression(theExpr, org.datanucleus.query.expression.Expression.OP_LTEQ, litUpper);
-        DyadicExpression overallDyadic =
-            new DyadicExpression(lowerDyadic, org.datanucleus.query.expression.Expression.OP_AND, upperDyadic);
+        DyadicExpression lowerDyadic = new DyadicExpression(theExpr, org.datanucleus.query.expression.Expression.OP_GTEQ, new Literal(obj0));
+        DyadicExpression upperDyadic = new DyadicExpression(theExpr, org.datanucleus.query.expression.Expression.OP_LTEQ, new Literal(obj1));
+        DyadicExpression overallDyadic = new DyadicExpression(lowerDyadic, org.datanucleus.query.expression.Expression.OP_AND, upperDyadic);
         pred.queryExpr = overallDyadic;
         return pred;
     }
@@ -1159,8 +1068,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <C extends Collection<?>> Predicate isEmpty(Expression<C> collExpr)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        org.datanucleus.query.expression.Expression queryExpr =
-            new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "isEmpty", null);
+        org.datanucleus.query.expression.Expression queryExpr = new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "isEmpty", null);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1173,8 +1081,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         PredicateImpl pred = new PredicateImpl(this);
         List args = new ArrayList();
         args.add(((ExpressionImpl)expr).getQueryExpression());
-        org.datanucleus.query.expression.Expression queryExpr =
-            new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
+        org.datanucleus.query.expression.Expression queryExpr = new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1186,10 +1093,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         List args = new ArrayList();
-        Literal lit = new Literal(val);
-        args.add(lit);
-        org.datanucleus.query.expression.Expression queryExpr =
-            new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
+        args.add(new Literal(val));
+        org.datanucleus.query.expression.Expression queryExpr = new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1199,8 +1104,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <C extends Collection<?>> Predicate isNotEmpty(Expression<C> collExpr)
     {
-        Predicate pred = isEmpty(collExpr);
-        return pred.not();
+        return isEmpty(collExpr).not();
     }
 
     /* (non-Javadoc)
@@ -1208,8 +1112,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> expr, Expression<C> collExpr)
     {
-        Predicate pred = isMember(expr, collExpr);
-        return pred.not();
+        return isMember(expr, collExpr).not();
     }
 
     /* (non-Javadoc)
@@ -1217,8 +1120,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <E, C extends Collection<E>> Predicate isNotMember(E val, Expression<C> collExpr)
     {
-        Predicate pred = isMember(val, collExpr);
-        return pred.not();
+        return isMember(val, collExpr).not();
     }
 
     /* (non-Javadoc)
@@ -1249,9 +1151,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_EQ,
-                new Literal(Boolean.FALSE));
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, new Literal(Boolean.FALSE));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1263,9 +1163,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         PredicateImpl pred = new PredicateImpl(this);
         org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(),
-                org.datanucleus.query.expression.Expression.OP_EQ,
-                new Literal(Boolean.TRUE));
+            new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, new Literal(Boolean.TRUE));
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1388,8 +1286,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <N extends Number> Expression<N> neg(Expression<N> expr)
     {
         ExpressionImpl<N> negExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
-        negExpr.queryExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NEG,
-            ((ExpressionImpl)expr).getQueryExpression());
+        negExpr.queryExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NEG, ((ExpressionImpl)expr).getQueryExpression());
         return negExpr;
     }
 
@@ -1399,8 +1296,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Predicate not(Expression<Boolean> expr)
     {
         PredicateImpl pred = new PredicateImpl(this);
-        pred.queryExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT,
-            ((ExpressionImpl)expr).getQueryExpression());
+        pred.queryExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT, ((ExpressionImpl)expr).getQueryExpression());
         return pred;
     }
 
@@ -1409,8 +1305,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, Expression<String> expr1)
     {
-        Predicate pred = like(expr, expr1);
-        return pred.not();
+        return like(expr, expr1).not();
     }
 
     /* (non-Javadoc)
@@ -1418,8 +1313,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, String regex)
     {
-        Predicate pred = like(expr, regex);
-        return pred.not();
+        return like(expr, regex).not();
     }
 
     /* (non-Javadoc)
@@ -1427,8 +1321,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, Expression<String> expr1, Expression<Character> escExpr)
     {
-        Predicate pred = like(expr, expr1, escExpr);
-        return pred.not();
+        return like(expr, expr1, escExpr).not();
     }
 
     /* (non-Javadoc)
@@ -1436,8 +1329,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, Expression<String> expr1, char escChr)
     {
-        Predicate pred = like(expr, expr1, escChr);
-        return pred.not();
+        return like(expr, expr1, escChr).not();
     }
 
     /* (non-Javadoc)
@@ -1445,8 +1337,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, String regex, Expression<Character> escExpr)
     {
-        Predicate pred = like(expr, regex, escExpr);
-        return pred.not();
+        return like(expr, regex, escExpr).not();
     }
 
     /* (non-Javadoc)
@@ -1454,8 +1345,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate notLike(Expression<String> expr, String regex, char escChr)
     {
-        Predicate pred = like(expr, regex, escChr);
-        return pred.not();
+        return like(expr, regex, escChr).not();
     }
 
     private static long PARAM_NUMBER = 0;
@@ -1601,8 +1491,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
         List args = new ArrayList();
-        Literal litStr = new Literal(substr);
-        args.add(litStr);
+        args.add(new Literal(substr));
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1627,10 +1516,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
         List args = new ArrayList();
-        Literal litStr = new Literal(substr);
-        args.add(litStr);
-        Literal litPos = new Literal(pos);
-        args.add(litPos);
+        args.add(new Literal(substr));
+        args.add(new Literal(pos));
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1654,8 +1541,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
         List args = new ArrayList();
-        Literal lit = new Literal(pos);
-        args.add(lit);
+        args.add(new Literal(pos));
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1680,10 +1566,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
         List args = new ArrayList();
-        Literal litStart = new Literal(pos0);
-        Literal litEnd = new Literal(pos1);
-        args.add(litStart);
-        args.add(litEnd);
+        args.add(new Literal(pos0));
+        args.add(new Literal(pos1));
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1723,10 +1607,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<String> trim(Expression<Character> chr, Expression<String> expr)
     {
         ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        String method = "trim";
         List args = new ArrayList();
         args.add(((ExpressionImpl)chr).getQueryExpression());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), method, args);
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "trim", args);
         return select;
     }
 
@@ -1736,10 +1619,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<String> trim(char chr, Expression<String> expr)
     {
         ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        String method = "trim";
         List args = new ArrayList();
         args.add(new Literal(chr));
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), method, args);
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "trim", args);
         return select;
     }
 
@@ -1821,8 +1703,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <T> Expression<T> literal(T obj)
     {
         ExpressionImpl expr = new ExpressionImpl<T>(this, (Class<T>) obj.getClass());
-        Literal lit = new Literal(obj);
-        expr.queryExpr = lit;
+        expr.queryExpr = new Literal(obj);
         return expr;
     }
 
@@ -1832,8 +1713,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <T> Expression<T> nullLiteral(Class<T> cls)
     {
         ExpressionImpl expr = new ExpressionImpl<T>(this, cls);
-        Literal lit = new Literal(null);
-        expr.queryExpr = lit;
+        expr.queryExpr = new Literal(null);
         return expr;
     }
 
