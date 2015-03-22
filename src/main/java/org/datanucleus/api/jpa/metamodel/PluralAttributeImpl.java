@@ -97,6 +97,12 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
             Class elementCls = owner.model.getClassLoaderResolver().classForName(mmd.getArray().getElementType());
             return owner.model.getType(elementCls);
         }
+        else if (mmd.hasMap())
+        {
+            Class valueCls = owner.model.getClassLoaderResolver().classForName(mmd.getMap().getValueType());
+            // TODO What is the "element type" of a Map? it has a key AND a value! API designed by an idiot? What if you want the type of key and the value?!
+            return owner.model.getType(valueCls);
+        }
         return null;
     }
 }
