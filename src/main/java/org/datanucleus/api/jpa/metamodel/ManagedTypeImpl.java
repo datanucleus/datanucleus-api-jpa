@@ -98,8 +98,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
                     attr = new CollectionAttributeImpl(mmds[i], this);
                 }
             }
-            else if (relationType == RelationType.ONE_TO_ONE_UNI || relationType == RelationType.ONE_TO_ONE_BI ||
-                    relationType == RelationType.MANY_TO_ONE_BI)
+            else if (RelationType.isRelationSingleValued(relationType))
             {
                 attr = new SingularAttributeImpl(mmds[i], this);
             }
@@ -111,12 +110,15 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
             {
                 if (mmds[i].getType().isArray())
                 {
-                    // Plural attribute
                     attr = new PluralAttributeImpl(mmds[i], this);
                 }
                 else if (Collection.class.isAssignableFrom(mmds[i].getType()))
                 {
                     attr = new CollectionAttributeImpl(mmds[i], this);
+                }
+                else if (Map.class.isAssignableFrom(mmds[i].getType()))
+                {
+                    attr = new MapAttributeImpl(mmds[i], this);
                 }
                 else
                 {
