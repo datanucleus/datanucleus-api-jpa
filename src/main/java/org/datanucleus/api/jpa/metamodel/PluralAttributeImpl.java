@@ -46,8 +46,20 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
      */
     public Class<E> getBindableJavaType()
     {
-        // What about for a Map ?
-        return owner.model.getClassLoaderResolver().classForName(mmd.getCollection().getElementType());
+        if (mmd.hasCollection())
+        {
+            return owner.model.getClassLoaderResolver().classForName(mmd.getCollection().getElementType());
+        }
+        else if (mmd.hasArray())
+        {
+            return owner.model.getClassLoaderResolver().classForName(mmd.getArray().getElementType());
+        }
+        else if (mmd.hasMap())
+        {
+            // TODO What is the "element type" of a Map? it has a key AND a value! API designed by an idiot? A value is not an "element"
+            return owner.model.getClassLoaderResolver().classForName(mmd.getMap().getValueType());
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -100,7 +112,7 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
         else if (mmd.hasMap())
         {
             Class valueCls = owner.model.getClassLoaderResolver().classForName(mmd.getMap().getValueType());
-            // TODO What is the "element type" of a Map? it has a key AND a value! API designed by an idiot? What if you want the type of key and the value?!
+            // TODO What is the "element type" of a Map? it has a key AND a value! API designed by an idiot? A value is not an "element"
             return owner.model.getType(valueCls);
         }
         return null;
