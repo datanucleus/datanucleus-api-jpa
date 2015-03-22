@@ -118,6 +118,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
                 {
                     attr = new CollectionAttributeImpl(mmds[i], this);
                 }
+                else if (Map.class.isAssignableFrom(mmds[i].getType()))
+                {
+                    attr = new MapAttributeImpl(mmds[i], this);
+                }
                 else
                 {
                     attr = new SingularAttributeImpl(mmds[i], this);

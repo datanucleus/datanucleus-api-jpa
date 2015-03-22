@@ -46,8 +46,20 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
      */
     public Class<E> getBindableJavaType()
     {
-        // What about for a Map ?
-        return owner.model.getClassLoaderResolver().classForName(mmd.getCollection().getElementType());
+        if (mmd.hasCollection())
+        {
+            return owner.model.getClassLoaderResolver().classForName(mmd.getCollection().getElementType());
+        }
+        else if (mmd.hasArray())
+        {
+            return owner.model.getClassLoaderResolver().classForName(mmd.getArray().getElementType());
+        }
+        else if (mmd.hasMap())
+        {
+            // We have to guess what an "element" of a Map is supposed to be, because it doesn't have one
+            return owner.model.getClassLoaderResolver().classForName(mmd.getMap().getValueType());
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -95,6 +107,11 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
         else if (mmd.hasArray())
         {
             Class elementCls = owner.model.getClassLoaderResolver().classForName(mmd.getArray().getElementType());
+            return owner.model.getType(elementCls);
+        }
+        else if (mmd.hasMap())
+        {
+            Class elementCls = owner.model.getClassLoaderResolver().classForName(mmd.getMap().getValueType());
             return owner.model.getType(elementCls);
         }
         return null;
