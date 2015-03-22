@@ -117,6 +117,10 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
             {
                 return PersistentAttributeType.ELEMENT_COLLECTION;
             }
+            else if (Map.class.isAssignableFrom(mmd.getType()))
+            {
+                return PersistentAttributeType.ELEMENT_COLLECTION;
+            }
             // TODO Detect embedded
             return PersistentAttributeType.BASIC;
         }
