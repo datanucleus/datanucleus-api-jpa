@@ -1377,9 +1377,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <R> Case<R> selectCase()
     {
-        // TODO Implement this
-        throw new UnsupportedOperationException(
-            "CriteriaBuilder.selectCase not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        CaseExpressionImpl<R> caseExpr = new CaseExpressionImpl<>(this);
+        return caseExpr;
     }
 
     /* (non-Javadoc)

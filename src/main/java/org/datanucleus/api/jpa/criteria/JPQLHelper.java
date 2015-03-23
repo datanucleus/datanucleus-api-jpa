@@ -22,6 +22,7 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.datanucleus.query.expression.CaseExpression;
 import org.datanucleus.query.expression.DyadicExpression;
 import org.datanucleus.query.expression.Expression;
 import org.datanucleus.query.expression.InvokeExpression;
@@ -30,6 +31,7 @@ import org.datanucleus.query.expression.ParameterExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
 import org.datanucleus.query.expression.SubqueryExpression;
 import org.datanucleus.query.expression.VariableExpression;
+import org.datanucleus.query.expression.CaseExpression.ExpressionPair;
 
 /**
  * Helper class that assists in generating JPQL from "org.datanucleus.query.expression" expressions.
@@ -433,6 +435,34 @@ public class JPQLHelper
         {
             SubqueryExpression subqExpr = (SubqueryExpression)expr;
             return subqExpr.getKeyword() + " " + JPQLHelper.getJPQLForExpression(subqExpr.getRight());
+        }
+        else if (expr instanceof CaseExpression)
+        {
+            CaseExpression caseExpr = (CaseExpression)expr;
+            List<ExpressionPair> conds = caseExpr.getConditions();
+            Expression elseExpr = caseExpr.getElseExpression();
+            StringBuilder str = new StringBuilder("CASE ");
+            if (conds != null)
+            {
+                for (ExpressionPair cond : conds)
+                {
+                    Expression whenExpr = cond.getWhenExpression();
+                    Expression actionExpr = cond.getActionExpression();
+                    str.append("WHEN ");
+                    str.append(JPQLHelper.getJPQLForExpression(whenExpr));
+                    str.append(" THEN ");
+                    str.append(JPQLHelper.getJPQLForExpression(actionExpr));
+                    str.append(" ");
+                }
+            }
+            if (elseExpr != null)
+            {
+                str.append("ELSE ");
+                str.append(JPQLHelper.getJPQLForExpression(elseExpr));
+                str.append(" ");
+            }
+            str.append("END");
+            return str.toString();
         }
         else
         {
