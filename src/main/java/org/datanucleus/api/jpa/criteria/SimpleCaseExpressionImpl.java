@@ -20,18 +20,26 @@ package org.datanucleus.api.jpa.criteria;
 import javax.persistence.criteria.CriteriaBuilder.SimpleCase;
 import javax.persistence.criteria.Expression;
 
+import org.datanucleus.query.expression.CaseExpression;
+import org.datanucleus.query.expression.DyadicExpression;
+import org.datanucleus.query.expression.Literal;
+
 /**
  * Implementation of JPA SimpleCase expression.
- * @param <C>
- * @param <R>
+ * @param <C> Condition type
+ * @param <R> Action type
  */
 public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements SimpleCase<C, R>
 {
     private static final long serialVersionUID = 6512810442458077049L;
 
-    public SimpleCaseExpressionImpl(CriteriaBuilderImpl cb)
+    ExpressionImpl caseWhenBaseExpr;
+
+    public SimpleCaseExpressionImpl(CriteriaBuilderImpl cb, ExpressionImpl expr)
     {
         super(cb, null);
+        caseWhenBaseExpr = expr;
+        queryExpr = new CaseExpression();
     }
 
     /* (non-Javadoc)
@@ -40,8 +48,7 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public Expression<C> getExpression()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return caseWhenBaseExpr;
     }
 
     /* (non-Javadoc)
@@ -50,8 +57,11 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public SimpleCase<C, R> when(C condition, R result)
     {
-        // TODO Auto-generated method stub
-        return null;
+        org.datanucleus.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
+        org.datanucleus.query.expression.Expression whenEqQueryExpr = (org.datanucleus.query.expression.Expression)condition;
+        org.datanucleus.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.query.expression.Expression.OP_EQ, whenEqQueryExpr);
+        ((CaseExpression)queryExpr).addCondition(condQueryExpr, new Literal(result));
+        return this;
     }
 
     /* (non-Javadoc)
@@ -60,8 +70,11 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public SimpleCase<C, R> when(C condition, Expression<? extends R> result)
     {
-        // TODO Auto-generated method stub
-        return null;
+        org.datanucleus.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
+        org.datanucleus.query.expression.Expression whenEqQueryExpr = (org.datanucleus.query.expression.Expression)condition;
+        org.datanucleus.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.query.expression.Expression.OP_EQ, whenEqQueryExpr);
+        ((CaseExpression)queryExpr).addCondition(condQueryExpr, new Literal(result));
+        return this;
     }
 
     /* (non-Javadoc)
@@ -70,8 +83,8 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public Expression<R> otherwise(R result)
     {
-        // TODO Auto-generated method stub
-        return null;
+        ((CaseExpression)queryExpr).setElseExpression(new Literal(result));
+        return this; // Correct?
     }
 
     /* (non-Javadoc)
@@ -80,7 +93,8 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public Expression<R> otherwise(Expression<? extends R> result)
     {
-        // TODO Auto-generated method stub
-        return null;
+        ExpressionImpl resultExpr = (ExpressionImpl) result;
+        ((CaseExpression)queryExpr).setElseExpression(resultExpr.getQueryExpression());
+        return this; // Correct?
     }
 }

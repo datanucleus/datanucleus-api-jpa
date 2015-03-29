@@ -1386,9 +1386,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expr)
     {
-        // TODO Implement this. What is the "expr" for?
-        throw new UnsupportedOperationException(
-            "CriteriaBuilder.selectCase(Expression) not yet implemented. Do you know what this is supposed to do and can provide an example? Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+        SimpleCaseExpressionImpl<C, R> caseExpr = new SimpleCaseExpressionImpl(this, (ExpressionImpl) expr);
+        return caseExpr;
     }
 
     /* (non-Javadoc)
