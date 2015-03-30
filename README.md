@@ -1,9 +1,11 @@
 # datanucleus-api-jpa
 
-Support for DataNucleus persistence using the JPA API (JSR0220, JSR0317, JSR0338)
+Support for DataNucleus persistence using the JPA API (JSR0220, JSR0317, JSR0338).  
+JPA "persistence provider" is _org.datanucleus.api.jpa.PersistenceProviderImpl_.  
+JPA EntityManagerFactory is implemented by _org.datanucleus.api.jpa.JPAEntityManagerFactory_.  
+JPA EntityManager is implemted by _org.datanucleus.api.jpa.JPAEntityManager_.  
 
-This is built using Maven, by executing `mvn clean install` which installs the built jar in your local Maven
-repository.
+This is built using Maven, by executing `mvn clean install` which installs the built jar in your local Maven repository.
 
 
 ## KeyFacts
