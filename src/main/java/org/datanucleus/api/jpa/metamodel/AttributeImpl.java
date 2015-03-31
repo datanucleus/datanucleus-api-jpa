@@ -155,8 +155,7 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
         ClassLoaderResolver clr = owner.getModel().getClassLoaderResolver();
         if (Collection.class.isAssignableFrom(mmd.getType()))
         {
-            String elementTypeName = mmd.getCollection().getElementType();
-            return owner.model.getType(clr.classForName(elementTypeName));
+            return owner.model.getType(clr.classForName(mmd.getCollection().getElementType()));
         }
         else if (mmd.getType().isArray())
         {

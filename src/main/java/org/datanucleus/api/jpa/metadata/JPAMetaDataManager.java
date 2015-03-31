@@ -75,13 +75,11 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         {
             if (allowXML && allowAnnotations)
             {
-                NucleusLogger.METADATA.debug("MetaDataManager : Input=(XML,Annotations)" +
-                    ", XML-Validation=" + validateXML);
+                NucleusLogger.METADATA.debug("MetaDataManager : Input=(XML,Annotations), XML-Validation=" + validateXML);
             }
             else if (allowXML && !allowAnnotations)
             {
-                NucleusLogger.METADATA.debug("MetaDataManager : Input=(XML)" +
-                    ", XML-Validation=" + validateXML);
+                NucleusLogger.METADATA.debug("MetaDataManager : Input=(XML), XML-Validation=" + validateXML);
             }
             else if (!allowXML && allowAnnotations)
             {
@@ -283,8 +281,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
                             methodAnnots[j].annotationType() == PostUpdate.class ||
                             methodAnnots[j].annotationType() == PostLoad.class)
                         {
-                            elmd.addCallback(methodAnnots[j].annotationType().getName(), 
-                                methods[i].getDeclaringClass().getName(), methods[i].getName());
+                            elmd.addCallback(methodAnnots[j].annotationType().getName(), methods[i].getDeclaringClass().getName(), methods[i].getName());
                         }
                     }
                 }
@@ -323,10 +320,10 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         }
 
         // Check for MetaData loaded when we loaded the "persistence-unit"
-        AbstractClassMetaData acmd = classMetaDataByClass.get(c.getName());
-        if (acmd != null)
+        AbstractClassMetaData cmd = classMetaDataByClass.get(c.getName());
+        if (cmd != null)
         {
-            return acmd;
+            return cmd;
         }
 
         if (!allowMetaDataLoad)
