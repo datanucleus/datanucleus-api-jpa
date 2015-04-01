@@ -146,20 +146,23 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
 
     /**
      * Return the type of the attribute.
-     * If the type is simple then returns that java type, otherwise if a collection then returns the
-     * element type.
+     * If the type is simple then returns that java type, otherwise if a collection then returns the element type.
      * @return The type of attribute
      */
     public final Type<Y> getType()
     {
         ClassLoaderResolver clr = owner.getModel().getClassLoaderResolver();
-        if (Collection.class.isAssignableFrom(mmd.getType()))
+        if (mmd.hasCollection())
         {
             return owner.model.getType(clr.classForName(mmd.getCollection().getElementType()));
         }
-        else if (mmd.getType().isArray())
+        else if (mmd.hasMap())
         {
-            return owner.model.managedType(mmd.getType().getComponentType());
+            return owner.model.getType(clr.classForName(mmd.getMap().getValueType()));
+        }
+        else if (mmd.hasArray())
+        {
+            return owner.model.getType(mmd.getType().getComponentType());
         }
         else
         {
