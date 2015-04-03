@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>datanucleus-api-jpa</artifactId>
-    <version>4.1.0-m3</version>
+    <version>4.1.0-m4-SNAPSHOT</version>
 
     <name>DataNucleus JPA API plugin</name>
     <description>
