@@ -62,6 +62,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.QueryHint;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.TemporalType;
@@ -1075,6 +1076,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     qmd.setLanguage(QueryLanguage.JPQL.toString());
                     qmd.setUnmodifiable(true);
                     qmd.setQuery(queries[j].query());
+                    QueryHint[] hints = queries[j].hints();
+                    if (hints != null)
+                    {
+                        for (int k=0;k<hints.length;k++)
+                        {
+                            qmd.addExtension(hints[k].name(), hints[k].value());
+                        }
+                    }
                     namedQueries.add(qmd);
                 }
             }
@@ -1092,6 +1101,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 qmd.setLanguage(QueryLanguage.JPQL.toString());
                 qmd.setUnmodifiable(true);
                 qmd.setQuery((String)annotationValues.get("query"));
+                QueryHint[] hints = (QueryHint[]) annotationValues.get("hints");
+                if (hints != null)
+                {
+                    for (int j=0;j<hints.length;j++)
+                    {
+                        qmd.addExtension(hints[j].name(), hints[j].value());
+                    }
+                }
                 namedQueries.add(qmd);
             }
             else if (annName.equals(JPAAnnotationUtils.NAMED_NATIVE_QUERIES))
@@ -1119,6 +1136,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     qmd.setResultClass(resultClassName);
                     qmd.setResultMetaDataName(resultMappingName);
                     qmd.setQuery(queries[j].query());
+                    QueryHint[] hints = queries[j].hints();
+                    if (hints != null)
+                    {
+                        for (int k=0;k<hints.length;k++)
+                        {
+                            qmd.addExtension(hints[k].name(), hints[k].value());
+                        }
+                    }
                     namedQueries.add(qmd);
                 }
             }
@@ -1146,6 +1171,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 qmd.setResultClass(resultClassName);
                 qmd.setResultMetaDataName(resultMappingName);
                 qmd.setQuery((String)annotationValues.get("query"));
+                QueryHint[] hints = (QueryHint[]) annotationValues.get("hints");
+                if (hints != null)
+                {
+                    for (int j=0;j<hints.length;j++)
+                    {
+                        qmd.addExtension(hints[j].name(), hints[j].value());
+                    }
+                }
                 namedQueries.add(qmd);
             }
             else if (annName.equals(JPAAnnotationUtils.NAMED_STOREDPROC_QUERIES))
