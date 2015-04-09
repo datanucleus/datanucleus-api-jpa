@@ -80,7 +80,7 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
      */
     public <U> Subquery<U> subquery(Class<U> cls)
     {
-        throw new UnsupportedOperationException("CriteriaDelete.subquery not yet supported");
+        throw new UnsupportedOperationException("CriteriaUpdate.subquery not yet supported");
         // TODO Support this
     }
 
@@ -156,8 +156,8 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
      */
     public CriteriaUpdate<T> set(String name, Object val)
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("CriteriaUpdate.set(String,Object) not yet supported");
+        // TODO Support this
     }
 
     /* (non-Javadoc)

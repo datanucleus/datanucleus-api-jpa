@@ -132,13 +132,11 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
      */
     public Expression<Class<? extends X>> type()
     {
-        // TODO Implement this
-        throw new UnsupportedOperationException("Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+        return new ExpressionImpl(cb, getJavaType());
     }
 
     /**
-     * Accessor for the underlying DataNucleus expression for this path.
-     * Creates it if not yet existing.
+     * Accessor for the underlying DataNucleus expression for this path. Creates it if not yet existing.
      * @return The DataNucleus query expression
      */
     public org.datanucleus.query.expression.Expression getQueryExpression()

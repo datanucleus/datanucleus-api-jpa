@@ -25,6 +25,7 @@ import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.FetchParent;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.PluralAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -105,8 +106,17 @@ public class FetchImpl<Z, X> extends PathImpl<Z, X> implements Fetch<Z, X>
     @SuppressWarnings("hiding")
     public <X, Y> Fetch<X, Y> fetch(String attrName, JoinType type)
     {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet supported");
+        ManagedType clsType = cb.getEntityManagerFactory().getMetamodel().managedType(getJavaType());
+        Attribute attr = clsType.getAttribute(attrName);
+        if (attr instanceof PluralAttribute)
+        {
+            return fetch((PluralAttribute)attr, type);
+        }
+        else if (attr instanceof SingularAttribute)
+        {
+            return fetch((SingularAttribute)attr, type);
+        }
+        throw new IllegalArgumentException("Attempt to fetch attribute " + attrName + " but attribute was " + attr);
     }
 
     /* (non-Javadoc)
