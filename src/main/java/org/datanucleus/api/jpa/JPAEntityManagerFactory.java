@@ -550,6 +550,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         return nucleusCtx.getStoreManager().getQueryManager().getQueryDatastoreCompilationCache();
     }
 
+    /**
+     * Method to save the specified query under the provided name, so it can be used as a named query.
+     * If there is already a named query of this name it is overwritten.
+     * @param query The query whose definition we save as named
+     */
     public void addNamedQuery(String name, Query query)
     {
         if (query == null)
@@ -557,14 +562,25 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             return;
         }
 
-        // Register the same query under this name, ignoring any parameters
         org.datanucleus.store.query.Query intQuery = ((JPAQuery)query).getInternalQuery();
-        Class candidateCls = intQuery.getCandidateClass();
-        AbstractClassMetaData candidateCmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(candidateCls, nucleusCtx.getClassLoaderResolver(query.getClass().getClassLoader()));
-        QueryMetaData qmd = candidateCmd.newQueryMetadata(name);
+        QueryMetaData qmd = new QueryMetaData(name);
         qmd.setLanguage(QueryLanguage.JPQL.toString());
         qmd.setQuery(intQuery.toString());
-        // TODO Maybe copy across extensions, result class ?
+        qmd.setResultClass(intQuery.getResultClassName());
+        qmd.setUnique(intQuery.isUnique());
+        Map<String, Object> queryExts = intQuery.getExtensions();
+        if (queryExts != null && !queryExts.isEmpty())
+        {
+            Iterator<Map.Entry<String, Object>> queryExtsIter = queryExts.entrySet().iterator();
+            while (queryExtsIter.hasNext())
+            {
+                Map.Entry<String, Object> queryExtEntry = queryExtsIter.next();
+                qmd.addExtension(queryExtEntry.getKey(), "" + queryExtEntry.getValue());
+            }
+        }
+
+        // Register the query under this name, ignoring any parameters
+        nucleusCtx.getMetaDataManager().registerNamedQuery(qmd);
     }
 
     /**
