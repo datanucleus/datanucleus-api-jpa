@@ -2347,6 +2347,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         Class targetEntity = null;
         boolean addJoin = false;
         boolean unique = false;
+        String relationTypeString = null;
 
         for (int i=0;annotations != null && i<annotations.length;i++)
         {
@@ -2435,6 +2436,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     // Default to UNIQUE constraint on the FK
                     unique = true;
                 }
+                relationTypeString = "OneToOne";
             }
             else if (annName.equals(JPAAnnotationUtils.ONE_TO_MANY))
             {
@@ -2446,6 +2448,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 FetchType fetch = (FetchType)annotationValues.get("fetch");
                 dfg = (fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
                 orphanRemoval = (Boolean)annotationValues.get("orphanRemoval");
+                relationTypeString = "OneToMany";
             }
             else if (annName.equals(JPAAnnotationUtils.MANY_TO_MANY))
             {
@@ -2456,6 +2459,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 targetEntity = (Class)annotationValues.get("targetEntity");
                 FetchType fetch = (FetchType)annotationValues.get("fetch");
                 dfg = (fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
+                relationTypeString = "ManyToMany";
             }
             else if (annName.equals(JPAAnnotationUtils.MANY_TO_ONE))
             {
@@ -2475,6 +2479,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     nullValue = "none";
                 }
+                relationTypeString = "ManyToOne";
             }
             else if (annName.equals(JPAAnnotationUtils.MAPS_ID))
             {
@@ -2556,6 +2561,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         else
         {
             mmd = new FieldMetaData(cmd, field.getName());
+        }
+        if (relationTypeString != null)
+        {
+            mmd.setRelationTypeString(relationTypeString);
         }
         if (modifier != null)
         {

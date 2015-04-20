@@ -30,7 +30,7 @@ import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.RelationType;
 
 /**
- * Implementation of JPA2 Metamodel "Attribute".
+ * Implementation of JPA Metamodel "Attribute".
  * Provides a wrapper to AbstractMemberMetaData.
  *
  * @param <X> The type containing the represented attribute
@@ -101,6 +101,11 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
         }
         else if (relationType == RelationType.ONE_TO_ONE_UNI || relationType == RelationType.ONE_TO_ONE_BI)
         {
+            if (mmd.getRelationTypeString() != null && mmd.getRelationTypeString().equals("ManyToOne"))
+            {
+                // 1-1 and N-1 (uni) are to all intents and purposes the exact same thing yet JPA insists on a user artificially discriminating
+                return PersistentAttributeType.MANY_TO_ONE;
+            }
             return PersistentAttributeType.ONE_TO_ONE;
         }
         else if (relationType == RelationType.ONE_TO_MANY_UNI || relationType == RelationType.ONE_TO_MANY_BI)

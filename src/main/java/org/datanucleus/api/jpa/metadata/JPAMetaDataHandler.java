@@ -1189,6 +1189,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         mmd.setJoinMetaData(new JoinMetaData());
                     }
                 }
+                mmd.setRelationTypeString("OneToMany");
 
                 pushStack(mmd);
             }
@@ -1207,6 +1208,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     mmd.setMapsIdAttribute(mapsId);
                 }
+                mmd.setRelationTypeString("OneToOne");
 
                 pushStack(mmd);
             }
@@ -1225,6 +1227,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     mmd.setMapsIdAttribute(mapsId);
                 }
+                mmd.setRelationTypeString("ManyToOne");
 
                 pushStack(mmd);
             }
@@ -1244,6 +1247,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     // M-N and no join specified (yet) so add one
                     mmd.setJoinMetaData(new JoinMetaData());
                 }
+                mmd.setRelationTypeString("ManyToMany");
 
                 pushStack(mmd);
             }
