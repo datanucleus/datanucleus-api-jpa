@@ -1372,6 +1372,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             String columnTable = null;
             JoinMetaData joinmd = null;
             KeyMetaData keymd = null;
+            ValueMetaData valmd = null;
             boolean oneToMany = false;
             boolean manyToMany = false;
             for (int i=0;annotations != null && i<annotations.length;i++)
@@ -1935,71 +1936,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     else if (converts.length == 1)
                     {
                         Class converterCls = converts[0].converter();
-                        String subfieldName = converts[0].attributeName();
+                        String convAttrName = converts[0].attributeName();
                         Boolean disable = converts[0].disableConversion();
                         if (disable == Boolean.TRUE)
                         {
                             mmd.setTypeConverterDisabled();
-                        }
-                        else
-                        {
-                            if (!StringUtils.isWhitespace(subfieldName))
-                            {
-                                // TODO Support attributeName to convert field of embedded object
-                                NucleusLogger.METADATA.warn("Field " + mmd.getFullFieldName() + 
-                                    " has @Convert annotation for attribute " + subfieldName + 
-                                    " but this is not yet supported. Ignored");
-                            }
-                            else
-                            {
-                                TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
-                                if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
-                                {
-                                    // Not yet cached an instance of this converter so create one
-                                    AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
-
-                                    // Extract field and datastore types for this converter
-                                    Class dbType = null;
-                                    try
-                                    {
-                                        Class returnCls = converterCls.getMethod("convertToDatabaseColumn", member.getType()).getReturnType();
-                                        if (returnCls != Object.class)
-                                        {
-										    dbType = returnCls;
-                                        }
-                                    }
-                                    catch (Exception e)
-                                    {
-                                    }
-
-                                    // Register the TypeConverter under the name of the AttributeConverter class
-                                    TypeConverter conv = new JPATypeConverter(entityConv, member.getType(), dbType);
-                                    typeMgr.registerConverter(converterCls.getName(), conv);
-                                    mmd.setTypeConverterName(converterCls.getName());
-                                }
-                                else
-                                {
-                                    mmd.setTypeConverterName(converterCls.getName());
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.CONVERT))
-                {
-                    // JPA2.1 : Field needs to be converted for persistence/retrieval
-                    Class converterCls = (Class)annotationValues.get("converter");
-                    String subfieldName = (String)annotationValues.get("attributeName");
-                    Boolean disable = (Boolean)annotationValues.get("disableConversion");
-                    // TODO Support disable to override autoApply
-                    if (disable != Boolean.TRUE)
-                    {
-                        if (!StringUtils.isWhitespace(subfieldName))
-                        {
-                            // TODO Support attributeName to convert field of embedded object
-                            NucleusLogger.METADATA.warn("Field " + mmd.getFullFieldName() + 
-                                " has @Convert annotation for attribute " + subfieldName + 
-                                " but this is not yet supported. Ignored");
                         }
                         else
                         {
@@ -2026,11 +1967,104 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 // Register the TypeConverter under the name of the AttributeConverter class
                                 TypeConverter conv = new JPATypeConverter(entityConv, member.getType(), dbType);
                                 typeMgr.registerConverter(converterCls.getName(), conv);
+                            }
+                            if (StringUtils.isWhitespace(convAttrName))
+                            {
                                 mmd.setTypeConverterName(converterCls.getName());
                             }
                             else
                             {
-                                mmd.setTypeConverterName(converterCls.getName());
+                                if ("key".equals(convAttrName))
+                                {
+                                    if (keymd == null)
+                                    {
+                                        keymd = new KeyMetaData();
+                                        mmd.setKeyMetaData(keymd);
+                                    }
+                                    keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                                }
+                                else if ("key".equals(convAttrName))
+                                {
+                                    if (valmd == null)
+                                    {
+                                        valmd = new ValueMetaData();
+                                        mmd.setValueMetaData(valmd);
+                                    }
+                                    valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                                }
+                                else
+                                {
+                                    // TODO Support attributeName to convert field of embedded object, or field of key/value
+                                    NucleusLogger.METADATA.warn("Field " + mmd.getFullFieldName() + 
+                                        " has @Convert annotation for attribute " + convAttrName + " but this is not yet fully supported. Ignored");
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (annName.equals(JPAAnnotationUtils.CONVERT))
+                {
+                    // JPA2.1 : Field needs to be converted for persistence/retrieval
+                    Class converterCls = (Class)annotationValues.get("converter");
+                    String convAttrName = (String)annotationValues.get("attributeName");
+                    Boolean disable = (Boolean)annotationValues.get("disableConversion");
+                    // TODO Support disable to override autoApply
+                    if (disable != Boolean.TRUE)
+                    {
+                        TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
+                        if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
+                        {
+                            // Not yet cached an instance of this converter so create one
+                            AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+
+                            // Extract field and datastore types for this converter
+                            Class dbType = null;
+                            try
+                            {
+                                Class returnCls = converterCls.getMethod("convertToDatabaseColumn", member.getType()).getReturnType();
+                                if (returnCls != Object.class)
+                                {
+                                    dbType = returnCls;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                            }
+
+                            // Register the TypeConverter under the name of the AttributeConverter class
+                            TypeConverter conv = new JPATypeConverter(entityConv, member.getType(), dbType);
+                            typeMgr.registerConverter(converterCls.getName(), conv);
+                        }
+
+                        if (StringUtils.isWhitespace(convAttrName))
+                        {
+                            mmd.setTypeConverterName(converterCls.getName());
+                        }
+                        else
+                        {
+                            if ("key".equals(convAttrName))
+                            {
+                                if (keymd == null)
+                                {
+                                    keymd = new KeyMetaData();
+                                    mmd.setKeyMetaData(keymd);
+                                }
+                                keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                            }
+                            else if ("key".equals(convAttrName))
+                            {
+                                if (valmd == null)
+                                {
+                                    valmd = new ValueMetaData();
+                                    mmd.setValueMetaData(valmd);
+                                }
+                                valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                            }
+                            else
+                            {
+                                // TODO Support attributeName to convert field of embedded object, or field of key/value
+                                NucleusLogger.METADATA.warn("Field " + mmd.getFullFieldName() + 
+                                    " has @Convert annotation for attribute " + convAttrName + " but this is not yet fully supported. Ignored");
                             }
                         }
                     }
@@ -2101,7 +2135,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 else if (mmd.hasMap() && joinmd == null)
                 {
                     // Column is for the FK value of the map
-                    ValueMetaData valmd = mmd.getValueMetaData();
+                    valmd = mmd.getValueMetaData();
                     if (valmd == null)
                     {
                         valmd = new ValueMetaData();
@@ -2134,7 +2168,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     }
                     else if (mmd.hasMap())
                     {
-                        ValueMetaData valmd = mmd.getValueMetaData();
+                        valmd = mmd.getValueMetaData();
                         if (valmd == null)
                         {
                             valmd = new ValueMetaData();
