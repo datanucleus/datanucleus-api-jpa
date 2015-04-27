@@ -1986,7 +1986,19 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                             if (StringUtils.isWhitespace(convAttrName))
                             {
-                                mmd.setTypeConverterName(converterCls.getName());
+                                if (Collection.class.isAssignableFrom(member.getType()))
+                                {
+                                    if (elemmd == null)
+                                    {
+                                        elemmd = new ElementMetaData();
+                                        mmd.setElementMetaData(elemmd);
+                                    }
+                                    elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                                }
+                                else
+                                {
+                                    mmd.setTypeConverterName(converterCls.getName());
+                                }
                             }
                             else
                             {
@@ -2007,15 +2019,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                         mmd.setValueMetaData(valmd);
                                     }
                                     valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
-                                }
-                                else if (Collection.class.isAssignableFrom(member.getType()))
-                                {
-                                    if (elemmd == null)
-                                    {
-                                        elemmd = new ElementMetaData();
-                                        mmd.setElementMetaData(elemmd);
-                                    }
-                                    elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                                 }
                                 else
                                 {
@@ -2078,7 +2081,19 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
                         if (StringUtils.isWhitespace(convAttrName))
                         {
-                            mmd.setTypeConverterName(converterCls.getName());
+                            if (Collection.class.isAssignableFrom(member.getType()))
+                            {
+                                if (elemmd == null)
+                                {
+                                    elemmd = new ElementMetaData();
+                                    mmd.setElementMetaData(elemmd);
+                                }
+                                elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                            }
+                            else
+                            {
+                                mmd.setTypeConverterName(converterCls.getName());
+                            }
                         }
                         else
                         {
@@ -2099,15 +2114,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                     mmd.setValueMetaData(valmd);
                                 }
                                 valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
-                            }
-                            else if (Collection.class.isAssignableFrom(member.getType()))
-                            {
-                                if (elemmd == null)
-                                {
-                                    elemmd = new ElementMetaData();
-                                    mmd.setElementMetaData(elemmd);
-                                }
-                                elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                             }
                             else
                             {

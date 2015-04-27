@@ -1035,7 +1035,20 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     if (StringUtils.isWhitespace(convAttrName))
                     {
-                        mmd.setTypeConverterName(converterClassName);
+                        if (mmd.hasCollection()) // TODO What if <collection> not yet added?
+                        {
+                            ElementMetaData elemmd = mmd.getElementMetaData();
+                            if (elemmd == null)
+                            {
+                                elemmd = new ElementMetaData();
+                                mmd.setElementMetaData(elemmd);
+                            }
+                            elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
+                        }
+                        else
+                        {
+                            mmd.setTypeConverterName(converterClassName);
+                        }
                     }
                     else
                     {
@@ -1058,16 +1071,6 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                                 mmd.setValueMetaData(valmd);
                             }
                             valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
-                        }
-                        else if (mmd.hasCollection()) // TODO What if <collection> not yet added?
-                        {
-                            ElementMetaData elemmd = mmd.getElementMetaData();
-                            if (elemmd == null)
-                            {
-                                elemmd = new ElementMetaData();
-                                mmd.setElementMetaData(elemmd);
-                            }
-                            elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
                         }
                         else
                         {
