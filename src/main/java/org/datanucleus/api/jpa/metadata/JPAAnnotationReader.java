@@ -1983,7 +1983,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                     }
                                     keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                                 }
-                                else if ("key".equals(convAttrName))
+                                else if ("value".equals(convAttrName))
                                 {
                                     if (valmd == null)
                                     {
@@ -2051,7 +2051,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 }
                                 keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                             }
-                            else if ("key".equals(convAttrName))
+                            else if ("value".equals(convAttrName))
                             {
                                 if (valmd == null)
                                 {
