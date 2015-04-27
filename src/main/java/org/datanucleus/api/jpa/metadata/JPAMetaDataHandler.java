@@ -74,6 +74,7 @@ import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMode;
 import org.datanucleus.metadata.TableGeneratorMetaData;
 import org.datanucleus.metadata.UniqueMetaData;
+import org.datanucleus.metadata.ValueMetaData;
 import org.datanucleus.metadata.VersionMetaData;
 import org.datanucleus.metadata.VersionStrategy;
 import org.datanucleus.metadata.xml.AbstractMetaDataHandler;
@@ -1024,6 +1025,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 // Basic field
                 AbstractMemberMetaData mmd = (AbstractMemberMetaData)getStack();
                 String converterClassName = getAttr(attrs, "converter");
+                String convAttrName = getAttr(attrs, "attribute-name");
                 Boolean disableConversion = Boolean.valueOf(getAttr(attrs, "disable-conversion"));
                 if (disableConversion)
                 {
@@ -1031,7 +1033,39 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 }
                 else if (!StringUtils.isWhitespace(converterClassName))
                 {
-                    mmd.setTypeConverterName(converterClassName);
+                    if (StringUtils.isWhitespace(convAttrName))
+                    {
+                        mmd.setTypeConverterName(converterClassName);
+                    }
+                    else
+                    {
+                        if ("key".equals(convAttrName))
+                        {
+                            KeyMetaData keymd = mmd.getKeyMetaData();
+                            if (keymd == null)
+                            {
+                                keymd = new KeyMetaData();
+                                mmd.setKeyMetaData(keymd);
+                            }
+                            keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
+                        }
+                        else if ("value".equals(convAttrName))
+                        {
+                            ValueMetaData valmd = mmd.getValueMetaData();
+                            if (valmd == null)
+                            {
+                                valmd = new ValueMetaData();
+                                mmd.setValueMetaData(valmd);
+                            }
+                            valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
+                        }
+                        else
+                        {
+                            // TODO Support attributeName to convert field of embedded object, or field of key/value
+                            NucleusLogger.METADATA.warn("Field " + mmd.getFullFieldName() + 
+                                " has <convert> for attribute " + convAttrName + " but this is not yet fully supported. Ignored");
+                        }
+                    }
 
                     TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
                     if (typeMgr.getTypeConverterForName(converterClassName) == null)
