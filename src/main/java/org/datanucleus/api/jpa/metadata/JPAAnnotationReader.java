@@ -1371,6 +1371,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             ColumnMetaData[] columnMetaData = null;
             String columnTable = null;
             JoinMetaData joinmd = null;
+            ElementMetaData elemmd = null;
             KeyMetaData keymd = null;
             ValueMetaData valmd = null;
             boolean oneToMany = false;
@@ -1960,6 +1961,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 {
                                     attrType = ClassUtils.getMapValueType(member.getType(), member.getGenericType());
                                 }
+                                else if (!StringUtils.isWhitespace(convAttrName) && Collection.class.isAssignableFrom(member.getType()))
+                                {
+                                    attrType = ClassUtils.getCollectionElementType(member.getType(), member.getGenericType());
+                                }
 
                                 Class dbType = null;
                                 try
@@ -2003,6 +2008,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                     }
                                     valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                                 }
+                                else if (Collection.class.isAssignableFrom(member.getType()))
+                                {
+                                    if (elemmd == null)
+                                    {
+                                        elemmd = new ElementMetaData();
+                                        mmd.setElementMetaData(elemmd);
+                                    }
+                                    elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                                }
                                 else
                                 {
                                     // TODO Support attributeName to convert field of embedded object, or field of key/value
@@ -2037,6 +2051,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             else if ("value".equals(convAttrName))
                             {
                                 attrType = ClassUtils.getMapValueType(member.getType(), member.getGenericType());
+                            }
+                            else if (!StringUtils.isWhitespace(convAttrName) && Collection.class.isAssignableFrom(member.getType()))
+                            {
+                                attrType = ClassUtils.getCollectionElementType(member.getType(), member.getGenericType());
                             }
 
                             Class dbType = null;
@@ -2081,6 +2099,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                     mmd.setValueMetaData(valmd);
                                 }
                                 valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
+                            }
+                            else if (Collection.class.isAssignableFrom(member.getType()))
+                            {
+                                if (elemmd == null)
+                                {
+                                    elemmd = new ElementMetaData();
+                                    mmd.setElementMetaData(elemmd);
+                                }
+                                elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterCls.getName());
                             }
                             else
                             {
@@ -2139,7 +2166,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 if ((mmd.hasCollection() || mmd.hasArray()) && joinmd == null)
                 {
                     // Column is for the FK of the element of the collection/array
-                    ElementMetaData elemmd = mmd.getElementMetaData();
+                    elemmd = mmd.getElementMetaData();
                     if (elemmd == null)
                     {
                         elemmd = new ElementMetaData();
@@ -2177,7 +2204,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     // Column is for element/value column(s) of join table of 1-N of non-PCs
                     if (mmd.hasCollection() || mmd.hasArray())
                     {
-                        ElementMetaData elemmd = mmd.getElementMetaData();
+                        elemmd = mmd.getElementMetaData();
                         if (elemmd == null)
                         {
                             elemmd = new ElementMetaData();

@@ -1059,6 +1059,16 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                             }
                             valmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
                         }
+                        else if (mmd.hasCollection()) // TODO What if <collection> not yet added?
+                        {
+                            ElementMetaData elemmd = mmd.getElementMetaData();
+                            if (elemmd == null)
+                            {
+                                elemmd = new ElementMetaData();
+                                mmd.setElementMetaData(elemmd);
+                            }
+                            elemmd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
+                        }
                         else
                         {
                             // TODO Support attributeName to convert field of embedded object, or field of key/value
@@ -1074,11 +1084,31 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                         Class converterCls = clr.classForName(converterClassName);
 
-                        AttributeConverter entityConv =
-                            (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                        AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
 
-                        // Extract field and datastore types for this converter
-                        Class memberType = clr.classForName(mmd.getTypeName());
+                        // Extract attribute and datastore types for this converter
+                        Class attrType = null;
+                        try
+                        {
+                            Method[] methods = entityConv.getClass().getDeclaredMethods();
+                            if (methods != null)
+                            {
+                                for (int j=0;j<methods.length;j++)
+                                {
+                                    if (methods[j].getName().equals("convertToEntityAttribute"))
+                                    {
+                                        Class returnCls = methods[j].getReturnType();
+                                        if (returnCls != Object.class)
+                                        {
+                                            attrType = returnCls;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                        }
                         Class dbType = null;
                         try
                         {
@@ -1103,7 +1133,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         }
 
                         // Register the TypeConverter under the name of the AttributeConverter class
-                        TypeConverter conv = new JPATypeConverter(entityConv, memberType, dbType);
+                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
                         typeMgr.registerConverter(converterCls.getName(), conv);
                     }
                 }
