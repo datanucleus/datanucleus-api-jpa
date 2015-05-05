@@ -52,7 +52,6 @@ import org.datanucleus.api.jpa.metamodel.MapAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.SetAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.SingularAttributeImpl;
 import org.datanucleus.query.expression.ClassExpression;
-import org.datanucleus.query.expression.DyadicExpression;
 import org.datanucleus.query.expression.Expression;
 import org.datanucleus.query.expression.JoinExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
@@ -522,7 +521,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         if (join.getOn() != null)
         {
             PredicateImpl onExpr = (PredicateImpl) join.getOn();
-            joinExpr.setOnExpression((DyadicExpression) onExpr.getQueryExpression());
+            joinExpr.setOnExpression(onExpr.getQueryExpression());
         }
         currentExpr = joinExpr;
 
