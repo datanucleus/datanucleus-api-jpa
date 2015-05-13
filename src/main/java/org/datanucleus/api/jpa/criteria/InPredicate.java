@@ -156,17 +156,26 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
 
             // Generate the query expression
             DyadicExpression dyExpr = null;
-            for (Expression valExpr : values)
+            if (values.size() == 1)
             {
-                DyadicExpression valDyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, 
-                    ((ExpressionImpl)valExpr).getQueryExpression());
-                if (dyExpr == null)
+                // Single value, could be value of same type, or a Collection so treat as "IN"
+                Expression valueExpr = values.get(0);
+                dyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_IN, ((ExpressionImpl)valueExpr).getQueryExpression());
+            }
+            else
+            {
+                for (Expression valExpr : values)
                 {
-                    dyExpr = valDyExpr;
-                }
-                else
-                {
-                    dyExpr = new DyadicExpression(dyExpr, org.datanucleus.query.expression.Expression.OP_OR, valDyExpr);
+                    DyadicExpression valDyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, 
+                        ((ExpressionImpl)valExpr).getQueryExpression());
+                    if (dyExpr == null)
+                    {
+                        dyExpr = valDyExpr;
+                    }
+                    else
+                    {
+                        dyExpr = new DyadicExpression(dyExpr, org.datanucleus.query.expression.Expression.OP_OR, valDyExpr);
+                    }
                 }
             }
             queryExpr = dyExpr;
