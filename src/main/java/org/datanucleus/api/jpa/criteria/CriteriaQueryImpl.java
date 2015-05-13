@@ -562,15 +562,23 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     resultExpr.bind(symtbl);
                     resultExprs[i++] = resultExpr;
                 }
+            }
+            else
+            {
+                // No result selected so select the candidate
+                resultExprs = new org.datanucleus.query.expression.Expression[1];
+                RootImpl root = from.get(0);
+                resultExprs[0] = root.getQueryExpression();
+                resultExprs[0].bind(symtbl);
+            }
 
-                if (resultExprs.length == 1 && resultExprs[0] instanceof PrimaryExpression)
+            if (resultExprs.length == 1 && resultExprs[0] instanceof PrimaryExpression)
+            {
+                // Check for special case of "Object(p)" in result, which means candidate
+                String resultExprId = ((PrimaryExpression)resultExprs[0]).getId();
+                if (resultExprId.equalsIgnoreCase(candidateAlias))
                 {
-                    // Check for special case of "Object(p)" in result, which means no special result
-                    String resultExprId = ((PrimaryExpression)resultExprs[0]).getId();
-                    if (resultExprId.equalsIgnoreCase(candidateAlias))
-                    {
-                        resultExprs = null;
-                    }
+                    resultExprs = null;
                 }
             }
 
@@ -723,8 +731,13 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                         str.append(",");
                     }
                 }
-                str.append(" ");
             }
+            else
+            {
+                // Select the candidate since nothing defined
+                str.append(from.get(0).toString());
+            }
+            str.append(" ");
 
             // FROM clause
             str.append("FROM ");
