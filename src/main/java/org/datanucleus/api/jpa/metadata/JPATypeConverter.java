@@ -33,27 +33,27 @@ public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
     /** The user-provided entity converter. */
     AttributeConverter<X, Y> entityConverter;
 
-    /** The datastore type. */
-    Class dbType;
-
     /** The member type. */
-    Class memberType;
+    Class<X> memberType;
 
-    public JPATypeConverter(AttributeConverter<X, Y> entityConv, Class memberType, Class dbType)
+    /** The datastore type. */
+    Class<Y> dbType;
+
+    public JPATypeConverter(AttributeConverter<X, Y> entityConv, Class<X> memberType, Class<Y> dbType)
     {
         this.entityConverter = entityConv;
         this.dbType = dbType;
         this.memberType = memberType;
     }
 
-    public Class getDatastoreClass()
-    {
-        return dbType;
-    }
-
-    public Class getMemberClass()
+    public Class<X> getMemberClass()
     {
         return memberType;
+    }
+
+    public Class<Y> getDatastoreClass()
+    {
+        return dbType;
     }
 
     public Y toDatastoreType(X memberValue)
