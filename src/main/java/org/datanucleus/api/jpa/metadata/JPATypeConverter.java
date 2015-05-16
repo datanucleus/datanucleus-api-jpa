@@ -68,6 +68,6 @@ public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
 
     public String toString()
     {
-        return "JPATypeConverter<" + memberType.getName() + "," + dbType + ">";
+        return "JPATypeConverter<" + memberType.getName() + "," + dbType.getName() + ">";
     }
 }
