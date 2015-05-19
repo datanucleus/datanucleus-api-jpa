@@ -1965,19 +1965,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 {
                                     attrType = ClassUtils.getCollectionElementType(member.getType(), member.getGenericType());
                                 }
-
-                                Class dbType = null;
-                                try
-                                {
-                                    Class returnCls = converterCls.getMethod("convertToDatabaseColumn", attrType).getReturnType();
-                                    if (returnCls != Object.class)
-                                    {
-                                        dbType = returnCls;
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                }
+                                Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(converterCls, attrType, null);
 
                                 // Register the TypeConverter under the name of the AttributeConverter class
                                 TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
@@ -2059,20 +2047,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 attrType = ClassUtils.getCollectionElementType(member.getType(), member.getGenericType());
                             }
-
-                            Class dbType = null;
-                            try
-                            {
-                                Class returnCls = converterCls.getMethod("convertToDatabaseColumn", attrType).getReturnType();
-                                if (returnCls != Object.class)
-                                {
-                                    dbType = returnCls;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                NucleusLogger.GENERAL.error("Exception in lookup", e);
-                            }
+                            Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(converterCls, attrType, null);
 
                             // Register the TypeConverter under the name of the AttributeConverter class
                             TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
@@ -3508,40 +3483,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         (AttributeConverter) ClassUtils.newInstance(cls, null, null);
 
                     // Extract field and datastore types for this converter
-                    Class javaType = null;
-                    Class dbType = null;
-                    try
-                    {
-                        Method[] methods = entityConv.getClass().getMethods();
-                        if (methods != null)
-                        {
-                            for (int j=0;j<methods.length;j++)
-                            {
-                                if (methods[j].getName().equals("convertToEntityAttribute"))
-                                {
-                                    Class returnCls = methods[j].getReturnType();
-                                    if (returnCls != Object.class)
-                                    {
-                                        javaType = returnCls;
-                                    }
-                                }
-                            }
-                        }
-						Class returnCls = entityConv.getClass().getMethod("convertToDatabaseColumn", javaType).getReturnType();
-						if (returnCls != Object.class)
-						{
-							dbType = returnCls;
-						}
-                    }
-                    catch (Exception e)
-                    {
-                    }
+                    Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
+                    Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
 
                     // Register the TypeConverter under the name of the AttributeConverter class
-                    if (javaType != null)
+                    if (attrType != null)
                     {
-                        TypeConverter conv = new JPATypeConverter(entityConv, javaType, dbType);
-                        typeMgr.registerConverter(cls.getName(), conv, autoApply, javaType.getName());
+                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                        typeMgr.registerConverter(cls.getName(), conv, autoApply, attrType.getName());
                     }
                 }
                 return true;

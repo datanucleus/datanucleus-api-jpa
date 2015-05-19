@@ -17,7 +17,6 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.metadata;
 
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -1090,50 +1089,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
 
                         // Extract attribute and datastore types for this converter
-                        Class attrType = null;
-                        try
-                        {
-                            Method[] methods = entityConv.getClass().getDeclaredMethods();
-                            if (methods != null)
-                            {
-                                for (int j=0;j<methods.length;j++)
-                                {
-                                    if (methods[j].getName().equals("convertToEntityAttribute"))
-                                    {
-                                        Class returnCls = methods[j].getReturnType();
-                                        if (returnCls != Object.class)
-                                        {
-                                            attrType = returnCls;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                        }
-                        Class dbType = null;
-                        try
-                        {
-                            Method[] methods = entityConv.getClass().getDeclaredMethods();
-                            if (methods != null)
-                            {
-                                for (int j=0;j<methods.length;j++)
-                                {
-                                    if (methods[j].getName().equals("convertToDatabaseColumn"))
-                                    {
-                                        Class returnCls = methods[j].getReturnType();
-                                        if (returnCls != Object.class)
-                                        {
-                                            dbType = returnCls;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                        }
+                        Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
+                        Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
 
                         // Register the TypeConverter under the name of the AttributeConverter class
                         TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
@@ -1154,47 +1111,17 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                     Class converterCls = clr.classForName(converterClassName);
 
-                    AttributeConverter entityConv =
-                        (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                    AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
 
                     // Extract field and datastore types for this converter
-                    Class javaType = null;
-                    Class dbType = null;
-                    try
-                    {
-                        Method[] methods = entityConv.getClass().getDeclaredMethods();
-                        if (methods != null)
-                        {
-                            for (int j=0;j<methods.length;j++)
-                            {
-                                if (methods[j].getName().equals("convertToDatabaseColumn"))
-                                {
-                                    Class returnCls = methods[j].getReturnType();
-                                    if (returnCls != Object.class)
-                                    {
-                                        dbType = returnCls;
-                                    }
-                                }
-                                if (methods[j].getName().equals("convertToEntityAttribute"))
-                                {
-                                    Class returnCls = methods[j].getReturnType();
-                                    if (returnCls != Object.class)
-                                    {
-                                        javaType = returnCls;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                    }
+                    Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
+                    Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
 
-                    if (javaType != null)
+                    if (attrType != null)
                     {
                         // Register the TypeConverter under the name of the AttributeConverter class
-                        TypeConverter conv = new JPATypeConverter(entityConv, javaType, dbType);
-                        typeMgr.registerConverter(converterCls.getName(), conv, autoApply, javaType.getName());
+                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                        typeMgr.registerConverter(converterCls.getName(), conv, autoApply, attrType.getName());
                     }
                 }
             }
