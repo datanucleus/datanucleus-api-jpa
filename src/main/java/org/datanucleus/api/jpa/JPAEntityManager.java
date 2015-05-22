@@ -542,10 +542,8 @@ public class JPAEntityManager implements EntityManager
             ec.setProperties(properties);
         }
 
-        AbstractClassMetaData cmd = 
-            ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
-        if (lock == LockModeType.OPTIMISTIC || lock == LockModeType.OPTIMISTIC_FORCE_INCREMENT && 
-            !cmd.isVersioned())
+        AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
+        if ((lock == LockModeType.OPTIMISTIC || lock == LockModeType.OPTIMISTIC_FORCE_INCREMENT) && !cmd.isVersioned())
         {
             throw new PersistenceException("Object of type " + entity.getClass().getName() + 
                 " is not versioned so cannot lock optimistically!");
