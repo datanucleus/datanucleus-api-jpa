@@ -279,7 +279,7 @@ public class JPAEntityManager implements EntityManager
 
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lock)
     {
-        return find(entityClass, primaryKey, null, null);
+        return find(entityClass, primaryKey, lock, null);
     }
 
     /**
