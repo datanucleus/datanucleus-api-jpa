@@ -19,6 +19,7 @@ package org.datanucleus.api.jpa.criteria;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -414,6 +415,10 @@ public class JPQLHelper
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                 String dateStr = formatter.format((Date)value);
                 return "{d '" + dateStr + "'}";
+            }
+            else if (value instanceof Timestamp)
+            {
+                return "{ts '" + value.toString() + "'}";
             }
             else if (value instanceof java.util.Date)
             {

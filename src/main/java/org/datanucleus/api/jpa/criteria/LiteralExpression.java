@@ -19,6 +19,7 @@ package org.datanucleus.api.jpa.criteria;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import org.datanucleus.query.expression.Expression;
@@ -74,6 +75,11 @@ public class LiteralExpression<X> extends ExpressionImpl
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             String dateStr = formatter.format((Date)value);
             return "{d '" + dateStr + "'}";
+        }
+        else if (value instanceof Timestamp)
+        {
+            // Convert to JDBC escape syntax
+            return "{ts '" + value.toString() + "'}";
         }
         else if (value instanceof java.util.Date)
         {
