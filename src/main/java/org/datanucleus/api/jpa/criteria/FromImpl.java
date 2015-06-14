@@ -55,6 +55,7 @@ import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.query.expression.Expression;
 import org.datanucleus.query.expression.JoinExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
+import org.datanucleus.util.StringUtils;
 
 /**
  * Implementation of JPA2 Criteria "From".
@@ -604,7 +605,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             {
                 // If we have no parent then put "attr alias" at front
                 str.append(getJavaType().getName());
-                if (getAlias() != null)
+                if (!StringUtils.isWhitespace(getAlias()))
                 {
                     str.append(" ").append(getAlias());
                 }
@@ -631,11 +632,11 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
                     }
 
                     Attribute<? super X, ?> attr = join.getAttribute();
-                    str.append(getAlias()).append('.').append(attr.getName()).append(" ");
+                    str.append(getAlias()).append('.').append(attr.getName());
 
-                    if (join.getAlias() != null)
+                    if (!StringUtils.isWhitespace(join.getAlias()))
                     {
-                        str.append(join.getAlias());
+                        str.append(" ").append(join.getAlias());
                     }
 
                     Predicate onPred = join.getOn();
