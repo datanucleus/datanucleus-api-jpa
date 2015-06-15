@@ -297,6 +297,7 @@
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
       <xsd:element name="extension" type="orm:extension" minOccurs="0" maxOccurs="unbounded"/> <!-- DN EXTENSION -->
+      <xsd:element name="datastore-id" type="orm:datastore-id" minOccurs="0"/> <!-- DN EXTENSION -->
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
@@ -1129,6 +1130,24 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+<!-- **************************************************** -->
+
+  <xsd:complexType name="datastore-id">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface DatastoreId {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+      <xsd:element name="generated-value" type="orm:generated-value" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="access" type="orm:access-type"/>
   </xsd:complexType>
 
 <!-- **************************************************** -->

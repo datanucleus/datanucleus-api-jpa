@@ -47,6 +47,7 @@ import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.ForeignKeyMetaData;
+import org.datanucleus.metadata.IdentityMetaData;
 import org.datanucleus.metadata.IdentityStrategy;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IndexMetaData;
@@ -910,6 +911,19 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 ClassMetaData cmd = (ClassMetaData)getStack();
                 cmd.setObjectIdClass(getAttr(attrs, "class"));
             }
+            else if (localName.equals("datastore-id"))
+            {
+                // DataNucleus Extension : Datastore Identity
+                ClassMetaData cmd = (ClassMetaData)getStack();
+                IdentityMetaData idmd = cmd.newIdentityMetadata();
+                String dsidColName = getAttr(attrs, "column");
+                if (!StringUtils.isWhitespace(dsidColName))
+                {
+                    idmd.setColumnName(dsidColName);
+                }
+                cmd.setIdentityType(IdentityType.DATASTORE);
+                pushStack(idmd);
+            }
             else if (localName.equals("inheritance"))
             {
                 // Inheritance - only for root class
@@ -1679,28 +1693,58 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             else if (localName.equals("generated-value"))
             {
                 // generated value for this field
-                AbstractMemberMetaData fmd = (AbstractMemberMetaData)getStack();
-                String strategy = getAttr(attrs, "strategy");
-                if (strategy != null)
+                MetaData md = getStack();
+                if (md instanceof AbstractMemberMetaData)
                 {
-                    if (strategy.equalsIgnoreCase("auto"))
+                    AbstractMemberMetaData fmd = (AbstractMemberMetaData)getStack();
+                    String strategy = getAttr(attrs, "strategy");
+                    if (strategy != null)
                     {
-                        fmd.setValueStrategy(IdentityStrategy.NATIVE);
+                        if (strategy.equalsIgnoreCase("auto"))
+                        {
+                            fmd.setValueStrategy(IdentityStrategy.NATIVE);
+                        }
+                        else if (strategy.equalsIgnoreCase("table"))
+                        {
+                            fmd.setValueStrategy(IdentityStrategy.INCREMENT);
+                        }
+                        else if (strategy.equalsIgnoreCase("sequence"))
+                        {
+                            fmd.setValueStrategy(IdentityStrategy.SEQUENCE);
+                        }
+                        else if (strategy.equalsIgnoreCase("identity"))
+                        {
+                            fmd.setValueStrategy(IdentityStrategy.IDENTITY);
+                        }
                     }
-                    else if (strategy.equalsIgnoreCase("table"))
-                    {
-                        fmd.setValueStrategy(IdentityStrategy.INCREMENT);
-                    }
-                    else if (strategy.equalsIgnoreCase("sequence"))
-                    {
-                        fmd.setValueStrategy(IdentityStrategy.SEQUENCE);
-                    }
-                    else if (strategy.equalsIgnoreCase("identity"))
-                    {
-                        fmd.setValueStrategy(IdentityStrategy.IDENTITY);
-                    }
+                    fmd.setValueGeneratorName(getAttr(attrs, "generator"));
                 }
-                fmd.setValueGeneratorName(getAttr(attrs, "generator"));
+                else if (md instanceof IdentityMetaData)
+                {
+                    // DataNucleus extension
+                    IdentityMetaData idmd = (IdentityMetaData)md;
+                    String strategy = getAttr(attrs, "strategy");
+                    if (strategy != null)
+                    {
+                        if (strategy.equalsIgnoreCase("auto"))
+                        {
+                            idmd.setValueStrategy(IdentityStrategy.NATIVE);
+                        }
+                        else if (strategy.equalsIgnoreCase("table"))
+                        {
+                            idmd.setValueStrategy(IdentityStrategy.INCREMENT);
+                        }
+                        else if (strategy.equalsIgnoreCase("sequence"))
+                        {
+                            idmd.setValueStrategy(IdentityStrategy.SEQUENCE);
+                        }
+                        else if (strategy.equalsIgnoreCase("identity"))
+                        {
+                            idmd.setValueStrategy(IdentityStrategy.IDENTITY);
+                        }
+                    }
+                    idmd.setValueGeneratorName(getAttr(attrs, "generator"));
+                }
             }
             else if (localName.equals("join-table"))
             {
@@ -2607,6 +2651,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             localName.equals("many-to-many") ||
             localName.equals("element-collection") ||
             localName.equals("version") ||
+            localName.equals("datastore-id") ||
             localName.equals("secondary-table") ||
             localName.equals("join-table") ||
             localName.equals("unique-constraint") ||
