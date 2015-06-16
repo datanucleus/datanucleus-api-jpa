@@ -1826,6 +1826,11 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     // We don't know if this field is a collection or map so just put this as the column on the member and let it's population sort it out
                     mmd.addColumn(colmd);
                 }
+                else if (md instanceof IdentityMetaData)
+                {
+                    IdentityMetaData idmd = (IdentityMetaData)md;
+                    idmd.setColumnMetaData(colmd);
+                }
             }
             else if (localName.equals("map-key-column"))
             {
