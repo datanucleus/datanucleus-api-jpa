@@ -33,6 +33,7 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.exceptions.NucleusOptimisticException;
 import org.datanucleus.exceptions.NucleusUserException;
+import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.store.query.QueryTimeoutException;
@@ -44,6 +45,38 @@ import org.datanucleus.util.ClassUtils;
 public class NucleusJPAHelper
 {
     // ------------------------------ Object Management --------------------------------
+
+    /**
+     * Convenience method to allow access to the version of an object when it is using DN Extension "surrogate-version".
+     * @param obj The entity object
+     * @return The (surrogate) version
+     */
+    public static Object getSurrogateVersionForEntity(Object obj)
+    {
+        if (obj instanceof Persistable)
+        {
+            return ((Persistable)obj).dnGetVersion();
+        }
+        return null;
+    }
+
+    /**
+     * Convenience method to allow access to the datastore id of an object when it is using DN Extension "datastore-id".
+     * @param obj The entity object
+     * @return The datastore id key
+     */
+    public static Object getDatastoreIdForEntity(Object obj)
+    {
+        if (obj instanceof Persistable)
+        {
+            Object id = ((Persistable)obj).dnGetObjectId();
+            if (id instanceof DatastoreId)
+            {
+                return ((DatastoreId)id).getKeyAsObject();
+            }
+        }
+        return null;
+    }
 
     public static Object getObjectId(Object obj)
     {
