@@ -298,6 +298,7 @@
       <xsd:element name="attributes" type="orm:attributes" minOccurs="0"/>
       <xsd:element name="extension" type="orm:extension" minOccurs="0" maxOccurs="unbounded"/> <!-- DN EXTENSION -->
       <xsd:element name="datastore-id" type="orm:datastore-id" minOccurs="0"/> <!-- DN EXTENSION -->
+      <xsd:element name="version" type="orm:surrogate-version" minOccurs="0"/> <!-- DN EXTENSION -->
     </xsd:sequence>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="class" type="xsd:string" use="required"/>
@@ -2361,6 +2362,22 @@
     <xsd:attribute name="access" type="orm:access-type"/>
   </xsd:complexType>
 
+<!-- **************************************************** -->
+
+  <xsd:complexType name="surrogate-version">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({TYPE}) @Retention(RUNTIME)
+        public @interface SurrogateVersion {}
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="column" type="orm:column" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="indexed" type="xsd:boolean"/>
+  </xsd:complexType>
 
   <!-- *********** DN EXTENSION *********** -->
   <xsd:complexType name="extension">

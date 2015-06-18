@@ -924,6 +924,24 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 cmd.setIdentityType(IdentityType.DATASTORE);
                 pushStack(idmd);
             }
+            else if (localName.equals("surrogate-version"))
+            {
+                // DataNucleus Extension : Surrogate Version
+                ClassMetaData cmd = (ClassMetaData)getStack();
+                VersionMetaData vermd = cmd.newVersionMetadata();
+                String verColName = getAttr(attrs, "column");
+                if (!StringUtils.isWhitespace(verColName))
+                {
+                    vermd.setColumnName(verColName);
+                }
+                vermd.setStrategy(VersionStrategy.VERSION_NUMBER);
+                String indexedStr = getAttr(attrs, "indexed");
+                if (!StringUtils.isWhitespace(indexedStr) && indexedStr.equals("true"))
+                {
+                    vermd.setIndexed(IndexedValue.TRUE);
+                }
+                pushStack(vermd);
+            }
             else if (localName.equals("inheritance"))
             {
                 // Inheritance - only for root class
@@ -1831,6 +1849,12 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     IdentityMetaData idmd = (IdentityMetaData)md;
                     idmd.setColumnMetaData(colmd);
                 }
+                else if (md instanceof VersionMetaData)
+                {
+                    // DataNucleus extension
+                    VersionMetaData vermd = (VersionMetaData)md;
+                    vermd.setColumnMetaData(colmd);
+                }
             }
             else if (localName.equals("map-key-column"))
             {
@@ -2657,6 +2681,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             localName.equals("element-collection") ||
             localName.equals("version") ||
             localName.equals("datastore-id") ||
+            localName.equals("surrogate-version") ||
             localName.equals("secondary-table") ||
             localName.equals("join-table") ||
             localName.equals("unique-constraint") ||
