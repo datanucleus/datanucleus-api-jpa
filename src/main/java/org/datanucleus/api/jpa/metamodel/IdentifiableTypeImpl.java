@@ -24,6 +24,7 @@ import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.Type;
 
+import org.datanucleus.identity.SingleFieldId;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 
@@ -134,6 +135,16 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
     {
         String objectIdClass = cmd.getObjectidClass();
         Class pkCls = model.getClassLoaderResolver().classForName(objectIdClass);
+        if (SingleFieldId.class.isAssignableFrom(pkCls))
+        {
+        	// Special case of single id field. But what if IdClass defined???
+        	int[] pkMemberNumbers = cmd.getPKMemberPositions();
+        	if (pkMemberNumbers.length == 1)
+        	{
+        		AbstractMemberMetaData pkMmd = cmd.getMetaDataForManagedMemberAtAbsolutePosition(pkMemberNumbers[0]);
+        		return model.getType(pkMmd.getType());
+        	}
+        }
         return model.getType(pkCls);
     }
 
