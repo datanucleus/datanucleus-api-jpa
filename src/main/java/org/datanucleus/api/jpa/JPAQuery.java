@@ -42,6 +42,7 @@ import javax.persistence.TypedQuery;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.query.QueryUtils;
+import org.datanucleus.query.compiler.QueryCompilation;
 import org.datanucleus.query.symbol.Symbol;
 import org.datanucleus.query.symbol.SymbolTable;
 import org.datanucleus.store.query.AbstractJavaQuery;
@@ -810,40 +811,57 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         if (query.getCompilation() != null)
         {
-            SymbolTable symTbl = query.getCompilation().getSymbolTable();
-            for (String symName : symTbl.getSymbolNames())
-            {
-                Symbol sym = symTbl.getSymbol(symName);
-                if (sym.getType() == Symbol.PARAMETER)
-                {
-                    if (parameters == null)
-                    {
-                        parameters = new HashSet<Parameter<?>>();
-                    }
+            QueryCompilation compilation = query.getCompilation();
+            loadParametersForCompilation(compilation);
 
-                    Parameter param = null;
-                    if (query.toString().indexOf("?" + sym.getQualifiedName()) >= 0)
-                    {
-                        // Positional parameters
-                        try
-                        {
-                            param = new JPAQueryParameter(Integer.valueOf(sym.getQualifiedName()), sym.getValueType());
-                        }
-                        catch (NumberFormatException nfe)
-                        {
-                        }
-                        
-                    }
-                    else
-                    {
-                        // Named parameters
-                        param = new JPAQueryParameter(sym.getQualifiedName(), sym.getValueType());
-                    }
-                    parameters.add(param);
+            // Add on parameters defined in subqueries
+            String[] subqueryAliases = compilation.getSubqueryAliases();
+            if (subqueryAliases != null && subqueryAliases.length > 0)
+            {
+                for (int i=0;i<subqueryAliases.length;i++)
+                {
+                    QueryCompilation subqCompilation = compilation.getCompilationForSubquery(subqueryAliases[i]);
+                    loadParametersForCompilation(subqCompilation);
                 }
             }
         }
         parametersLoaded = true;
+    }
+
+    protected void loadParametersForCompilation(QueryCompilation compilation)
+    {
+        SymbolTable symTbl = compilation.getSymbolTable();
+        for (String symName : symTbl.getSymbolNames())
+        {
+            Symbol sym = symTbl.getSymbol(symName);
+            if (sym.getType() == Symbol.PARAMETER)
+            {
+                if (parameters == null)
+                {
+                    parameters = new HashSet<Parameter<?>>();
+                }
+
+                Parameter param = null;
+                if (query.toString().indexOf("?" + sym.getQualifiedName()) >= 0)
+                {
+                    // Positional parameters
+                    try
+                    {
+                        param = new JPAQueryParameter(Integer.valueOf(sym.getQualifiedName()), sym.getValueType());
+                    }
+                    catch (NumberFormatException nfe)
+                    {
+                    }
+                    
+                }
+                else
+                {
+                    // Named parameters
+                    param = new JPAQueryParameter(sym.getQualifiedName(), sym.getValueType());
+                }
+                parameters.add(param);
+            }
+        }
     }
 
     /**
