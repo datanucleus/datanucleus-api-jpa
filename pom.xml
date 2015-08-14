@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>datanucleus-api-jpa</artifactId>
-    <version>4.1.3-SNAPSHOT</version>
+    <version>5.0.0-m1-SNAPSHOT</version>
 
     <name>DataNucleus JPA API plugin</name>
     <description>
@@ -17,7 +17,7 @@
     </description>
 
     <properties>
-        <dn.core.version>4.1.0-release</dn.core.version>
+        <dn.core.version>5.0.0-m1-SNAPSHOT</dn.core.version>
     </properties>
 
     <scm>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
-            <version>[${dn.core.version}, 4.9)</version>
+            <version>[${dn.core.version},)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
