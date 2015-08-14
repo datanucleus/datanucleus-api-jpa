@@ -30,13 +30,13 @@
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
-            <version>[${dn.core.version}, )</version>
+            <version>[${dn.core.version}, 4.9)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
