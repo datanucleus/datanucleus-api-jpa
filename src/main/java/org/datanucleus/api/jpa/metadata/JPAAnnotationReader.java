@@ -33,6 +33,7 @@ import java.util.Set;
 
 import javax.persistence.AccessType;
 import javax.persistence.AssociationOverride;
+import javax.persistence.AttributeConverter;
 import javax.persistence.AttributeOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,13 +48,16 @@ import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
 import javax.persistence.ForeignKey;
 import javax.persistence.GenerationType;
+import javax.persistence.Index;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.NamedSubgraph;
+import javax.persistence.ParameterMode;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
@@ -65,13 +69,9 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.QueryHint;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Index;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureParameter;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.api.jpa.JPAEntityGraph;
@@ -81,7 +81,6 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractElementMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
-import org.datanucleus.metadata.ArrayMetaData;
 import org.datanucleus.metadata.ClassMetaData;
 import org.datanucleus.metadata.ClassPersistenceModifier;
 import org.datanucleus.metadata.CollectionMetaData;
@@ -96,9 +95,9 @@ import org.datanucleus.metadata.ExtensionMetaData;
 import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.ForeignKeyMetaData;
-import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IdentityMetaData;
 import org.datanucleus.metadata.IdentityStrategy;
+import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IndexMetaData;
 import org.datanucleus.metadata.IndexedValue;
 import org.datanucleus.metadata.InheritanceMetaData;
@@ -130,6 +129,7 @@ import org.datanucleus.metadata.VersionStrategy;
 import org.datanucleus.metadata.annotations.AbstractAnnotationReader;
 import org.datanucleus.metadata.annotations.AnnotationObject;
 import org.datanucleus.metadata.annotations.Member;
+import org.datanucleus.store.types.ContainerHandler;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
 import org.datanucleus.util.ClassUtils;
@@ -2717,10 +2717,19 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         {
             mmd.setUnique(unique);
         }
-
-        // Container fields : If the field is a container then add its container element
+        
+        TypeManager typeManager = mgr.getNucleusContext().getTypeManager();
+        ContainerHandler containerHandler = typeManager.getContainerHandler(field.getType());
+        
+        // If the field is a container then add its container element
         ContainerMetaData contmd = null;
-        if (Collection.class.isAssignableFrom(field.getType()))
+        
+        if ( containerHandler != null )
+        {
+            contmd = containerHandler.newMetaData();
+        }
+
+        if (contmd instanceof CollectionMetaData)
         {
             String elementType = null;
             if (targetEntity != null && targetEntity != void.class)
@@ -2734,14 +2743,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             // No annotation for collections so cant specify the element type, dependent, embedded, serialized
 
-            contmd = new CollectionMetaData();
             ((CollectionMetaData)contmd).setElementType(elementType);
         }
-        else if (field.getType().isArray())
-        {
-            contmd = new ArrayMetaData();
-        }
-        else if (Map.class.isAssignableFrom(field.getType()))
+        else if (contmd instanceof MapMetaData)
         {
             Class keyCls = ClassUtils.getMapKeyType(field.getType(), field.getGenericType());
             String keyType = (keyCls != null ? keyCls.getName() : null);
@@ -2762,6 +2766,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             mapmd.setKeyType(keyType);
             mapmd.setValueType(valueType);
         }
+        
         if (contmd != null)
         {
             mmd.setContainer(contmd);
