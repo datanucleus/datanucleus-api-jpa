@@ -822,6 +822,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         mmgr.setAllowXML(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_XML));
         mmgr.setAllowAnnotations(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_ANNOTATIONS));
         mmgr.setValidate(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_XML_VALIDATE));
+        mmgr.setDefaultNullable(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_DEFAULT_NULLABLE));
         mmgr.registerEntityGraphListener(this);
         nucleusCtx.getMetaDataManager().loadPersistenceUnit(unitMetaData, null);
 
