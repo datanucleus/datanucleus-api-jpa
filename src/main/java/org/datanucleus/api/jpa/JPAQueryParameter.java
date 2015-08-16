@@ -59,6 +59,46 @@ public class JPAQueryParameter<T> implements Parameter<T>
         return position;
     }
 
+    public int hashCode()
+    {
+        return (type != null ? type.hashCode() : 0) ^ (name != null ? name.hashCode() : 0) ^ (position != null ? position.hashCode() : 0);
+    }
+
+    public boolean equals(Object other)
+    {
+        if (other == null || !(other instanceof JPAQueryParameter))
+        {
+            return false;
+        }
+
+        JPAQueryParameter otherParam = (JPAQueryParameter)other;
+        if ((type == null && otherParam.type != null) || (type != null && otherParam.type == null))
+        {
+            return false;
+        }
+        else if (type != null && !type.equals(otherParam.type))
+        {
+            return false;
+        }
+        if ((name == null && otherParam.name != null) || (name != null && otherParam.name == null))
+        {
+            return false;
+        }
+        else if (name != null && !name.equals(otherParam.name))
+        {
+            return false;
+        }
+        if ((position == null && otherParam.position != null) || (position != null && otherParam.position == null))
+        {
+            return false;
+        }
+        else if (position != null && !position.equals(otherParam.position))
+        {
+            return false;
+        }
+        return true;
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.Parameter#getParameterType()
      */
