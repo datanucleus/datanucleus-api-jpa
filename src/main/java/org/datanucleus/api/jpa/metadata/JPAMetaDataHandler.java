@@ -116,7 +116,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
 
     /** Work-in-progress result constructor type mapping, during parse process. */
     String ctrTypeClassName = null;
-    /** Work-in-progrss result constructor columns, during parse process. */
+
+    /** Work-in-progress result constructor columns, during parse process. */
     List<ConstructorTypeColumn> ctrTypeColumns = null;
 
     private class GraphHolder
