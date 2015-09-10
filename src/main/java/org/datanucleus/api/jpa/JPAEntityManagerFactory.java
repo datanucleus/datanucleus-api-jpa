@@ -107,7 +107,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     private static ConcurrentHashMap<String, JPAEntityManagerFactory> emfByName = null;
 
     /** Cache of persistence-unit information for JavaSE. */
-    private static Map<String, PersistenceUnitMetaData> unitMetaDataCache = null;
+    private static volatile Map<String, PersistenceUnitMetaData> unitMetaDataCache = null;
 
     private String name = null;
 
@@ -392,11 +392,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         // Set persistence context type (default to EXTENDED unless overridden)
         persistenceContextType = PersistenceContextType.EXTENDED;
-        if (unitMetaData != null)
-        {
-            Properties props = unitMetaData.getProperties();
-            setPersistenceContextTypeFromProperties(props, overridingProps);
-        }
+        Properties props = unitMetaData.getProperties();
+        setPersistenceContextTypeFromProperties(props, overridingProps);
 
         initialise(unitMetaData, overridingProps, pluginMgr);
     }
@@ -796,15 +793,17 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         Map startupProps = null;
         for (String startupPropName : AbstractNucleusContext.STARTUP_PROPERTIES)
         {
-            for (String currentPropName : props.keySet())
+            Iterator<Map.Entry<String, Object>> propsEntryIter = props.entrySet().iterator();
+            while (propsEntryIter.hasNext())
             {
-                if (currentPropName.equalsIgnoreCase(startupPropName))
+                Map.Entry<String, Object> propsEntry = propsEntryIter.next();
+                if (propsEntry.getKey().equalsIgnoreCase(startupPropName))
                 {
                     if (startupProps == null)
                     {
                         startupProps = new HashMap();
                     }
-                    startupProps.put(startupPropName, props.get(currentPropName));
+                    startupProps.put(startupPropName, propsEntry.getValue());
                 }
             }
         }
