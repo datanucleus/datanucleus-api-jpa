@@ -48,8 +48,9 @@ import org.datanucleus.util.StringUtils;
 
 /**
  * Implementation of JPA2.1 EntityGraph.
+ * @param <T> Type of the entity
  */
-public class JPAEntityGraph<T> extends JPAGraph<T> implements EntityGraph<T>
+public class JPAEntityGraph<T> extends AbstractJPAGraph<T> implements EntityGraph<T>
 {
     public static final String LOADGRAPH_PROPERTY = "javax.persistence.loadgraph";
     public static final String FETCHGRAPH_PROPERTY = "javax.persistence.fetchgraph";

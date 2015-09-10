@@ -30,8 +30,9 @@ import org.datanucleus.metadata.MetaDataManager;
 
 /**
  * Base for JPAEntityGraph and JPASubgraph.
+ * @param <T> Type of the entity
  */
-public abstract class JPAGraph<T>
+public abstract class AbstractJPAGraph<T>
 {
     MetaDataManager mmgr;
 
@@ -41,7 +42,7 @@ public abstract class JPAGraph<T>
 
     boolean mutable = true;
 
-    public JPAGraph(MetaDataManager mmgr, Class<T> clsType)
+    public AbstractJPAGraph(MetaDataManager mmgr, Class<T> clsType)
     {
         this.mmgr = mmgr;
         this.classType = clsType;

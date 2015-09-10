@@ -31,7 +31,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.api.jpa.JPAEntityGraph;
-import org.datanucleus.api.jpa.JPAGraph;
+import org.datanucleus.api.jpa.AbstractJPAGraph;
 import org.datanucleus.api.jpa.JPASubgraph;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
@@ -122,7 +122,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
 
     private class GraphHolder
     {
-        JPAGraph graph;
+        AbstractJPAGraph graph;
         Map<String, String> attributeNameBySubgroupName = new HashMap<String, String>();
     }
     Deque<GraphHolder> graphHolderStack = new ArrayDeque<GraphHolder>();
@@ -2046,7 +2046,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             else if (localName.equals("subgraph"))
             {
                 GraphHolder parentGraphHolder = graphHolderStack.peek();
-                JPAGraph parentGraph = parentGraphHolder.graph;
+                AbstractJPAGraph parentGraph = parentGraphHolder.graph;
                 String subgraphName = getAttr(attrs, "name");
                 String attributeName = (parentGraphHolder.attributeNameBySubgroupName != null ? 
                         parentGraphHolder.attributeNameBySubgroupName.get(subgraphName) : null);

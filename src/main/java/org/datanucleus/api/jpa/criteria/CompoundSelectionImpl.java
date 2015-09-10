@@ -27,6 +27,7 @@ import javax.persistence.criteria.Selection;
 
 /**
  * Implementation of JPA2 Criteria "CompoundSelection".
+ * @param <X> The selection
  */
 public class CompoundSelectionImpl<X> extends ExpressionImpl<X> implements CompoundSelection<X>
 {

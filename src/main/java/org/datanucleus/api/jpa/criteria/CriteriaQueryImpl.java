@@ -139,7 +139,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     public CriteriaQuery<T> multiselect(List<Selection<?>> selects)
     {
         discardCompiled();
-        if (selects == null || selects.size() == 0)
+        if (selects == null || selects.isEmpty())
         {
             result = null;
             return this;
@@ -267,7 +267,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     public CriteriaQuery<T> where(List<Predicate> preds)
     {
         discardCompiled();
-        if (preds == null || preds.size() == 0)
+        if (preds == null || preds.isEmpty())
         {
             filter = null;
             return this;
@@ -318,7 +318,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     public CriteriaQuery<T> groupBy(List<Expression<?>> exprs)
     {
         discardCompiled();
-        if (exprs == null || exprs.size() == 0)
+        if (exprs == null || exprs.isEmpty())
         {
             grouping = null;
             return this;
@@ -400,7 +400,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     public CriteriaQuery<T> orderBy(List<Order> orders)
     {
         discardCompiled();
-        if (orders == null || orders.size() == 0)
+        if (orders == null || orders.isEmpty())
         {
             ordering = null;
             return this;

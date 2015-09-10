@@ -602,9 +602,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         assertIsClosed();
 
         // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
-
-        return newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        return newEntityManager(initialiseNucleusContext(unitMetaData, overridingProps, null), persistenceContextType, SynchronizationType.SYNCHRONIZED);
     }
 
     /**
@@ -648,9 +646,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
-
-        return newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        return newEntityManager(initialiseNucleusContext(unitMetaData, overridingProps, null), persistenceContextType, syncType);
     }
 
     /**
@@ -809,13 +805,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         // Initialise the context for JPA
-        PersistenceNucleusContext nucleusCtx = (pluginMgr != null ? new PersistenceNucleusContextImpl("JPA", startupProps, pluginMgr) :
+        PersistenceNucleusContext nucCtx = (pluginMgr != null ? new PersistenceNucleusContextImpl("JPA", startupProps, pluginMgr) :
             new PersistenceNucleusContextImpl("JPA", startupProps));
 
         // Apply remaining persistence properties
-        Configuration propConfig = nucleusCtx.getConfiguration();
+        Configuration propConfig = nucCtx.getConfiguration();
         propConfig.setPersistenceProperties(props);
-        JPAMetaDataManager mmgr = (JPAMetaDataManager)nucleusCtx.getMetaDataManager();
+        JPAMetaDataManager mmgr = (JPAMetaDataManager)nucCtx.getMetaDataManager();
 
         // Initialise metadata manager, and load up the MetaData implied by this "persistence-unit"
         mmgr.setAllowXML(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_ALLOW_XML));
@@ -823,12 +819,12 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         mmgr.setValidate(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_XML_VALIDATE));
         mmgr.setDefaultNullable(propConfig.getBooleanProperty(PropertyNames.PROPERTY_METADATA_DEFAULT_NULLABLE));
         mmgr.registerEntityGraphListener(this);
-        nucleusCtx.getMetaDataManager().loadPersistenceUnit(unitMetaData, null);
+        nucCtx.getMetaDataManager().loadPersistenceUnit(unitMetaData, null);
 
         // Initialise the context, creating the StoreManager
-        nucleusCtx.initialise();
+        nucCtx.initialise();
 
-        return nucleusCtx;
+        return nucCtx;
     }
 
     /**
@@ -870,13 +866,10 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     {
         assertIsClosed();
 
-        if (datastoreCache == null)
+        if (datastoreCache == null && nucleusCtx.hasLevel2Cache())
         {
             // Initialise the L2 cache (if used)
-            if (nucleusCtx.hasLevel2Cache())
-            {
-                datastoreCache = new JPADataStoreCache(nucleusCtx, nucleusCtx.getLevel2Cache());
-            }
+            datastoreCache = new JPADataStoreCache(nucleusCtx, nucleusCtx.getLevel2Cache());
         }
         return datastoreCache;
     }
@@ -1028,14 +1021,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             throw new IllegalStateException("Attempt to add graph " + graph + " for type=" + ((JPAEntityGraph)graph).getClassType() + " but is not a known Entity");
         }
 
-        String name = (graphName != null ? graphName : cmd.getEntityName());
-        ((JPAEntityGraph)graph).setName(name);
+        String myGraphName = (graphName != null ? graphName : cmd.getEntityName());
+        ((JPAEntityGraph)graph).setName(myGraphName);
 
         if (entityGraphsByName == null)
         {
             entityGraphsByName = new HashMap<String, JPAEntityGraph>();
         }
-        entityGraphsByName.put(name, (JPAEntityGraph) graph);
+        entityGraphsByName.put(myGraphName, (JPAEntityGraph) graph);
 
         // Register graph as FetchGroupMetaData for the class
         registerEntityGraph((JPAEntityGraph) graph, graph.getName());
@@ -1168,7 +1161,6 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             // No "persistence.xml" files found
             LOGGER.warn(Localiser.msg("EMF.NoPersistenceXML"));
-            //throw new NoPersistenceXmlException(Localiser.msg("EMF.NoPersistenceXML"));
         }
         else
         {
@@ -1187,13 +1179,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                         LOGGER.warn("Found persistence-unit with name \"" + unitmds[j].getName() + "\" at " + unitmds[j].getRootURI() +
                             " but already found one with same name at " + JPAEntityManagerFactory.unitMetaDataCache.get(unitmds[j].getName()).getRootURI());
                     }
-                    if (unitmds[j].getName().equals(unitName))
+
+                    if (unitmds[j].getName().equals(unitName) && pumd == null)
                     {
-                        if (pumd == null)
-                        {
-                            pumd = unitmds[j];
-                            pumd.clearJarFiles(); // Jar files not applicable to J2SE [JPA 6.3]
-                        }
+                        pumd = unitmds[j];
+                        pumd.clearJarFiles(); // Jar files not applicable to J2SE [JPA 6.3]
                     }
                 }
             }

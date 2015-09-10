@@ -60,6 +60,8 @@ import org.datanucleus.util.StringUtils;
  */
 public class JPAQuery<X> implements TypedQuery<X>
 {
+    public static final String QUERY_HINT_TIMEOUT = "javax.persistence.query.timeout";
+
     /** Underlying EntityManager handling persistence. */
     JPAEntityManager em;
 
@@ -373,7 +375,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         {
             return this;
         }
-        if (hintName.equalsIgnoreCase("javax.persistence.query.timeout"))
+        if (hintName.equalsIgnoreCase(QUERY_HINT_TIMEOUT))
         {
             query.setDatastoreReadTimeoutMillis((Integer)value);
         }

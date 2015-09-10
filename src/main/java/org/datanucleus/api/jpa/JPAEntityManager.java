@@ -1121,6 +1121,7 @@ public class JPAEntityManager implements EntityManager
     /**
      * Create an instance of Query for executing a named query (in JPQL or native).
      * @param queryName the name of a query defined in metadata
+     * @param resultClass Result class for this query
      * @return the new query instance
      * @throws IllegalArgumentException if a query has not been defined with the given name
      */

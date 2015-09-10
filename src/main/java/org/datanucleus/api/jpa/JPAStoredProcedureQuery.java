@@ -40,9 +40,6 @@ import org.datanucleus.store.query.NoQueryResultsException;
  */
 public class JPAStoredProcedureQuery extends JPAQuery implements StoredProcedureQuery
 {
-    /** Procedure name. */
-    String procName;
-
     public JPAStoredProcedureQuery(EntityManager em, org.datanucleus.store.query.Query query)
     {
         super((JPAEntityManager)em, query, "STOREDPROCEDURE");

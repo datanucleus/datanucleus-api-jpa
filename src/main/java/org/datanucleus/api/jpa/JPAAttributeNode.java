@@ -33,13 +33,13 @@ public class JPAAttributeNode<T> implements AttributeNode<T>
 {
     MetaDataManager mmgr;
 
-    JPAGraph parent;
+    AbstractJPAGraph parent;
 
     String name;
 
     Map<Class, Subgraph> subgraphsByType = null;
 
-    public JPAAttributeNode(MetaDataManager mmgr, JPAGraph parent, String name)
+    public JPAAttributeNode(MetaDataManager mmgr, AbstractJPAGraph parent, String name)
     {
         this.mmgr = mmgr;
         this.parent = parent;

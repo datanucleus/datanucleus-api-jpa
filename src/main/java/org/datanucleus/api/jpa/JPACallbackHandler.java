@@ -267,16 +267,14 @@ public class JPACallbackHandler implements CallbackHandler
         final ExecutionContext ec = nucleusCtx.getApiAdapter().getExecutionContext(pc);
         final ClassLoaderResolver clr = ec.getClassLoaderResolver();
 
-        JPAMetaDataManager metaDataMgr = (JPAMetaDataManager)ec.getMetaDataManager();
-        AbstractClassMetaData acmd = metaDataMgr.getMetaDataForClass(pc.getClass(), clr);
-
+        AbstractClassMetaData acmd = ec.getMetaDataManager().getMetaDataForClass(pc.getClass(), clr);
         try
         {
             if (!acmd.isExcludeDefaultListeners())
             {
                 // Global listeners for all classes
-                List<EventListenerMetaData> listenerMetaData = metaDataMgr.getEventListeners();
-                if (listenerMetaData != null && listenerMetaData.size() > 0)
+                List<EventListenerMetaData> listenerMetaData = ((JPAMetaDataManager)ec.getMetaDataManager()).getEventListeners();
+                if (listenerMetaData != null && !listenerMetaData.isEmpty())
                 {
                     // Files have listeners so go through them in the same order
                     Iterator<EventListenerMetaData> listenerIter = listenerMetaData.iterator();
@@ -300,7 +298,7 @@ public class JPACallbackHandler implements CallbackHandler
             while (acmd != null)
             {
                 List<EventListenerMetaData> listenerMetaData = acmd.getListeners();
-                if (listenerMetaData != null && listenerMetaData.size() > 0)
+                if (listenerMetaData != null && !listenerMetaData.isEmpty())
                 {
                     // Class has listeners so go through them in the same order
                     Iterator<EventListenerMetaData> listenerIter = listenerMetaData.iterator();

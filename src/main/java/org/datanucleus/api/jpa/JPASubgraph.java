@@ -28,7 +28,7 @@ import org.datanucleus.util.StringUtils;
 /**
  * Implementation of JPA2.1 Subgraph
  */
-public class JPASubgraph<T> extends JPAGraph<T> implements Subgraph<T>
+public class JPASubgraph<T> extends AbstractJPAGraph<T> implements Subgraph<T>
 {
     public JPASubgraph(MetaDataManager mmgr, Class<T> clsType)
     {
