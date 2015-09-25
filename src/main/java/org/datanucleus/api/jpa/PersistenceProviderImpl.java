@@ -162,8 +162,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             try
             {
                 // Try to access the enhanced "dnGet" method
-                Method getterMethod = ClassUtils.getMethodWithArgument(entity.getClass(), 
-                    "dnGet" + memberName, entity.getClass());
+                Method getterMethod = ClassUtils.getMethodWithArgument(entity.getClass(), "dnGet" + memberName, entity.getClass());
                 getterMethod.invoke(null, new Object[] {entity});
                 return LoadState.LOADED;
             }
@@ -197,20 +196,14 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
     }
 
     /**
-     * If the provider determines that the entity has been provided
-     * by itself and that the state of the specified attribute has
+     * If the provider determines that the entity has been provided by itself and that the state of the specified attribute has
      * been loaded, this method returns LoadState.LOADED.
-     * If a provider determines that the entity has been provided
-     * by itself and that either the entity attributes with FetchType
-     * EAGER have not been loaded or that the state of the specified
-     * attribute has not been loaded, this method returns
+     * If a provider determines that the entity has been provided by itself and that either the entity attributes with FetchType
+     * EAGER have not been loaded or that the state of the specified attribute has not been loaded, this method returns
      * return LoadState.NOT_LOADED.
-     * If the provider cannot determine the load state, this method
-     * returns LoadState.UNKNOWN.
-     * The provider's implementation of this method is permitted to
-     * obtain a reference to the attribute value. (This access is
-     * safe because providers which might trigger the loading of the
-     * attribute state will have already been determined by
+     * If the provider cannot determine the load state, this method returns LoadState.UNKNOWN.
+     * The provider's implementation of this method is permitted to obtain a reference to the attribute value. (This access is
+     * safe because providers which might trigger the loading of the attribute state will have already been determined by
      * isLoadedWithoutReference.)
      * @param entity The entity
      * @param memberName name of member whose load status is to be determined
@@ -223,17 +216,12 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
     }
 
     /**
-     * If the provider determines that the entity has been provided
-     * by itself and that the state of all attributes for which
-     * FetchType EAGER has been specified have been loaded, this
-     * method returns LoadState.LOADED.
-     * If the provider determines that the entity has been provided
-     * by itself and that not all attributes with FetchType EAGER
+     * If the provider determines that the entity has been provided by itself and that the state of all attributes for which
+     * FetchType EAGER has been specified have been loaded, this method returns LoadState.LOADED.
+     * If the provider determines that the entity has been provided by itself and that not all attributes with FetchType EAGER
      * have been loaded, this method returns LoadState.NOT_LOADED.
-     * If the provider cannot determine if the entity has been
-     * provided by itself, this method returns LoadState.UNKNOWN.
-     * The provider's implementation of this method must not obtain
-     * a reference to any attribute value, as this could trigger the
+     * If the provider cannot determine if the entity has been provided by itself, this method returns LoadState.UNKNOWN.
+     * The provider's implementation of this method must not obtain a reference to any attribute value, as this could trigger the
      * loading of entity state if the entity has been provided by a different provider.
      * @param entity whose loaded status is to be determined
      * @return load status of the entity
@@ -299,18 +287,16 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
 
     /**
      * Create database schemas and/or tables and/or create DDL scripts as determined by the supplied properties.
-     * Called by the container when schema generation is to occur as a separate phase from creation 
-     * of the entity manager factory.
+     * Called by the container when schema generation is to occur as a separate phase from creation of the entity manager factory.
      * @param unitInfo metadata for use by the persistence provider
      * @param overridingProps properties for schema generation; these may also include provider-specific properties
-     * @throws PersistenceException if insufficient or inconsistent configuration information is provided 
-     *     or if schema generation otherwise fails.
+     * @throws PersistenceException if insufficient or inconsistent configuration information is provided or if schema generation otherwise fails.
      * @since JPA2.1
      */
     public void generateSchema(PersistenceUnitInfo unitInfo, Map overridingProps)
     {
         // TODO Throw exception if this is for a different provider
-        // Create a PersistenceUnitMetaData
+        // Create a PersistenceUnitMetaData TODO This can cause problems if the user also has a persistence.xml with a unit of the same name
         PersistenceUnitMetaData pumd = null;
         URI rootURI = null;
         try
@@ -323,15 +309,13 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
 
         if (unitInfo.getTransactionType() == PersistenceUnitTransactionType.JTA)
         {
-            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
-                TransactionType.JTA.toString(), rootURI);
+            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(), TransactionType.JTA.toString(), rootURI);
         }
         else
         {
-            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(),
-                TransactionType.RESOURCE_LOCAL.toString(), rootURI);
+            pumd = new PersistenceUnitMetaData(unitInfo.getPersistenceUnitName(), TransactionType.RESOURCE_LOCAL.toString(), rootURI);
         }
-        
+
         // Classes
         List<String> classNames = unitInfo.getManagedClassNames();
         Iterator<String> classIter = classNames.iterator();
@@ -382,8 +366,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
 
     /**
      * Create database schemas and/or tables and/or create DDL scripts as determined by the supplied properties.
-     * Called by the container when schema generation is to occur as a separate phase from creation 
-     * of the entity manager factory.
+     * Called by the container when schema generation is to occur as a separate phase from creation of the entity manager factory.
      * @param unitName Name of the persistence unit
      * @param overridingProps properties for schema generation; these may also include provider-specific properties
      * @throws PersistenceException if insufficient or inconsistent configuration information is provided 
