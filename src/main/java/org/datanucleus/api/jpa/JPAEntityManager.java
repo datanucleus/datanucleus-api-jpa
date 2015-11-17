@@ -252,8 +252,7 @@ public class JPAEntityManager implements EntityManager
      * @param entityClass The entity class
      * @param primaryKey The PK value
      * @return the found entity instance or null if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is 
-     *     not a valid type for that entity's primary key
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is not a valid type for that entity's primary key
      */
     public Object find(Class entityClass, Object primaryKey)
     {
@@ -300,7 +299,7 @@ public class JPAEntityManager implements EntityManager
         try
         {
             boolean fetchGraphSpecified = false;
-            if (properties != null)
+            if (properties != null) // TODO Should be for just this operation
             {
                 if (properties.containsKey(JPAEntityGraph.FETCHGRAPH_PROPERTY))
                 {
@@ -414,6 +413,7 @@ public class JPAEntityManager implements EntityManager
     /**
      * Return the underlying provider object for the EntityManager, if available.
      * The result of this method is implementation specific.
+     * @return The ExecutionContext
      */
     public Object getDelegate()
     {
@@ -424,8 +424,7 @@ public class JPAEntityManager implements EntityManager
 
     /**
      * Return an object of the specified type to allow access to the provider-specific API.
-     * If the provider's EntityManager implementation does not support the specified class, the
-     * PersistenceException is thrown.
+     * If the provider's EntityManager implementation does not support the specified class, the PersistenceException is thrown.
      * @param cls the class of the object to be returned. This is normally either the underlying 
      * EntityManager implementation class or an interface that it implements.
      * @return an instance of the specified class
@@ -466,18 +465,14 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Get an instance, whose state may be lazily fetched. If the requested
-     * instance does not exist in the database, the EntityNotFoundException is
-     * thrown when the instance state is first accessed. The persistence
-     * provider runtime is permitted to throw the EntityNotFoundException when
-     * getReference is called. The application should not expect that the
-     * instance state will be available upon detachment, unless it was accessed
+     * Get an instance, whose state may be lazily fetched. If the requested instance does not exist in the database, the EntityNotFoundException is
+     * thrown when the instance state is first accessed. The persistence provider runtime is permitted to throw the EntityNotFoundException when
+     * getReference is called. The application should not expect that the instance state will be available upon detachment, unless it was accessed
      * by the application while the entity manager was open.
      * @param entityClass Class of the entity
      * @param primaryKey The PK
      * @return the found entity instance
-     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is not
-     *     a valid type for that entities PK
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is not a valid type for that entities PK
      * @throws EntityNotFoundException if the entity state cannot be accessed
      */
     @SuppressWarnings("unchecked")
@@ -545,7 +540,7 @@ public class JPAEntityManager implements EntityManager
             // The object is not contained (the javadoc doesnt explicitly say which exception to throw here)
             throwException(new PersistenceException("Entity is not contained in this persistence context so cant lock it"));
         }
-        if (properties != null)
+        if (properties != null) // TODO Should be for just this operation
         {
             ec.setProperties(properties);
         }
@@ -598,8 +593,7 @@ public class JPAEntityManager implements EntityManager
         {
             if (ec.getApiAdapter().isDetached(entity))
             {
-                // The JPA spec is very confused about when this exception is thrown, however the JPA TCK
-                // invokes this operation multiple times over the same instance
+                // The JPA spec is very confused about when this exception is thrown, however the JPA TCK invokes this operation multiple times over the same instance
                 // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
                 throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
             }
@@ -629,8 +623,7 @@ public class JPAEntityManager implements EntityManager
             {
                 if (ec.getApiAdapter().isDetached(entity))
                 {
-                    // The JPA spec is very confused about when this exception is thrown, however the JPA TCK
-                    // invokes this operation multiple times over the same instance
+                    // The JPA spec is very confused about when this exception is thrown, however the JPA TCK invokes this operation multiple times over the same instance
                     // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
                     throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
                 }
@@ -652,8 +645,7 @@ public class JPAEntityManager implements EntityManager
      * @param entity The Entity
      * @return the instance that the state was merged to
      * @throws IllegalArgumentException if instance is not an entity or is a removed entity
-     * @throws TransactionRequiredException if invoked on a container-managed entity manager
-     *     of type PersistenceContextType.TRANSACTION and there is no transaction.
+     * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction.
      */
     public Object merge(Object entity)
     {
@@ -704,8 +696,7 @@ public class JPAEntityManager implements EntityManager
             assertEntity(entity);
             if (ec.getApiAdapter().isDeleted(entity))
             {
-                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDeleted", 
-                    StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
+                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDeleted", StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
             }
         }
 
@@ -742,7 +733,7 @@ public class JPAEntityManager implements EntityManager
             }
             else if (entity.getClass().isArray())
             {
-                // DN extension : detach of Collection of entities
+                // DN extension : detach of array of entities
                 detach((Object[])entity);
                 return;
             }
@@ -831,7 +822,7 @@ public class JPAEntityManager implements EntityManager
         {
             throwException(new EntityNotFoundException(Localiser.msg("EM.EntityNotInDatastore", StringUtils.toJVMIDString(entity))));
         }
-        if (properties != null)
+        if (properties != null) // TODO Should be for just this operation
         {
             ec.setProperties(properties);
         }
@@ -884,8 +875,7 @@ public class JPAEntityManager implements EntityManager
         // What if the object doesnt exist in the datastore ? IllegalArgumentException. Spec says nothing
         if (ec.getApiAdapter().isDetached(entity))
         {
-            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
-                StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached", StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
         }
 
         try
@@ -912,8 +902,7 @@ public class JPAEntityManager implements EntityManager
             // What if the object doesn't exist in the datastore ? IllegalArgumentException. Spec says nothing
             if (ec.getApiAdapter().isDetached(entity))
             {
-                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
-                    StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
+                throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached", StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
             }
         }
 
@@ -1307,8 +1296,7 @@ public class JPAEntityManager implements EntityManager
         try
         {
             org.datanucleus.store.query.AbstractStoredProcedureQuery internalQuery =
-                (AbstractStoredProcedureQuery) ec.getStoreManager().getQueryManager().newQuery(
-                    QueryLanguage.STOREDPROC.toString(), ec, qmd.getProcedureName());
+                (AbstractStoredProcedureQuery) ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, qmd.getProcedureName());
 
             if (qmd.getParameters() != null)
             {
@@ -1375,22 +1363,18 @@ public class JPAEntityManager implements EntityManager
     /**
      * Create an instance of StoredProcedureQuery for executing a stored procedure in the database.
      * Parameters must be registered before the stored procedure can be executed.
-     * The resultClass arguments must be specified in the order in which the result sets will be returned 
-     * by the stored procedure invocation.
+     * The resultClass arguments must be specified in the order in which the result sets will be returned by the stored procedure invocation.
      * @param procedureName name of the stored procedure in the database
-     * @param resultClasses classes to which the result sets produced by the stored procedure are to
-     *     be mapped
+     * @param resultClasses classes to which the result sets produced by the stored procedure are to be mapped
      * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a stored procedure of the given name does not exist or the 
-     *     query execution will fail
+     * @throws IllegalArgumentException if a stored procedure of the given name does not exist or the query execution will fail
      */
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses)
     {
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.STOREDPROC.toString(), ec, procedureName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
             if (resultClasses != null && resultClasses.length > 0)
             {
                 ((AbstractStoredProcedureQuery)internalQuery).setResultClasses(resultClasses);
@@ -1406,11 +1390,9 @@ public class JPAEntityManager implements EntityManager
     /**
      * Create an instance of StoredProcedureQuery for executing a stored procedure in the database.
      * Parameters must be registered before the stored procedure can be executed.
-     * The resultSetMappings argument must be specified in the order in which the result sets will be 
-     * returned by the stored procedure invocation.
+     * The resultSetMappings argument must be specified in the order in which the result sets will be returned by the stored procedure invocation.
      * @param procedureName name of the stored procedure in the database
-     * @param resultSetMappings the names of the result set mappings to be used in mapping result sets
-     *     returned by the stored procedure
+     * @param resultSetMappings the names of the result set mappings to be used in mapping result sets returned by the stored procedure
      * @return the new stored procedure query instance
      * @throws IllegalArgumentException if a stored procedure or result set mapping of the given name does not exist
      * or the query execution will fail
@@ -1420,8 +1402,7 @@ public class JPAEntityManager implements EntityManager
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.STOREDPROC.toString(), ec, procedureName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
             if (resultSetMappings != null && resultSetMappings.length > 0)
             {
                 QueryResultMetaData[] qrmds = new QueryResultMetaData[resultSetMappings.length];
