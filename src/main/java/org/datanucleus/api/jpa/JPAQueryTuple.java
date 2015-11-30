@@ -25,8 +25,6 @@ import java.util.Map;
 import javax.persistence.Tuple;
 import javax.persistence.TupleElement;
 
-import org.datanucleus.util.NucleusLogger;
-
 /**
  * Implementation of a JPA Tuple, for a query result.
  */
@@ -46,7 +44,6 @@ public class JPAQueryTuple implements Tuple
      */
     public void put(Object key, Object val)
     {
-        NucleusLogger.GENERAL.info(">> JPAQueryTuple.put key=" + key + " val=" + val);
         JPAQueryTupleElement te = new JPAQueryTupleElement((String) key, (val != null) ? val.getClass() : null, val);
         elements.add(te);
         elementByAlias.put((String)key, te);
