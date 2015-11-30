@@ -1447,7 +1447,20 @@ public class JPAEntityManager implements EntityManager
      */
     public <T> TypedQuery<T> createQuery(String queryString, Class<T> resultClass)
     {
-        return createQuery(queryString).setResultClass(resultClass);
+        JPAQuery jpaQuery = createQuery(queryString);
+        if (resultClass != null)
+        {
+            // Catch special case of javax.persistence.Tuple
+            if (resultClass.getName().equals("javax.persistence.Tuple"))
+            {
+                jpaQuery.setResultClass(JPAQueryTuple.class);
+            }
+            else
+            {
+                jpaQuery.setResultClass(resultClass);
+            }
+        }
+        return jpaQuery;
     }
 
     /**
