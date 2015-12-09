@@ -299,7 +299,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<constrs.length;j++)
                         {
                             UniqueMetaData unimd = new UniqueMetaData();
-                            unimd.setTable((String)annotationValues.get("name"));
+                            String uniName = constrs[j].name();
+                            if (!StringUtils.isWhitespace(uniName))
+                            {
+                                unimd.setName(uniName);
+                            }
                             for (int k=0;k<constrs[j].columnNames().length;k++)
                             {
                                 unimd.addColumn(constrs[j].columnNames()[k]);
@@ -318,9 +322,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<indexConstrs.length;j++)
                         {
                             IndexMetaData idxmd = new IndexMetaData();
-                            if (!StringUtils.isWhitespace(indexConstrs[j].name()))
+                            String idxName = indexConstrs[j].name();
+                            if (!StringUtils.isWhitespace(idxName))
                             {
-                                idxmd.setName(indexConstrs[j].name());
+                                idxmd.setName(idxName);
                             }
                             String colStr = indexConstrs[j].columnList();
                             String[] cols = StringUtils.split(colStr, ",");
@@ -1633,6 +1638,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<joinUniqueConstraints.length;j++)
                         {
                             UniqueMetaData unimd = new UniqueMetaData();
+                            String uniName = joinUniqueConstraints[j].name();
+                            if (!StringUtils.isWhitespace(uniName))
+                            {
+                                unimd.setName(uniName);
+                            }
                             for (int k=0;k<joinUniqueConstraints[j].columnNames().length;k++)
                             {
                                 unimd.addColumn(joinUniqueConstraints[j].columnNames()[k]);
@@ -1647,6 +1657,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<joinIndexConstrs.length;j++)
                         {
                             IndexMetaData idxmd = new IndexMetaData();
+                            String idxName = joinIndexConstrs[j].name();
+                            if (!StringUtils.isWhitespace(idxName))
+                            {
+                                idxmd.setName(idxName);
+                            }
                             if (!StringUtils.isWhitespace(joinIndexConstrs[j].name()))
                             {
                                 idxmd.setName(joinIndexConstrs[j].name());
@@ -1725,6 +1740,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<joinUniqueConstraints.length;j++)
                         {
                             UniqueMetaData unimd = new UniqueMetaData();
+                            String uniName = joinUniqueConstraints[j].name();
+                            if (!StringUtils.isWhitespace(uniName))
+                            {
+                                unimd.setName(uniName);
+                            }
                             for (int k=0;k<joinUniqueConstraints[j].columnNames().length;k++)
                             {
                                 unimd.addColumn(joinUniqueConstraints[j].columnNames()[k]);
@@ -1739,9 +1759,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         for (int j=0;j<joinIndexConstrs.length;j++)
                         {
                             IndexMetaData idxmd = new IndexMetaData();
-                            if (!StringUtils.isWhitespace(joinIndexConstrs[j].name()))
+                            String idxName = joinIndexConstrs[j].name();
+                            if (!StringUtils.isWhitespace(idxName))
                             {
-                                idxmd.setName(joinIndexConstrs[j].name());
+                                idxmd.setName(idxName);
                             }
                             String colStr = joinIndexConstrs[j].columnList();
                             String[] cols = StringUtils.split(colStr, ",");
@@ -3252,7 +3273,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             for (int k=0;k<constrs.length;k++)
                             {
                                 UniqueMetaData unimd = new UniqueMetaData();
-                                unimd.setTable((String)annotationValues.get("table"));
+                                String uniName = constrs[k].name();
+                                if (!StringUtils.isWhitespace(uniName))
+                                {
+                                    unimd.setName(uniName);
+                                }
                                 for (int l=0;l<constrs[k].columnNames().length;l++)
                                 {
                                     unimd.addColumn(constrs[k].columnNames()[l]);
@@ -3267,9 +3292,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             for (int k=0;k<indexConstrs.length;k++)
                             {
                                 IndexMetaData idxmd = new IndexMetaData();
-                                if (!StringUtils.isWhitespace(indexConstrs[k].name()))
+                                String idxName = indexConstrs[k].name();
+                                if (!StringUtils.isWhitespace(idxName))
                                 {
-                                    idxmd.setName(indexConstrs[k].name());
+                                    idxmd.setName(idxName);
                                 }
                                 String colStr = indexConstrs[k].columnList();
                                 String[] cols = StringUtils.split(colStr, ",");
@@ -3326,7 +3352,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     for (int j=0;j<constrs.length;j++)
                     {
                         UniqueMetaData unimd = new UniqueMetaData();
-                        unimd.setTable((String)annotationValues.get("table"));
+                        String uniName = constrs[j].name();
+                        if (!StringUtils.isWhitespace(uniName))
+                        {
+                            unimd.setName(uniName);
+                        }
                         for (int k=0;k<constrs[j].columnNames().length;k++)
                         {
                             unimd.addColumn(constrs[j].columnNames()[k]);
@@ -3341,9 +3371,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     for (int j=0;j<indexConstrs.length;j++)
                     {
                         IndexMetaData idxmd = new IndexMetaData();
-                        if (!StringUtils.isWhitespace(indexConstrs[j].name()))
+                        String idxName = indexConstrs[j].name();
+                        if (!StringUtils.isWhitespace(idxName))
                         {
-                            idxmd.setName(indexConstrs[j].name());
+                            idxmd.setName(idxName);
                         }
                         String colStr = indexConstrs[j].columnList();
                         String[] cols = StringUtils.split(colStr, ",");
