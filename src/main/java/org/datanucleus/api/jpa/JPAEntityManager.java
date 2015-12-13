@@ -86,7 +86,7 @@ import org.datanucleus.util.StringUtils;
 /**
  * EntityManager implementation for JPA.
  */
-public class JPAEntityManager implements EntityManager
+public class JPAEntityManager implements EntityManager, AutoCloseable
 {
     protected boolean closed = false;
 
