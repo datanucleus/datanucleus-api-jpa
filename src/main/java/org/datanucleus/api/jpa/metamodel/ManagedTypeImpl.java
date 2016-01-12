@@ -112,6 +112,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
                 {
                     attr = new PluralAttributeImpl(mmds[i], this);
                 }
+                else if (List.class.isAssignableFrom(mmds[i].getType()))
+                {
+                    attr = new ListAttributeImpl(mmds[i], this);
+                }
                 else if (Collection.class.isAssignableFrom(mmds[i].getType()))
                 {
                     attr = new CollectionAttributeImpl(mmds[i], this);
