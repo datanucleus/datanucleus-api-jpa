@@ -229,25 +229,25 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     /* (non-Javadoc)
      * @see javax.persistence.criteria.From#join(java.lang.String, javax.persistence.criteria.JoinType)
      */
-    @SuppressWarnings("hiding")
+    @SuppressWarnings({"hiding", "cast"})
     public <X, Y> Join<X, Y> join(String attrName, JoinType joinType)
     {
         Attribute attr = getAttributeForAttributeName(attrName);
         if (attr instanceof SetAttributeImpl)
         {
-            return join((SetAttribute)attr, joinType);
+            return (Join<X, Y>) join((SetAttribute)attr, joinType);
         }
         else if (attr instanceof ListAttribute)
         {
-            return join((ListAttribute)attr, joinType);
+            return (Join<X, Y>) join((ListAttribute)attr, joinType);
         }
         else if (attr instanceof MapAttribute)
         {
-            return join((MapAttribute)attr, joinType);
+            return (Join<X, Y>) join((MapAttribute)attr, joinType);
         }
         else if (attr instanceof CollectionAttribute)
         {
-            return join((CollectionAttribute)attr, joinType);
+            return (Join<X, Y>) join((CollectionAttribute)attr, joinType);
         }
         else
         {
