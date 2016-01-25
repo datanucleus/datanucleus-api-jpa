@@ -25,12 +25,9 @@ Contributors:
         <persistence-property name="javax.persistence.jdbc.url" internal-name="datanucleus.ConnectionURL"/>
         <persistence-property name="javax.persistence.jdbc.user" internal-name="datanucleus.ConnectionUserName"/>
         <persistence-property name="javax.persistence.jdbc.password" internal-name="datanucleus.ConnectionPassword"/>
-        <persistence-property name="javax.persistence.query.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0"
-            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
-        <persistence-property name="javax.persistence.lock.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0"
-            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
-        <persistence-property name="javax.persistence.transactionType" internal-name="datanucleus.TransactionType"
-            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="javax.persistence.query.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0" validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="javax.persistence.lock.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0" validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="javax.persistence.transactionType" internal-name="datanucleus.TransactionType" validator="org.datanucleus.properties.CorePropertyValidator"/>
         <persistence-property name="javax.persistence.jtaDataSource" internal-name="datanucleus.ConnectionFactoryName"/>
         <persistence-property name="javax.persistence.nonJtaDataSource" internal-name="datanucleus.ConnectionFactory2Name"/>
 
@@ -51,11 +48,9 @@ Contributors:
         <persistence-property name="javax.persistence.schema-generation.scripts.create-target" internal-name="datanucleus.generateSchema.scripts.create.target"/>
         <persistence-property name="javax.persistence.schema-generation.scripts.drop-target" internal-name="datanucleus.generateSchema.scripts.drop.target"/>
         <persistence-property name="javax.persistence.schema-generation.create-script-source" internal-name="datanucleus.generateSchema.scripts.create.source"/>
-        <persistence-property name="javax.persistence.schema-generation.create-source" internal-name="datanucleus.generateSchema.scripts.create.order"
-            validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
+        <persistence-property name="javax.persistence.schema-generation.create-source" internal-name="datanucleus.generateSchema.scripts.create.order" validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
         <persistence-property name="javax.persistence.schema-generation.drop-script-source" internal-name="datanucleus.generateSchema.scripts.drop.source"/>
-        <persistence-property name="javax.persistence.schema-generation.drop-source" internal-name="datanucleus.generateSchema.scripts.drop.order"
-            validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
+        <persistence-property name="javax.persistence.schema-generation.drop-source" internal-name="datanucleus.generateSchema.scripts.drop.order" validator="org.datanucleus.api.jpa.JPAPropertyValidator"/>
         <persistence-property name="javax.persistence.sql-load-script-source" internal-name="datanucleus.generateSchema.scripts.load"/>
 
         <!-- DataNucleus JPA own properties -->
@@ -119,13 +114,9 @@ Contributors:
 
     <!-- EXTENSION ANNOTATIONS -->
     <extension point="org.datanucleus.member_annotation_handler">
-        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.Index" 
-            handler="org.datanucleus.api.jpa.annotations.IndexHandler"/>
-        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.JdbcType" 
-            handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
-        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" 
-            handler="org.datanucleus.api.jpa.annotations.ColumnPositionHandler"/>
-        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ValueGenerator" 
-            handler="org.datanucleus.api.jpa.annotations.ValueGeneratorHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.Index" handler="org.datanucleus.api.jpa.annotations.IndexHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.JdbcType" handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" handler="org.datanucleus.api.jpa.annotations.ColumnPositionHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ValueGenerator" handler="org.datanucleus.api.jpa.annotations.ValueGeneratorHandler"/>
     </extension>
 </plugin>
