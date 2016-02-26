@@ -50,6 +50,7 @@ import org.datanucleus.store.query.Query;
 import org.datanucleus.store.query.QueryInvalidParametersException;
 import org.datanucleus.store.query.NoQueryResultsException;
 import org.datanucleus.store.query.QueryNotUniqueException;
+import org.datanucleus.store.query.Query.QueryType;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
 
@@ -122,7 +123,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public int executeUpdate()
     {
-        if (query.getType() == org.datanucleus.store.query.Query.SELECT)
+        if (query.getType() == QueryType.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.ExecuteUpdateForSelectInvalid"));
         }
@@ -172,7 +173,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public List getResultList()
     {
-        if (query.getType() != org.datanucleus.store.query.Query.SELECT)
+        if (query.getType() != QueryType.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
         }
@@ -224,7 +225,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public X getSingleResult()
     {
-        if (query.getType() != org.datanucleus.store.query.Query.SELECT)
+        if (query.getType() != QueryType.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
         }
@@ -1098,7 +1099,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
     public LockModeType getLockMode()
     {
-        if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals("JPQL"))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }
@@ -1108,7 +1109,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
     public TypedQuery<X> setLockMode(LockModeType lock)
     {
-        if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals("JPQL"))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }
