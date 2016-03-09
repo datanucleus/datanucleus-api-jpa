@@ -211,11 +211,15 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
                         // Remove from unknown classes now that we have some metadata
                         classesWithoutPersistenceInfo.remove(cmd.getFullClassName());
                     }
-                    if (cmd.getEntityName() != null)
+
+                    // Register the metadata under the entity name
+                    if (cmd.getEntityName() == null)
                     {
-                        // Register the metadata under the entity name
-                        classMetaDataByEntityName.put(cmd.getEntityName(), cmd);
+                        // No entity name provided so set to the basic class name
+                        cmd.setEntityName(cmd.getName());
                     }
+                    classMetaDataByEntityName.put(cmd.getEntityName(), cmd);
+
                     if (cmd.getInheritanceMetaData() != null)
                     {
                         // Register the metadata under the discriminator name
