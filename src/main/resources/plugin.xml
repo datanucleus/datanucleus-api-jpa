@@ -118,5 +118,6 @@ Contributors:
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.JdbcType" handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" handler="org.datanucleus.api.jpa.annotations.ColumnPositionHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ValueGenerator" handler="org.datanucleus.api.jpa.annotations.ValueGeneratorHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.SharedRelation" handler="org.datanucleus.api.jpa.annotations.SharedRelationHandler"/>
     </extension>
 </plugin>
