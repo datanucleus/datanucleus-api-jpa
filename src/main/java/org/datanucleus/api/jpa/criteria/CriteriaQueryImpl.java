@@ -518,6 +518,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
      */
     public QueryCompilation getCompilation(MetaDataManager mmgr, ClassLoaderResolver clr)
     {
+        fixQuery();
+
         return getCompilation(mmgr, clr, null);
     }
 
@@ -703,6 +705,44 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         // TODO What about frm.getFetches() ?
     }
 
+    protected int internalJoinAliasNumber = 0;
+
+    /**
+     * Method called when the criteria is converted into a JPQL query.
+     * We use this point to set the aliases of any joins to avoid potential problems.
+     */
+    private void fixQuery()
+    {
+        Iterator iter = from.iterator();
+        internalJoinAliasNumber = 0;
+        while (iter.hasNext())
+        {
+            FromImpl frm = (FromImpl)iter.next();
+            fixJoinsForFrom(frm);
+        }
+    }
+
+    private void fixJoinsForFrom(FromImpl frm)
+    {
+        Set<JoinImpl> frmJoins = frm.getJoins();
+        if (frmJoins != null && !frmJoins.isEmpty())
+        {
+            Iterator<JoinImpl> frmJoinIter = frmJoins.iterator();
+            while (frmJoinIter.hasNext())
+            {
+                JoinImpl frmJoin = frmJoinIter.next();
+                if (frmJoin.getAlias() == null)
+                {
+                    frmJoin.alias("DN_JOIN_" + internalJoinAliasNumber);
+                    internalJoinAliasNumber++;
+                }
+
+                // Recurse while there are nested joins
+                fixJoinsForFrom(frmJoin);
+            }
+        }
+    }
+
     /**
      * Method to return a single-string representation of the criteria query in JPQL.
      * @return The single-string form
@@ -711,6 +751,8 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     {
         if (jpqlString == null)
         {
+            fixQuery();
+
             // Generate the query string
             StringBuilder str = new StringBuilder();
             str.append("SELECT ");
