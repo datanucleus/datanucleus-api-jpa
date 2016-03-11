@@ -232,27 +232,92 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, Y> Join<X, Y> join(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        if (attr instanceof SetAttributeImpl)
+        if (attrName == null)
         {
-            return join((SetAttribute)attr, joinType);
+            throw new IllegalArgumentException("Cannot join to null attribute");
         }
-        else if (attr instanceof ListAttribute)
+
+        StringTokenizer tokeniser = new StringTokenizer(attrName, ".");
+        if (!tokeniser.hasMoreTokens())
         {
-            return join((ListAttribute)attr, joinType);
+            throw new IllegalArgumentException("Cannot join to null attribute");
         }
-        else if (attr instanceof MapAttribute)
+
+        String token = tokeniser.nextToken();
+        ManagedType currentType = (ManagedType)this.type;
+        if (!token.equalsIgnoreCase(getAlias()))
         {
-            return join((MapAttribute)attr, joinType);
+            // First token is not the alias of this type, so reset the tokeniser
+            tokeniser = new StringTokenizer(attrName, ".");
         }
-        else if (attr instanceof CollectionAttribute)
+
+        boolean first = true;
+        JoinImpl currentJoin = null;
+        AttributeImpl currentAttr = null;
+        while (tokeniser.hasMoreTokens())
         {
-            return join((CollectionAttribute)attr, joinType);
+            token = tokeniser.nextToken();
+            currentAttr = (AttributeImpl)currentType.getAttribute(token);
+            if (currentAttr == null)
+            {
+                throw new IllegalArgumentException("Unable to access attribute " + token + " of " + currentType + " for join");
+            }
+
+            JoinImpl thisJoin = null;
+            if (currentAttr instanceof ListAttributeImpl)
+            {
+                thisJoin = new ListJoinImpl(cb, currentJoin != null ? currentJoin : this, (ListAttributeImpl)currentAttr, joinType);
+            }
+            else if (currentAttr instanceof SetAttributeImpl)
+            {
+                thisJoin = new SetJoinImpl(cb, currentJoin != null ? currentJoin : this, (SetAttributeImpl)currentAttr, joinType);
+            }
+            else if (currentAttr instanceof MapAttributeImpl)
+            {
+                thisJoin = new MapJoinImpl(cb, currentJoin != null ? currentJoin : this, (MapAttributeImpl)currentAttr, joinType);
+            }
+            else if (currentAttr instanceof CollectionAttributeImpl)
+            {
+                thisJoin = new CollectionJoinImpl(cb, currentJoin != null ? currentJoin : this, (CollectionAttributeImpl)currentAttr, joinType);
+            }
+            else if (currentAttr instanceof SingularAttributeImpl)
+            {
+                thisJoin = new JoinImpl(cb, currentJoin != null ? currentJoin : this, (SingularAttributeImpl) currentAttr, joinType);
+            }
+            else
+            {
+                if (currentAttr.getPersistentAttributeType() == PersistentAttributeType.BASIC)
+                {
+                    throw new IllegalArgumentException("Cannot resolve attribute " + attrName + " since " +
+                        token + " is not a relation field and the attribute name goes beyond it!");
+                }
+            }
+
+            if (first)
+            {
+                if (joins == null)
+                {
+                    joins = new HashSet();
+                }
+                joins.add(thisJoin);
+            }
+            else
+            {
+                if (currentJoin.joins == null)
+                {
+                    currentJoin.joins = new HashSet();
+                }
+                currentJoin.joins.add(thisJoin);
+            }
+
+            currentJoin = thisJoin;
+            if (tokeniser.hasMoreTokens())
+            {
+                currentType = (ManagedType)currentAttr.getType();
+            }
+            first = false;
         }
-        else
-        {
-            return join((SingularAttribute)attr, joinType);
-        }
+        return currentJoin;
     }
 
     /* (non-Javadoc)
@@ -270,8 +335,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, Y> CollectionJoin<X, Y> joinCollection(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        return join((CollectionAttribute)attr, joinType);
+        return (CollectionJoin<X, Y>) join(attrName, joinType);
     }
 
     /* (non-Javadoc)
@@ -289,8 +353,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, Y> ListJoin<X, Y> joinList(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        return join((ListAttribute)attr, joinType);
+        return (ListJoin<X, Y>) join(attrName, joinType);
     }
 
     /* (non-Javadoc)
@@ -308,8 +371,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, K, V> MapJoin<X, K, V> joinMap(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        return join((MapAttribute)attr, joinType);
+        return (MapJoin<X, K, V>) join(attrName, joinType);
     }
 
     /* (non-Javadoc)
@@ -327,8 +389,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, Y> SetJoin<X, Y> joinSet(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        return join((SetAttribute)attr, joinType);
+        return (SetJoin<X, Y>) join(attrName, joinType);
     }
 
     /* (non-Javadoc)
@@ -402,27 +463,63 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     @SuppressWarnings("hiding")
     public <X, Y> Fetch<X, Y> fetch(String attrName, JoinType joinType)
     {
-        Attribute attr = getAttributeForAttributeName(attrName);
-        if (attr instanceof SetAttributeImpl)
+        if (attrName == null)
         {
-            return fetch((SetAttribute)attr, joinType);
+            throw new IllegalArgumentException("Cannot (fetch) join to null attribute");
         }
-        else if (attr instanceof ListAttribute)
+
+        StringTokenizer tokeniser = new StringTokenizer(attrName, ".");
+        if (!tokeniser.hasMoreTokens())
         {
-            return fetch((ListAttribute)attr, joinType);
+            throw new IllegalArgumentException("Cannot (fetch) join to null attribute");
         }
-        else if (attr instanceof MapAttribute)
+
+        String token = tokeniser.nextToken();
+        ManagedType currentType = (ManagedType)this.type;
+        if (!token.equalsIgnoreCase(getAlias()))
         {
-            return fetch((MapAttribute)attr, joinType);
+            // First token is not the alias of this type, so reset the tokeniser
+            tokeniser = new StringTokenizer(attrName, ".");
         }
-        else if (attr instanceof CollectionAttribute)
+
+        boolean first = true;
+        FetchImpl currentJoin = null;
+        AttributeImpl currentAttr = null;
+        while (tokeniser.hasMoreTokens())
         {
-            return fetch((CollectionAttribute)attr, joinType);
+            token = tokeniser.nextToken();
+            currentAttr = (AttributeImpl)currentType.getAttribute(token);
+            if (currentAttr == null)
+            {
+                throw new IllegalArgumentException("Unable to access attribute " + token + " of " + currentType + " for join");
+            }
+
+            FetchImpl thisJoin = new FetchImpl(cb, currentJoin != null ? currentJoin : this, currentAttr, joinType);
+            if (first)
+            {
+                if (fetchJoins == null)
+                {
+                    fetchJoins = new HashSet();
+                }
+                fetchJoins.add(thisJoin);
+            }
+            else
+            {
+                if (currentJoin.fetches == null)
+                {
+                    currentJoin.fetches = new HashSet();
+                }
+                currentJoin.fetches.add(thisJoin);
+            }
+
+            currentJoin = thisJoin;
+            if (tokeniser.hasMoreTokens())
+            {
+                currentType = (ManagedType)currentAttr.getType();
+            }
+            first = false;
         }
-        else
-        {
-            return fetch((SingularAttribute)attr, joinType);
-        }
+        return currentJoin;
     }
 
     /* (non-Javadoc)
@@ -694,49 +791,5 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             // no alias
             return "(unaliased type=" + getJavaType().getName() + ")";
         }
-    }
-
-    protected Attribute getAttributeForAttributeName(String attrName)
-    {
-        if (attrName == null)
-        {
-            throw new IllegalArgumentException("Cannot join to null attribute");
-        }
-        StringTokenizer tokeniser = new StringTokenizer(attrName, ".");
-        if (!tokeniser.hasMoreTokens())
-        {
-            throw new IllegalArgumentException("Cannot join to null attribute");
-        }
-
-        String token = tokeniser.nextToken();
-        ManagedType currentType = (ManagedType)this.type;
-        if (!token.equalsIgnoreCase(getAlias()))
-        {
-            // First token is not the alias of this type, so reset the tokeniser
-            tokeniser = new StringTokenizer(attrName, ".");
-        }
-
-        AttributeImpl currentAttr = null;
-        while (tokeniser.hasMoreTokens())
-        {
-            token = tokeniser.nextToken();
-            currentAttr = (AttributeImpl)currentType.getAttribute(token);
-            if (currentAttr == null)
-            {
-                throw new IllegalArgumentException("Unable to access attribute " + token + " of " + currentType + " for join");
-            }
-
-            if (tokeniser.hasMoreTokens())
-            {
-                if (currentAttr.getPersistentAttributeType() == PersistentAttributeType.BASIC)
-                {
-                    throw new IllegalArgumentException("Cannot resolve attribute " + attrName + " since " +
-                        token + " is not a relation field and the attribute name goes beyond it!");
-                }
-                currentType = (ManagedType)currentAttr.getType();
-            }
-        }
-
-        return currentAttr;
     }
 }
