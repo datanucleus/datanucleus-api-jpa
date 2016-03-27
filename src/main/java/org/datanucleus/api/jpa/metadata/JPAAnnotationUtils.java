@@ -94,6 +94,7 @@ import javax.persistence.NamedStoredProcedureQuery;
 import org.datanucleus.api.jpa.annotations.DatastoreId;
 import org.datanucleus.api.jpa.annotations.Extension;
 import org.datanucleus.api.jpa.annotations.Extensions;
+import org.datanucleus.api.jpa.annotations.NonDurableId;
 import org.datanucleus.api.jpa.annotations.PersistenceAware;
 import org.datanucleus.api.jpa.annotations.SurrogateVersion;
 import org.datanucleus.metadata.ColumnMetaData;
@@ -224,6 +225,8 @@ public class JPAAnnotationUtils
     public static final String PERSISTENCE_AWARE = PersistenceAware.class.getName();
 
     public static final String DATASTORE_IDENTITY = DatastoreId.class.getName();
+
+    public static final String NONDURABLE_IDENTITY = NonDurableId.class.getName();
 
     public static final String SURROGATE_VERSION = SurrogateVersion.class.getName();
 

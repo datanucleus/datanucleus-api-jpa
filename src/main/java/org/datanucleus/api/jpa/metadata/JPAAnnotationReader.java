@@ -267,6 +267,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     identityStrategy = JPAAnnotationUtils.getIdentityStrategyString(type);
                     identityGenerator = (String) annotationValues.get("generator");
                 }
+                else if (annName.equals(JPAAnnotationUtils.NONDURABLE_IDENTITY))
+                {
+                    // extension to allow nondurable-identity
+                    identityType = IdentityType.NONDURABLE;
+                }
                 else if (annName.equals(JPAAnnotationUtils.SURROGATE_VERSION))
                 {
                     // extension to allow surrogate version
@@ -976,9 +981,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
             }
 
-            // extension - datastore-identity
             if (identityType == IdentityType.DATASTORE)
             {
+                // extension - datastore-identity
                 IdentityMetaData idmd = cmd.newIdentityMetadata();
                 idmd.setColumnName(identityColumn);
                 idmd.setValueStrategy(IdentityStrategy.getIdentityStrategy(identityStrategy));

@@ -925,6 +925,12 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 cmd.setIdentityType(IdentityType.DATASTORE);
                 pushStack(idmd);
             }
+            else if (localName.equals("nondurable-id"))
+            {
+                // DataNucleus Extension : NonDurable Identity
+                ClassMetaData cmd = (ClassMetaData)getStack();
+                cmd.setIdentityType(IdentityType.NONDURABLE);
+            }
             else if (localName.equals("surrogate-version"))
             {
                 // DataNucleus Extension : Surrogate Version
