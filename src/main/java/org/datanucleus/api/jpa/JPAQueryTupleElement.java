@@ -21,7 +21,6 @@ import javax.persistence.TupleElement;
 
 /**
  * Implementation of a JPA TupleElement, for a query result.
- * @param <X> The java type of the tuple element
  */
 public class JPAQueryTupleElement implements TupleElement
 {
