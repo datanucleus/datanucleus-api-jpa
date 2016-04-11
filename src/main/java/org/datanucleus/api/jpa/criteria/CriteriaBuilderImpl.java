@@ -1191,7 +1191,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "CriteriaBuilder.keys not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+            "CriteriaBuilder.keys not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -1201,7 +1201,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "CriteriaBuilder.values not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+            "CriteriaBuilder.values not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -1719,35 +1719,35 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     {
         // TODO JPA2.1 addition
         throw new UnsupportedOperationException(
-                "CriteriaBuilder.treat(Join, Class) not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+                "CriteriaBuilder.treat(Join, Class) not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type)
     {
         // TODO JPA2.1 addition
         throw new UnsupportedOperationException(
-                "CriteriaBuilder.treat(CollectionJoin, Class) not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+                "CriteriaBuilder.treat(CollectionJoin, Class) not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type)
     {
         // TODO JPA2.1 addition
         throw new UnsupportedOperationException(
-                "CriteriaBuilder.treat(SetJoin, Class) not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+                "CriteriaBuilder.treat(SetJoin, Class) not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type)
     {
         // TODO JPA2.1 addition
         throw new UnsupportedOperationException(
-                "CriteriaBuilder.treat(ListJoin, Class) not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+                "CriteriaBuilder.treat(ListJoin, Class) not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type)
     {
         // TODO JPA2.1 addition
         throw new UnsupportedOperationException(
-                "CriteriaBuilder.treat(MapJoin, Class) not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+                "CriteriaBuilder.treat(MapJoin, Class) not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public <X, T extends X> Path<T> treat(Path<X> path, Class<T> type)

@@ -96,7 +96,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -106,7 +106,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -116,7 +116,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -126,7 +126,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -136,7 +136,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -146,7 +146,7 @@ public class SubqueryImpl<T> extends ExpressionImpl<T> implements Subquery<T>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)

@@ -93,7 +93,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA issue attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)

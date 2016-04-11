@@ -55,7 +55,7 @@ public class ListJoinImpl<Z, E> extends PluralJoinImpl<Z,java.util.List<E>,E> im
     public Expression<Integer> index()
     {
         // TODO Implement this
-        throw new UnsupportedOperationException("Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+        throw new UnsupportedOperationException("Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public ListJoin<Z, E> on(Expression<Boolean> restriction)

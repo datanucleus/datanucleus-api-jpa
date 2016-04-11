@@ -58,7 +58,7 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -68,7 +68,7 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -78,7 +78,7 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -88,7 +88,7 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     /* (non-Javadoc)
@@ -98,7 +98,7 @@ public class MapJoinImpl<Z, K, V> extends PluralJoinImpl<Z, java.util.Map<K, V>,
     {
         // TODO Implement this
         throw new UnsupportedOperationException(
-            "Not yet implemented. Provide a testcase that uses this and raise a JIRA attaching your testcase");
+            "Not yet implemented. Provide a testcase that uses this and raise an issue attaching your testcase");
     }
 
     public MapJoin<Z, K, V> on(Expression<Boolean> restriction)
