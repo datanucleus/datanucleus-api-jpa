@@ -42,6 +42,7 @@ import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
 import org.datanucleus.state.CallbackHandler;
+import org.datanucleus.state.ObjectProvider;
 
 /**
  * CallbackHandler implementation for JPA.
@@ -99,7 +100,12 @@ public class JPACallbackHandler implements CallbackHandler
         }
         if (beanValidationHandler != null)
         {
-            beanValidationHandler.preStore(pc);
+            ObjectProvider op = nucleusCtx.getApiAdapter().getExecutionContext(pc).findObjectProvider(pc);
+            if (!op.getLifecycleState().isNew())
+            {
+                // Don't fire this when persisting new since we will have done prePersist
+                beanValidationHandler.preStore(pc);
+            }
         }
     }
 
