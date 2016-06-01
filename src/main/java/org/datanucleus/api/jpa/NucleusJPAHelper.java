@@ -33,9 +33,9 @@ import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.datanucleus.exceptions.NucleusOptimisticException;
 import org.datanucleus.exceptions.NucleusUserException;
+import org.datanucleus.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.state.ObjectProvider;
-import org.datanucleus.store.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.store.query.QueryTimeoutException;
 import org.datanucleus.util.ClassUtils;
 
