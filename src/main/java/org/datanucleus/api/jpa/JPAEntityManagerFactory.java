@@ -79,7 +79,7 @@ import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.plugin.PluginManager;
-import org.datanucleus.query.cache.QueryCompilationCache;
+import org.datanucleus.query.compiler.QueryCompilationCache;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.connection.ConnectionFactory;
 import org.datanucleus.store.connection.ConnectionResourceType;

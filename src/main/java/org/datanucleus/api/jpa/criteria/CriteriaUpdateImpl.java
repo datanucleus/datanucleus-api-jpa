@@ -36,12 +36,12 @@ import javax.persistence.metamodel.SingularAttribute;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.query.compiler.JPQLSymbolResolver;
+import org.datanucleus.query.compiler.PropertySymbol;
 import org.datanucleus.query.compiler.QueryCompilation;
+import org.datanucleus.query.compiler.SymbolTable;
 import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.query.expression.DyadicExpression;
 import org.datanucleus.query.expression.Literal;
-import org.datanucleus.query.symbol.PropertySymbol;
-import org.datanucleus.query.symbol.SymbolTable;
 
 /**
  * Implementation of a Criteria Update query.

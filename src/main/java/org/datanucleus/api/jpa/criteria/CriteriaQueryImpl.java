@@ -39,7 +39,9 @@ import javax.persistence.metamodel.Metamodel;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.query.compiler.JPQLSymbolResolver;
+import org.datanucleus.query.compiler.PropertySymbol;
 import org.datanucleus.query.compiler.QueryCompilation;
+import org.datanucleus.query.compiler.SymbolTable;
 import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.query.expression.CreatorExpression;
 import org.datanucleus.query.expression.DyadicExpression;
@@ -49,8 +51,6 @@ import org.datanucleus.query.expression.OrderExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
 import org.datanucleus.query.expression.SubqueryExpression;
 import org.datanucleus.query.expression.VariableExpression;
-import org.datanucleus.query.symbol.PropertySymbol;
-import org.datanucleus.query.symbol.SymbolTable;
 
 /**
  * Implementation of JPA2 Criteria "Query".
