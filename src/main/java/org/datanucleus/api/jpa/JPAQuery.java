@@ -40,7 +40,6 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
 import org.datanucleus.exceptions.NucleusException;
-import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.query.QueryUtils;
 import org.datanucleus.query.compiler.QueryCompilation;
 import org.datanucleus.query.compiler.Symbol;
@@ -482,7 +481,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
          try
          {
-             if (language.equals(QueryLanguage.SQL.toString()))
+             if (isNativeQuery())
              {
                  query.setImplicitParameter(param.getPosition(), value);
              }
@@ -531,7 +530,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         try
         {
-            if (language.equals(QueryLanguage.SQL.toString()))
+            if (isNativeQuery())
             {
                 query.setImplicitParameter(position, value);
             }
@@ -641,7 +640,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         try
         {
-            if (language.equals(QueryLanguage.SQL.toString()))
+            if (isNativeQuery())
             {
                 query.setImplicitParameter(position, paramValue);
             }
@@ -686,7 +685,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         try
         {
-            if (language.equals(QueryLanguage.SQL.toString()))
+            if (isNativeQuery())
             {
                 query.setImplicitParameter(position, paramValue);
             }
@@ -777,7 +776,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Set<Parameter<?>> getParameters()
     {
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             throw new IllegalStateException("Not supported on native query");
         }
@@ -874,7 +873,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type)
     {
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             throw new IllegalStateException("Not supported on native query");
         }
@@ -901,7 +900,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type)
     {
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             throw new IllegalStateException("Not supported on native query");
         }
@@ -926,7 +925,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(int position)
     {
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             throw new IllegalStateException("Not supported on native query");
         }
@@ -951,7 +950,7 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(String name)
     {
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             throw new IllegalStateException("Not supported on native query");
         }
@@ -998,7 +997,7 @@ public class JPAQuery<X> implements TypedQuery<X>
                 throw new IllegalArgumentException("No parameter at position " + param.getPosition());
             }
 
-            if (language.equals(QueryLanguage.SQL.toString()))
+            if (isNativeQuery())
             {
                 if (query.getImplicitParameters().containsKey(param.getPosition()))
                 {
@@ -1026,7 +1025,7 @@ public class JPAQuery<X> implements TypedQuery<X>
             throw new IllegalArgumentException("No parameter at position " + position);
         }
 
-        if (language.equals(QueryLanguage.SQL.toString()))
+        if (isNativeQuery())
         {
             if (query.getImplicitParameters().containsKey(position))
             {
@@ -1079,7 +1078,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         else
         {
-            if (language.equals(QueryLanguage.SQL.toString()))
+            if (isNativeQuery())
             {
                 if (query.getImplicitParameters().containsKey(param.getPosition()))
                 {
@@ -1148,8 +1147,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     }
 
     /**
-     * Accessor for the native query invoked by this query (if known at this time and supported by the
-     * store plugin).
+     * Accessor for the native query invoked by this query (if known at this time and supported by the store plugin).
      * @return The native query (e.g for RDBMS this is the SQL).
      */
     public Object getNativeQuery()
@@ -1165,5 +1163,10 @@ public class JPAQuery<X> implements TypedQuery<X>
     public void saveAsNamedQuery(String name)
     {
         em.getEntityManagerFactory().addNamedQuery(name, this);
+    }
+
+    protected boolean isNativeQuery()
+    {
+        return language.equals(em.getExecutionContext().getStoreManager().getNativeQueryLanguage());
     }
 }
