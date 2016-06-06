@@ -178,6 +178,10 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
                     }
                 }
             }
+            if (negated)
+            {
+                dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT, dyExpr);
+            }
             queryExpr = dyExpr;
         }
         return queryExpr;
