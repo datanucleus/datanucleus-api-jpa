@@ -20,7 +20,7 @@ package org.datanucleus.api.jpa.criteria;
 import javax.persistence.criteria.ParameterExpression;
 
 /**
- * Implementation of JPA2 Criteria "ParameterExpression".
+ * Implementation of JPA Criteria "ParameterExpression".
  */
 public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements ParameterExpression<T>
 {
@@ -65,7 +65,12 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      */
     public org.datanucleus.query.expression.ParameterExpression getQueryExpression()
     {
-        return new org.datanucleus.query.expression.ParameterExpression(name, position);
+        org.datanucleus.query.expression.ParameterExpression paramExpr = new org.datanucleus.query.expression.ParameterExpression(name, position);
+        if (getJavaType() != null)
+        {
+            paramExpr.setType(getJavaType());
+        }
+        return paramExpr;
     }
 
     /**
