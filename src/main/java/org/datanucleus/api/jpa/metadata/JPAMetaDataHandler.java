@@ -954,11 +954,11 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 // DataNucleus Extension : Shared Relation
                 AbstractMemberMetaData mmd = (AbstractMemberMetaData)getStack();
                 String shColName = getAttr(attrs, "column");
-                mmd.addExtension("relation-discriminator-column", shColName);
+                mmd.addExtension(MetaData.EXTENSION_MEMBER_RELATION_DISCRIM_COLUMN, shColName);
                 String shColValue = getAttr(attrs, "value");
-                mmd.addExtension("relation-discriminator-value", shColValue);
+                mmd.addExtension(MetaData.EXTENSION_MEMBER_RELATION_DISCRIM_VALUE, shColValue);
                 String shColPK = getAttr(attrs, "primary-key");
-                mmd.addExtension("relation-discriminator-pk", shColPK);
+                mmd.addExtension(MetaData.EXTENSION_MEMBER_RELATION_DISCRIM_PK, shColPK);
             }
             else if (localName.equals("inheritance"))
             {
