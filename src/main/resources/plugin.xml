@@ -112,8 +112,14 @@ Contributors:
         <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
     </extension>
 
-    <!-- EXTENSION ANNOTATIONS -->
+    <!-- EXTENSION CLASS ANNOTATIONS -->
+    <extension point="org.datanucleus.class_annotation_handler">
+        <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ReadOnly" handler="org.datanucleus.api.jpa.annotations.ReadOnlyHandler"/>
+    </extension>
+
+    <!-- EXTENSION MEMBER ANNOTATIONS -->
     <extension point="org.datanucleus.member_annotation_handler">
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ReadOnly" handler="org.datanucleus.api.jpa.annotations.ReadOnlyHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.Index" handler="org.datanucleus.api.jpa.annotations.IndexHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.JdbcType" handler="org.datanucleus.api.jpa.annotations.JdbcTypeHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ColumnPosition" handler="org.datanucleus.api.jpa.annotations.ColumnPositionHandler"/>
