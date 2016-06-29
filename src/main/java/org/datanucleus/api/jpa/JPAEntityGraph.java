@@ -152,7 +152,7 @@ public class JPAEntityGraph<T> extends AbstractJPAGraph<T> implements EntityGrap
                 {
                     str.append(",");
                 }
-                if (!hasSubgraphs && attr.getSubgraphs() != null && attr.getSubgraphs().size() > 0)
+                if (!hasSubgraphs && attr.getSubgraphs() != null && !attr.getSubgraphs().isEmpty())
                 {
                     hasSubgraphs = true;
                 }
@@ -167,7 +167,7 @@ public class JPAEntityGraph<T> extends AbstractJPAGraph<T> implements EntityGrap
                 for (AttributeNode attr : attributeNodeMap.values())
                 {
                     Map<Class, Subgraph> subgraphs = attr.getSubgraphs();
-                    if (subgraphs != null && subgraphs.size() > 0)
+                    if (subgraphs != null && !subgraphs.isEmpty())
                     {
                         str.append(StringUtils.collectionToString(subgraphs.values()));
                     }

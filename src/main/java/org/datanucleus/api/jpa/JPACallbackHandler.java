@@ -346,7 +346,7 @@ public class JPACallbackHandler implements CallbackHandler
                 acmd = acmd.getSuperAbstractClassMetaData();
             }
 
-            if (entityMethodsToInvoke != null && entityMethodsToInvoke.size() > 0)
+            if (entityMethodsToInvoke != null && !entityMethodsToInvoke.isEmpty())
             {
                 // Invoke all listener methods on the entity
                 for (int i=0;i<entityMethodsToInvoke.size();i++)

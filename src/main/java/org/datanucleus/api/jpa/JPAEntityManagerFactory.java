@@ -1050,7 +1050,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                 {
                     fg.addMember(node.getAttributeName());
                     Map<Class, Subgraph> subgraphByTypeForNode = node.getSubgraphs();
-                    if (subgraphByTypeForNode.size() > 0)
+                    if (!subgraphByTypeForNode.isEmpty())
                     {
                         // Add FetchGroup for the subgraph type under the same fetch group name as this graph uses
                         for (Map.Entry<Class, Subgraph> subgraphEntry : subgraphByTypeForNode.entrySet())

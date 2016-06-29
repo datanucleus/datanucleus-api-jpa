@@ -432,7 +432,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     {
         Map extensions = query.getExtensions();
         Map map = new HashMap();
-        if (extensions != null && extensions.size() > 0)
+        if (extensions != null && !extensions.isEmpty())
         {
             map.putAll(extensions);
         }

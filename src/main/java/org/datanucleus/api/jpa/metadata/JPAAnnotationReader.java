@@ -1003,7 +1003,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     pkmd.addColumn(pkColumnMetaData[i]);
                 }
             }
-            if (uniques != null && uniques.size() > 0)
+            if (uniques != null && !uniques.isEmpty())
             {
                 // Unique constraints for the primary/secondary tables
                 Iterator<UniqueMetaData> uniquesIter = uniques.iterator();
