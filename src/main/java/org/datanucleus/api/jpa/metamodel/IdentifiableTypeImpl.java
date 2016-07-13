@@ -29,7 +29,7 @@ import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 
 /**
- * Implementation of JPA2 Metamodel "IdentifiableType".
+ * Implementation of JPA Metamodel "IdentifiableType".
  */
 public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements IdentifiableType<X>
 {
@@ -64,9 +64,8 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
             throw new IllegalArgumentException("More than 1 PK field, so use getIdClassAttributes()");
         }
 
-        int pkPosition = cmd.getPKMemberPositions()[0];
-        AbstractMemberMetaData mmd = cmd.getMetaDataForManagedMemberAtAbsolutePosition(pkPosition);
-        if (cls.isAssignableFrom(mmd.getType()))
+        AbstractMemberMetaData mmd = cmd.getMetaDataForManagedMemberAtAbsolutePosition(cmd.getPKMemberPositions()[0]);
+        if (mmd.getType().isAssignableFrom(cls) || cls.isAssignableFrom(mmd.getType()))
         {
             // User passed in the type of the field
             SingularAttribute attr = (SingularAttribute) attributes.get(mmd.getName());
@@ -167,7 +166,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
         if (verFieldName != null)
         {
             AbstractMemberMetaData verMmd = cmd.getMetaDataForMember(verFieldName);
-            if (cls.isAssignableFrom(verMmd.getType()))
+            if (cls.isAssignableFrom(verMmd.getType()) || verMmd.getType().isAssignableFrom(getClass()))
             {
                 SingularAttribute attr = (SingularAttribute) attributes.get(verFieldName);
                 if (attr == null)
@@ -182,6 +181,14 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
                 return attr;
             }
             throw new IllegalArgumentException("Version is not of specified type (" + cls.getName() + "). Should be " + verMmd.getTypeName());
+        }
+
+        // Maybe defined in superclass
+        IdentifiableType supertype = getSupertype();
+        if (supertype != null)
+        {
+            // Relay to the supertype
+            return supertype.getId(cls);
         }
 
         return null;
