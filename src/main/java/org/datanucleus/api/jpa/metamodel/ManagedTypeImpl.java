@@ -41,7 +41,7 @@ import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.RelationType;
 
 /**
- * Implementation of JPA2 Metamodel "ManagedType".
+ * Implementation of JPA Metamodel "ManagedType".
  * Provides a wrapper to AbstractClassMetaData.
  */
 public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
@@ -66,72 +66,78 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         this.model = model;
         this.cmd = cmd;
 
-        AbstractMemberMetaData[] mmds = cmd.getManagedMembers();
         ClassLoaderResolver clr = model.getClassLoaderResolver();
+        AbstractMemberMetaData[] mmds = cmd.getManagedMembers();
         for (int i=0;i<mmds.length;i++)
         {
-            RelationType relationType = mmds[i].getRelationType(clr);
-            Attribute attr = null;
-            if (relationType == RelationType.ONE_TO_MANY_UNI || relationType == RelationType.ONE_TO_MANY_BI)
+            Attribute attr = createAttributeForMember(mmds[i], clr, this);
+            attributes.put(mmds[i].getName(), attr);
+        }
+    }
+
+    public static Attribute createAttributeForMember(AbstractMemberMetaData mmd, ClassLoaderResolver clr, ManagedTypeImpl mt)
+    {
+        RelationType relationType = mmd.getRelationType(clr);
+        Attribute attr = null;
+        if (relationType == RelationType.ONE_TO_MANY_UNI || relationType == RelationType.ONE_TO_MANY_BI)
+        {
+            if (mmd.hasCollection())
             {
-                if (mmds[i].hasCollection())
+                if (List.class.isAssignableFrom(mmd.getType()))
                 {
-                    if (List.class.isAssignableFrom(mmds[i].getType()))
-                    {
-                        attr = new ListAttributeImpl(mmds[i], this);
-                    }
-                    else if (Set.class.isAssignableFrom(mmds[i].getType()))
-                    {
-                        attr = new SetAttributeImpl(mmds[i], this);
-                    }
-                    else
-                    {
-                        attr = new CollectionAttributeImpl(mmds[i], this);
-                    }
+                    attr = new ListAttributeImpl(mmd, mt);
                 }
-                else if (mmds[i].hasMap())
+                else if (Set.class.isAssignableFrom(mmd.getType()))
                 {
-                    attr = new MapAttributeImpl(mmds[i], this);
-                }
-                else if (mmds[i].hasArray())
-                {
-                    attr = new CollectionAttributeImpl(mmds[i], this);
-                }
-            }
-            else if (RelationType.isRelationSingleValued(relationType))
-            {
-                attr = new SingularAttributeImpl(mmds[i], this);
-            }
-            else if (relationType == RelationType.MANY_TO_MANY_BI)
-            {
-                attr = new CollectionAttributeImpl(mmds[i], this);
-            }
-            else
-            {
-                if (mmds[i].getType().isArray())
-                {
-                    attr = new PluralAttributeImpl(mmds[i], this);
-                }
-                else if (List.class.isAssignableFrom(mmds[i].getType()))
-                {
-                    attr = new ListAttributeImpl(mmds[i], this);
-                }
-                else if (Collection.class.isAssignableFrom(mmds[i].getType()))
-                {
-                    attr = new CollectionAttributeImpl(mmds[i], this);
-                }
-                else if (Map.class.isAssignableFrom(mmds[i].getType()))
-                {
-                    attr = new MapAttributeImpl(mmds[i], this);
+                    attr = new SetAttributeImpl(mmd, mt);
                 }
                 else
                 {
-                    attr = new SingularAttributeImpl(mmds[i], this);
+                    attr = new CollectionAttributeImpl(mmd, mt);
                 }
             }
-
-            attributes.put(mmds[i].getName(), attr);
+            else if (mmd.hasMap())
+            {
+                attr = new MapAttributeImpl(mmd, mt);
+            }
+            else if (mmd.hasArray())
+            {
+                attr = new CollectionAttributeImpl(mmd, mt);
+            }
         }
+        else if (RelationType.isRelationSingleValued(relationType))
+        {
+            attr = new SingularAttributeImpl(mmd, mt);
+        }
+        else if (relationType == RelationType.MANY_TO_MANY_BI)
+        {
+            attr = new CollectionAttributeImpl(mmd, mt);
+        }
+        else
+        {
+            if (mmd.getType().isArray())
+            {
+                attr = new PluralAttributeImpl(mmd, mt);
+            }
+            else if (List.class.isAssignableFrom(mmd.getType()))
+            {
+                attr = new ListAttributeImpl(mmd, mt);
+            }
+            else if (Collection.class.isAssignableFrom(mmd.getType()))
+            {
+                attr = new CollectionAttributeImpl(mmd, mt);
+            }
+            else if (Map.class.isAssignableFrom(mmd.getType()))
+            {
+                attr = new MapAttributeImpl(mmd, mt);
+            }
+            else
+            {
+                attr = new SingularAttributeImpl(mmd, mt);
+            }
+        }
+
+        return attr;
     }
 
     /**
