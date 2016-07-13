@@ -175,7 +175,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
                     if (supertype != null)
                     {
                         // Relay to the supertype
-                        return supertype.getId(cls);
+                        return supertype.getVersion(cls);
                     }
                 }
                 return attr;
@@ -188,7 +188,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
         if (supertype != null)
         {
             // Relay to the supertype
-            return supertype.getId(cls);
+            return supertype.getVersion(cls);
         }
 
         return null;
