@@ -66,7 +66,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
 
         int pkPosition = cmd.getPKMemberPositions()[0];
         AbstractMemberMetaData mmd = cmd.getMetaDataForManagedMemberAtAbsolutePosition(pkPosition);
-        if (cls.isAssignableFrom(mmd.getType()))
+        if (cls.isAssignableFrom(mmd.getType()) || mmd.getType().isAssignableFrom(cls))
         {
             // User passed in the type of the field
             SingularAttribute attr = (SingularAttribute) attributes.get(mmd.getName());
@@ -167,7 +167,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
         if (verFieldName != null)
         {
             AbstractMemberMetaData verMmd = cmd.getMetaDataForMember(verFieldName);
-            if (cls.isAssignableFrom(verMmd.getType()))
+            if (cls.isAssignableFrom(verMmd.getType()) || verMmd.getType().isAssignableFrom(cls))
             {
                 SingularAttribute attr = (SingularAttribute) attributes.get(verFieldName);
                 if (attr == null)
@@ -176,12 +176,20 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
                     if (supertype != null)
                     {
                         // Relay to the supertype
-                        return supertype.getId(cls);
+                        return supertype.getVersion(cls);
                     }
                 }
                 return attr;
             }
             throw new IllegalArgumentException("Version is not of specified type (" + cls.getName() + "). Should be " + verMmd.getTypeName());
+        }
+
+        // Maybe defined in superclass
+        IdentifiableType supertype = getSupertype();
+        if (supertype != null)
+        {
+            // Relay to the supertype
+            return supertype.getVersion(cls);
         }
 
         return null;
