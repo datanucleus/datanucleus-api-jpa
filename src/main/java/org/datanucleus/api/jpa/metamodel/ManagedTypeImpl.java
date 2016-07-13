@@ -154,6 +154,17 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         return model;
     }
 
+    public ManagedType getSuperclass()
+    {
+        AbstractClassMetaData superCmd = cmd.getSuperAbstractClassMetaData();
+        if (superCmd != null)
+        {
+            Class superCls = model.getClassLoaderResolver().classForName(superCmd.getFullClassName());
+            return model.managedType(superCls);
+        }
+        return null;
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.metamodel.ManagedType#getAttribute(java.lang.String)
      */
@@ -162,11 +173,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getAttribute(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class " + cmd.getFullClassName());
@@ -181,11 +191,11 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
     {
         Set<Attribute<? super X, ?>> set = new HashSet<Attribute<? super X,?>>();
         set.addAll(attributes.values());
-        if (cmd.getSuperAbstractClassMetaData() != null)
+
+        ManagedType supertype = getSuperclass();
+        if (supertype != null)
         {
             // Relay to the supertype
-            Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-            ManagedType supertype = model.managedType(supercls);
             Set<Attribute<? super X, ?>> superattrs = supertype.getAttributes();
             set.addAll(superattrs);
         }
@@ -244,11 +254,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getCollection(attr, elementType);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -274,11 +283,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getCollection(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -354,11 +362,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getList(attr, elementType);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -384,11 +391,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getList(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -464,11 +470,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getMap(attr, keyType, valueType);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -502,11 +507,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getMap(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -589,11 +593,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getSet(attr, elementType);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -619,11 +622,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getSet(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -699,11 +701,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getSingularAttribute(attr, type);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -724,11 +725,10 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AttributeImpl<X, ?> theAttr = (AttributeImpl<X, ?>) attributes.get(attr);
         if (theAttr == null)
         {
-            if (cmd.getSuperAbstractClassMetaData() != null)
+            ManagedType supertype = getSuperclass();
+            if (supertype != null)
             {
                 // Relay to the supertype
-                Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-                ManagedType supertype = model.managedType(supercls);
                 return supertype.getSingularAttribute(attr);
             }
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
@@ -752,11 +752,11 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
                 attrs.add((SingularAttribute<? super X, ?>) attr);
             }
         }
-        if (cmd.getSuperAbstractClassMetaData() != null)
+
+        ManagedType supertype = getSuperclass();
+        if (supertype != null)
         {
             // Relay to the supertype
-            Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-            ManagedType supertype = model.managedType(supercls);
             Set superattrs = supertype.getSingularAttributes();
             attrs.addAll(superattrs);
         }
@@ -774,6 +774,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         {
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
         }
+
         AbstractMemberMetaData mmd = theAttr.getMetadata();
         if (!type.isAssignableFrom(mmd.getType()))
         {
@@ -851,11 +852,11 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
                 attrs.add((PluralAttribute<X, ?, ?>) attr);
             }
         }
-        if (cmd.getSuperAbstractClassMetaData() != null)
+
+        ManagedType supertype = getSuperclass();
+        if (supertype != null)
         {
             // Relay to the supertype
-            Class supercls = model.getClassLoaderResolver().classForName(cmd.getSuperAbstractClassMetaData().getFullClassName());
-            ManagedType supertype = model.managedType(supercls);
             Set superattrs = supertype.getPluralAttributes();
             attrs.addAll(superattrs);
         }
