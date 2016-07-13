@@ -76,6 +76,15 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
                 {
                     // Relay to the supertype
                     return supertype.getId(cls);
+                    /*SingularAttribute idAttr = supertype.getId(cls);
+
+                    AbstractMemberMetaData overrideMmd = cmd.getOverriddenMember(mmd.getName());
+                    if (overrideMmd != null && overrideMmd.getType() != null && overrideMmd.getType() != idAttr.getJavaType())
+                    {
+                        // Type in subtype is different to supertype so must be generic overridden, so return separate attribute for id
+                        idAttr = (SingularAttribute) ManagedTypeImpl.createAttributeForMember(overrideMmd, model.getClassLoaderResolver(), this);
+                    }
+                    return idAttr;*/
                 }
             }
             return attr;
