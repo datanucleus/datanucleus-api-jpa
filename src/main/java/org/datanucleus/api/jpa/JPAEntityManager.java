@@ -128,7 +128,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         if (this.syncType == SynchronizationType.UNSYNCHRONIZED)
         {
             // Default is to auto-join, but user requests unsynchronized so pass this requirement to our ExecutionContext
-            options = new HashMap();
+            options = new HashMap<>();
             options.put(ExecutionContext.OPTION_JTA_AUTOJOIN, "false");
         }
         ec = nucleusCtx.getExecutionContext(this, options);
@@ -199,6 +199,11 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         {
             throw NucleusJPAHelper.getJPAExceptionForNucleusException(ne);
         }
+
+        fetchPlan = null;
+        ec = null;
+        // TODO Null emf
+
         closed = true;
     }
 

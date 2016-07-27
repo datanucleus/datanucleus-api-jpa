@@ -502,6 +502,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         nucleusCtx.close();
+        nucleusCtx = null;
+
         closed = true;
     }
 
@@ -554,6 +556,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public void addNamedQuery(String name, Query query)
     {
+        assertIsClosed();
+
         if (query == null)
         {
             return;
@@ -847,6 +851,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public Set<String> getSupportedProperties()
     {
+        assertIsClosed();
+
         return nucleusCtx.getConfiguration().getSupportedProperties();
     }
 
@@ -905,6 +911,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public Object getIdentifier(Object entity)
     {
+        assertIsClosed();
+
         return nucleusCtx.getApiAdapter().getIdForObject(entity);
     }
 
@@ -913,6 +921,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public boolean isLoaded(Object entity, String attrName)
     {
+        assertIsClosed();
+
         ExecutionContext ec = nucleusCtx.getApiAdapter().getExecutionContext(entity);
         if (ec == null)
         {
@@ -938,6 +948,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public boolean isLoaded(Object entity)
     {
+        assertIsClosed();
+
         if (nucleusCtx.getApiAdapter().getObjectState(entity).equals("hollow"))
         {
             return false;
@@ -956,6 +968,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public <T> T unwrap(Class<T> cls)
     {
+        assertIsClosed();
+
         if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
         {
             return (T) nucleusCtx;
@@ -1010,6 +1024,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
     public <T> void addNamedEntityGraph(String graphName, EntityGraph<T> graph)
     {
+        assertIsClosed();
+
         if (graph == null)
         {
             // Maybe better to throw an exception but the JPA API says nothing
@@ -1036,6 +1052,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
     public void registerEntityGraph(JPAEntityGraph eg, String graphName)
     {
+        assertIsClosed();
+
         FetchGroup fg = new FetchGroup(nucleusCtx, graphName, eg.getClassType());
         if (eg.getIncludeAllAttributes())
         {
@@ -1093,6 +1111,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
     public void deregisterEntityGraph(String graphName)
     {
+        assertIsClosed();
+
         Set<FetchGroup> fgs = nucleusCtx.getFetchGroupManager().getFetchGroupsWithName(graphName);
         if (fgs != null)
         {
