@@ -150,34 +150,12 @@ public class JPAEntityManager implements EntityManager
     }
 
     /**
-     * Clear the persistence context, causing all managed entities to become detached. 
-     * Changes made to entities that have not been flushed to the database will not be persisted.
-     */
-    public void clear()
-    {
-        assertIsOpen();
-        ec.detachAll();
-        ec.clearDirty();
-        ec.evictAllObjects();
-    }
-
-    public boolean isContainerManaged()
-    {
-        return emf.isContainerManaged();
-    }
-
-    /**
      * Determine whether the EntityManager is open.
      * @return true until the EntityManager has been closed.
      */
     public boolean isOpen()
     {
         return !closed;
-    }
-
-    public ExecutionContext getExecutionContext()
-    {
-        return ec;
     }
 
     /**
@@ -199,7 +177,34 @@ public class JPAEntityManager implements EntityManager
         {
             throw NucleusJPAHelper.getJPAExceptionForNucleusException(ne);
         }
+
+        fetchPlan = null;
+        ec = null;
+        emf = null;
+
         closed = true;
+    }
+
+    /**
+     * Clear the persistence context, causing all managed entities to become detached. 
+     * Changes made to entities that have not been flushed to the database will not be persisted.
+     */
+    public void clear()
+    {
+        assertIsOpen();
+        ec.detachAll();
+        ec.clearDirty();
+        ec.evictAllObjects();
+    }
+
+    public boolean isContainerManaged()
+    {
+        return emf.isContainerManaged();
+    }
+
+    public ExecutionContext getExecutionContext()
+    {
+        return ec;
     }
 
     /**

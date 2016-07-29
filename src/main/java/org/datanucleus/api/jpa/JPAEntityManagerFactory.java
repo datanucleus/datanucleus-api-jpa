@@ -505,6 +505,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         nucleusCtx.close();
+        nucleusCtx = null;
+
         closed = true;
     }
 

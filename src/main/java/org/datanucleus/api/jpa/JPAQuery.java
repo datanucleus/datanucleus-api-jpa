@@ -120,6 +120,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public int executeUpdate()
     {
+        assertIsOpen();
+
         if (query.getType() == org.datanucleus.store.query.Query.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.ExecuteUpdateForSelectInvalid"));
@@ -170,6 +172,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public List getResultList()
     {
+        assertIsOpen();
+
         if (query.getType() != org.datanucleus.store.query.Query.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
@@ -222,6 +226,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public X getSingleResult()
     {
+        assertIsOpen();
+
         if (query.getType() != org.datanucleus.store.query.Query.SELECT)
         {
             throw new IllegalStateException(Localiser.msg("Query.GetResultForUpdateInvalid"));
@@ -273,6 +279,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setFirstResult(int startPosition)
     {
+        assertIsOpen();
+
         if (startPosition < 0)
         {
             throw new IllegalArgumentException(Localiser.msg("Query.StartPositionInvalid"));
@@ -297,6 +305,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setMaxResults(int max)
     {
+        assertIsOpen();
+
         if (max < 0)
         {
             throw new IllegalArgumentException(Localiser.msg("Query.MaxResultsInvalid"));
@@ -314,6 +324,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public int getMaxResults()
     {
+        assertIsOpen();
+
         if (maxResults == -1)
         {
             return Integer.MAX_VALUE;
@@ -335,6 +347,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public int getFirstResult()
     {
+        assertIsOpen();
+
         return (int)query.getRangeFromIncl();
     }
 
@@ -345,6 +359,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setFlushMode(FlushModeType mode)
     {
+        assertIsOpen();
+
         flushMode = mode;
         return this;
     }
@@ -356,6 +372,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public FlushModeType getFlushMode()
     {
+        assertIsOpen();
+
         return flushMode;
     }
 
@@ -369,6 +387,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setHint(String hintName, Object value)
     {
+        assertIsOpen();
+
         if (hintName == null)
         {
             return this;
@@ -428,6 +448,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Map getHints()
     {
+        assertIsOpen();
+
         Map extensions = query.getExtensions();
         Map map = new HashMap();
         if (extensions != null && extensions.size() > 0)
@@ -447,6 +469,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Set<String> getSupportedHints()
     {
+        assertIsOpen();
+
         return query.getSupportedExtensions();
     }
 
@@ -459,6 +483,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
      public <T> TypedQuery<X> setParameter(Parameter<T> param, T value)
      {
+         assertIsOpen();
+
          if (param == null)
          {
              throw new IllegalArgumentException("Parameter object is null");
@@ -505,6 +531,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(String name, Object value)
     {
+        assertIsOpen();
+
         try
         {
             query.setImplicitParameter(name, value);
@@ -526,6 +554,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(int position, Object value)
     {
+        assertIsOpen();
+
         try
         {
             if (language.equals(QueryLanguage.SQL.toString()))
@@ -554,6 +584,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(String name, Date value, TemporalType temporalType)
     {
+        assertIsOpen();
+
         Object paramValue = value;
         if (temporalType == TemporalType.TIME && !(value instanceof Time))
         {
@@ -585,6 +617,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(String name, Calendar value, TemporalType temporalType)
     {
+        assertIsOpen();
+
         Object paramValue = value;
         if (value != null)
         {
@@ -623,6 +657,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(int position, Date value, TemporalType temporalType)
     {
+        assertIsOpen();
+
         Object paramValue = value;
         if (value != null)
         {
@@ -664,6 +700,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(int position, Calendar value, TemporalType temporalType)
     {
+        assertIsOpen();
+
         Object paramValue = value;
         if (value != null)
         {
@@ -704,6 +742,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public JPAQuery<X> setParameter(Parameter<Calendar> param, Calendar cal, TemporalType type)
     {
+        assertIsOpen();
+
         if (param.getName() != null)
         {
             setParameter(param.getName(), cal, type);
@@ -720,6 +760,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public TypedQuery<X> setParameter(Parameter<Date> param, Date date, TemporalType type)
     {
+        assertIsOpen();
+
         if (param.getName() != null)
         {
             setParameter(param.getName(), date, type);
@@ -751,6 +793,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> T unwrap(Class<T> cls)
     {
+        assertIsOpen();
+
         if (cls == org.datanucleus.store.query.Query.class)
         {
             return (T)query;
@@ -774,6 +818,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Set<Parameter<?>> getParameters()
     {
+        assertIsOpen();
+
         if (language.equals(QueryLanguage.SQL.toString()))
         {
             throw new IllegalStateException("Not supported on native query");
@@ -871,6 +917,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(String name, Class<T> type)
     {
+        assertIsOpen();
+
         if (language.equals(QueryLanguage.SQL.toString()))
         {
             throw new IllegalStateException("Not supported on native query");
@@ -898,6 +946,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> Parameter<T> getParameter(int position, Class<T> type)
     {
+        assertIsOpen();
+
         if (language.equals(QueryLanguage.SQL.toString()))
         {
             throw new IllegalStateException("Not supported on native query");
@@ -923,6 +973,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(int position)
     {
+        assertIsOpen();
+
         if (language.equals(QueryLanguage.SQL.toString()))
         {
             throw new IllegalStateException("Not supported on native query");
@@ -948,6 +1000,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Parameter<?> getParameter(String name)
     {
+        assertIsOpen();
+
         if (language.equals(QueryLanguage.SQL.toString()))
         {
             throw new IllegalStateException("Not supported on native query");
@@ -976,6 +1030,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public <T> T getParameterValue(Parameter<T> param)
     {
+        assertIsOpen();
+
         if (param.getName() != null)
         {
             if (query.getImplicitParameters() == null)
@@ -1018,6 +1074,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(int position)
     {
+        assertIsOpen();
+
         if (query.getImplicitParameters() == null)
         {
             throw new IllegalArgumentException("No parameter at position " + position);
@@ -1045,6 +1103,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public Object getParameterValue(String name)
     {
+        assertIsOpen();
+
         if (query.getImplicitParameters() == null)
         {
             throw new IllegalArgumentException("No parameter with name " + name);
@@ -1062,6 +1122,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     public boolean isBound(Parameter<?> param)
     {
+        assertIsOpen();
+
         if (parameters == null)
         {
             return false;
@@ -1096,6 +1158,8 @@ public class JPAQuery<X> implements TypedQuery<X>
 
     public LockModeType getLockMode()
     {
+        assertIsOpen();
+
         if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
@@ -1106,6 +1170,8 @@ public class JPAQuery<X> implements TypedQuery<X>
 
     public TypedQuery<X> setLockMode(LockModeType lock)
     {
+        assertIsOpen();
+
         if (query.getType() != Query.SELECT || !query.getLanguage().equals("JPQL"))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
@@ -1122,6 +1188,8 @@ public class JPAQuery<X> implements TypedQuery<X>
      */
     TypedQuery<X> setResultClass(Class resultClass)
     {
+        assertIsOpen();
+
         if (resultClass == Object[].class)
         {
             // Internal default when we have a result specified so ignore
@@ -1162,5 +1230,17 @@ public class JPAQuery<X> implements TypedQuery<X>
     public void saveAsNamedQuery(String name)
     {
         em.getEntityManagerFactory().addNamedQuery(name, this);
+    }
+
+    /**
+     * Assert if the EntityManager is closed.
+     * @throws IllegalStateException When the EntityManaged is closed
+     */
+    private void assertIsOpen()
+    {
+        if (!em.isOpen())
+        {
+            throw new IllegalStateException(Localiser.msg("EM.IsClosed"));
+        }
     }
 }
