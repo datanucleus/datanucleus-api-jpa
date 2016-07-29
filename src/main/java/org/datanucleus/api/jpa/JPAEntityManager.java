@@ -202,7 +202,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
         fetchPlan = null;
         ec = null;
-        // TODO Null emf
+        emf = null;
 
         closed = true;
     }
