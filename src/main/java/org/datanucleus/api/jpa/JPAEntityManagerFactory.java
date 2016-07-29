@@ -500,6 +500,16 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             unitMetaData = null;
         }
+        if (entityGraphsByName != null)
+        {
+            entityGraphsByName.clear();
+            entityGraphsByName = null;
+        }
+        if (entityGraphsToRegister != null)
+        {
+            entityGraphsToRegister.clear();
+            entityGraphsToRegister = null;
+        }
 
         nucleusCtx.close();
         nucleusCtx = null;
