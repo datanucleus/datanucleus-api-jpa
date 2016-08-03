@@ -3044,16 +3044,28 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             {
                 // Column for a Collection<NonPC> ?
                 fieldType = ClassUtils.getCollectionElementType(fieldType, member.getGenericType());
+                if (fieldType == null)
+                {
+                    fieldType = clr.classForName(mmd.getCollection().getElementType());
+                }
             }
             else if (mmd.hasMap() && Map.class.isAssignableFrom(fieldType))
             {
                 // Column for a Map<?,NonPC> ?
                 fieldType = ClassUtils.getMapValueType(fieldType, member.getGenericType());
+                if (fieldType == null)
+                {
+                    fieldType = clr.classForName(mmd.getMap().getValueType());
+                }
             }
             else if (mmd.hasArray() && fieldType.isArray())
             {
                 // Column for an array of NonPC using join table
                 fieldType = fieldType.getComponentType();
+                if (fieldType == null)
+                {
+                    fieldType = clr.classForName(mmd.getArray().getElementType());
+                }
             }
         }
 
