@@ -2177,7 +2177,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (columnMetaData == null)
             {
                 // Column specified (at least in part) via @Column/@Lob/@Enumerated/@Temporal
-                ColumnMetaData colmd = newColumnMetaData(mmd, member.getType(), annotations);
+                ColumnMetaData colmd = newColumnMetaData(mmd, member, annotations);
                 if (colmd != null)
                 {
                     columnMetaData = new ColumnMetaData[1];
@@ -3022,14 +3022,26 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     /**
      * Method to create a new ColumnMetaData.
      * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
-     * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
+     * otherwise it can cause a different behaviour based on the loading order of the annotations !!!!
      * @param parent The parent MetaData object
-     * @param field The field/property
+     * @param member The field/property
      * @param annotations Annotations on this field/property
      * @return MetaData for the column
      */
-    private ColumnMetaData newColumnMetaData(MetaData parent, Class fieldType, AnnotationObject[] annotations)
+    private ColumnMetaData newColumnMetaData(MetaData parent, Member member, AnnotationObject[] annotations)
     {
+        Class fieldType = member.getType();
+        if (Collection.class.isAssignableFrom(fieldType))
+        {
+            // Column for a Collection<NonPC> ?
+            fieldType = ClassUtils.getCollectionElementType(fieldType, member.getGenericType());
+        }
+        else if (Map.class.isAssignableFrom(fieldType))
+        {
+            // Column for a Map<?,NonPC> ?
+            fieldType = ClassUtils.getMapValueType(fieldType, member.getGenericType());
+        }
+
         String columnName = null;
         String target = null;
         String targetField = null;
