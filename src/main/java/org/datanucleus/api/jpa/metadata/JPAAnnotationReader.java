@@ -3027,26 +3027,34 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Method to create a new ColumnMetaData.
+     * Method to create a new ColumnMetaData for a member.
      * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
      * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
-     * @param parent The parent MetaData object
+     * @param mmd The member MetaData
      * @param member The field/property
      * @param annotations Annotations on this field/property
      * @return MetaData for the column
      */
-    private ColumnMetaData newColumnMetaData(MetaData parent, Member member, AnnotationObject[] annotations)
+    private ColumnMetaData newColumnMetaData(AbstractMemberMetaData mmd, Member member, AnnotationObject[] annotations)
     {
         Class fieldType = member.getType();
-        if (Collection.class.isAssignableFrom(fieldType))
+        if (mmd.getJoinMetaData() != null && !mmd.isSerialized())
         {
-            // Column for a Collection<NonPC> ?
-            fieldType = ClassUtils.getCollectionElementType(fieldType, member.getGenericType());
-        }
-        else if (Map.class.isAssignableFrom(fieldType))
-        {
-            // Column for a Map<?,NonPC> ?
-            fieldType = ClassUtils.getMapValueType(fieldType, member.getGenericType());
+            if (mmd.hasCollection() && Collection.class.isAssignableFrom(fieldType))
+            {
+                // Column for a Collection<NonPC> ?
+                fieldType = ClassUtils.getCollectionElementType(fieldType, member.getGenericType());
+            }
+            else if (mmd.hasMap() && Map.class.isAssignableFrom(fieldType))
+            {
+                // Column for a Map<?,NonPC> ?
+                fieldType = ClassUtils.getMapValueType(fieldType, member.getGenericType());
+            }
+            else if (mmd.hasArray() && fieldType.isArray())
+            {
+                // Column for an array of NonPC using join table
+                fieldType = fieldType.getComponentType();
+            }
         }
 
         String columnName = null;
@@ -3102,11 +3110,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     if (mgr.getNucleusContext().getConfiguration().getBooleanProperty("datanucleus.jpa.legacy.mapBooleanToSmallint", false))
                     {
                         // NOTE : This was present for up to DN 4.0 but now only available via property since not found a reason for it
-                        String memberName = "unknown";
-                        if (parent instanceof AbstractMemberMetaData)
-                        {
-                            memberName = ((AbstractMemberMetaData)parent).getFullFieldName();
-                        }
+                        String memberName = mmd.getFullFieldName();
                         NucleusLogger.METADATA.info("Member " + memberName + " has column of type " + fieldType.getName() + 
                             " and being mapped to SMALLINT JDBC type. This is deprecated and could be removed in the future. Use @JdbcType instead");
                         jdbcType = "SMALLINT";
@@ -3221,30 +3225,18 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         {
             colmd.setColumnDdl(columnDdl);
         }
-        if (parent instanceof AbstractMemberMetaData)
+
+        if (!StringUtils.isWhitespace(table))
         {
-            AbstractMemberMetaData apmd = (AbstractMemberMetaData) parent;
-            if (!StringUtils.isWhitespace(table))
-            {
-                apmd.setTable(table);
-            }
-            // apmd.addColumn(colmd);
-            // update column settings if primary key, cannot be null
-            if (apmd.isPrimaryKey())
-            {
-                colmd.setAllowsNull(false);
-            }
+            mmd.setTable(table);
         }
-        else if (parent instanceof KeyMetaData)
+        // mmd.addColumn(colmd);
+        // update column settings if primary key, cannot be null
+        if (mmd.isPrimaryKey())
         {
-            KeyMetaData keymd = (KeyMetaData) parent;
-            AbstractMemberMetaData apmd = (AbstractMemberMetaData) keymd.getParent();
-            if (!StringUtils.isWhitespace(table))
-            {
-                apmd.setTable(table);
-            }
-//            colmd.setAllowsNull(colmd.isAllowsNull());
+            colmd.setAllowsNull(false);
         }
+
         return colmd;
     }
 
