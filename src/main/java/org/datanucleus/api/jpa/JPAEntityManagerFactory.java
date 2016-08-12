@@ -315,6 +315,9 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             nucleusCtx.getMetaDataManager().setAllowMetaDataLoad(false);
         }
+
+        // Initialise metamodel
+        getMetamodel();
     }
 
     private void setPersistenceContextTypeFromProperties(Properties props, Map overridingProps)
@@ -360,6 +363,9 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         setPersistenceContextTypeFromProperties(props, overridingProps);
 
         initialise(pumd, overridingProps, null);
+
+        // Initialise metamodel
+        getMetamodel();
     }
 
     /**
@@ -396,6 +402,9 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         setPersistenceContextTypeFromProperties(props, overridingProps);
 
         initialise(unitMetaData, overridingProps, pluginMgr);
+
+        // Initialise metamodel
+        getMetamodel();
     }
 
     public NucleusContext getNucleusContext()
