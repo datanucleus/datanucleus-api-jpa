@@ -32,6 +32,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.Type;
 
 import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.api.jpa.JPAEntityManagerFactory;
 import org.datanucleus.exceptions.ClassNotResolvedException;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.ClassMetaData;
@@ -41,7 +42,7 @@ import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.metadata.PackageMetaData;
 
 /**
- * Implementation of JPA2 Criteria "Metamodel".
+ * Implementation of JPA Criteria "Metamodel".
  */
 public class MetamodelImpl implements Metamodel
 {
@@ -136,6 +137,7 @@ public class MetamodelImpl implements Metamodel
                                     }
                                     catch (Exception e)
                                     {
+                                        JPAEntityManagerFactory.LOGGER.debug("Exception in setting metamodel", e);
                                     }
                                 }
                             }
