@@ -94,6 +94,11 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
      */
     public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType()
     {
+        if (mmd.getEmbeddedMetaData() != null)
+        {
+            return PersistentAttributeType.EMBEDDED;
+        }
+
         RelationType relationType = mmd.getRelationType(owner.getModel().getClassLoaderResolver());
         if (relationType == RelationType.MANY_TO_ONE_BI)
         {
