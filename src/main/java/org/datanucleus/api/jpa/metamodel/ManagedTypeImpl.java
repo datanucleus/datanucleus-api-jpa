@@ -102,7 +102,8 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
             }
             else if (mmd.hasArray())
             {
-                attr = new CollectionAttributeImpl(mmd, mt);
+                // Include arrays as SingularAttributeImpl! since JPA doesn't provide an alternative
+                attr = new SingularAttributeImpl(mmd, mt);
             }
         }
         else if (RelationType.isRelationSingleValued(relationType))
@@ -115,13 +116,13 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         }
         else
         {
-            if (mmd.getType().isArray())
-            {
-                attr = new PluralAttributeImpl(mmd, mt);
-            }
-            else if (List.class.isAssignableFrom(mmd.getType()))
+            if (List.class.isAssignableFrom(mmd.getType()))
             {
                 attr = new ListAttributeImpl(mmd, mt);
+            }
+            else if (Set.class.isAssignableFrom(mmd.getType()))
+            {
+                attr = new SetAttributeImpl(mmd, mt);
             }
             else if (Collection.class.isAssignableFrom(mmd.getType()))
             {
@@ -133,6 +134,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
             }
             else
             {
+                // Include arrays as SingularAttributeImpl! since JPA doesn't provide an alternative
                 attr = new SingularAttributeImpl(mmd, mt);
             }
         }
