@@ -149,8 +149,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
         	int[] pkMemberNumbers = cmd.getPKMemberPositions();
         	if (pkMemberNumbers.length == 1)
         	{
-        		AbstractMemberMetaData pkMmd = cmd.getMetaDataForManagedMemberAtAbsolutePosition(pkMemberNumbers[0]);
-        		return model.getType(pkMmd.getType());
+        		return model.getType(cmd.getMetaDataForManagedMemberAtAbsolutePosition(pkMemberNumbers[0]).getType());
         	}
         }
         return model.getType(pkCls);
@@ -162,8 +161,11 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
     public IdentifiableType<? super X> getSupertype()
     {
         AbstractClassMetaData superCmd = cmd.getSuperAbstractClassMetaData();
-        Class superCls = model.getClassLoaderResolver().classForName(superCmd.getFullClassName());
-        return (IdentifiableType<? super X>)model.managedType(superCls);
+        if (superCmd != null)
+        {
+            return (IdentifiableType<? super X>)model.managedType(model.getClassLoaderResolver().classForName(superCmd.getFullClassName()));
+        }
+        return null;
     }
 
     /* (non-Javadoc)
