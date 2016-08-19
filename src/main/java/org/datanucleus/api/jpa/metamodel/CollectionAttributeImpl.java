@@ -24,7 +24,7 @@ import javax.persistence.metamodel.CollectionAttribute;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 
 /**
- * Implementation of JPA2 metamodel "CollectionAttribute".
+ * Implementation of JPA metamodel "CollectionAttribute".
  * 
  * @param <X> The type the represented Collection belongs to
  * @param <E> The element type of the represented Collection

@@ -25,7 +25,7 @@ import org.datanucleus.metadata.RelationType;
 import org.datanucleus.metadata.VersionMetaData;
 
 /**
- * Implementation of JPA2 Metamodel "SingularAttribute".
+ * Implementation of JPA Metamodel "SingularAttribute".
  *
  * @param <X> The type containing the represented attribute
  * @param <T> The type of the represented attribute
@@ -63,8 +63,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         {
             return false;
         }
-        else if (mmd.getColumnMetaData() != null && mmd.getColumnMetaData().length > 0 && 
-                !mmd.getColumnMetaData()[0].isAllowsNull())
+        else if (mmd.getColumnMetaData() != null && mmd.getColumnMetaData().length > 0 && !mmd.getColumnMetaData()[0].isAllowsNull())
         {
             return false;
         }

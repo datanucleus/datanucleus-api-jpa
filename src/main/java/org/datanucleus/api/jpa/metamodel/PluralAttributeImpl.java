@@ -28,7 +28,7 @@ import javax.persistence.metamodel.Type;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 
 /**
- * Implementation of JPA2 Metamodel "PluralAttribute".
+ * Implementation of JPA Metamodel "PluralAttribute".
  * 
  * @param <X> the type that owns this member
  * @param <C> the container type that holds this member (e.g. java.util.Set&lt;Employee&gt;)
@@ -91,6 +91,7 @@ public class PluralAttributeImpl<X, C, E> extends AttributeImpl<X, C> implements
         {
             return CollectionType.COLLECTION;
         }
+        // Should array come here?
         return null;
     }
 

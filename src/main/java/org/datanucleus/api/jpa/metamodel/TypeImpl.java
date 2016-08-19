@@ -20,7 +20,7 @@ package org.datanucleus.api.jpa.metamodel;
 import javax.persistence.metamodel.Type;
 
 /**
- * Implementation of JPA2 Metamodel "Type".
+ * Implementation of JPA Metamodel "Type".
  */
 public class TypeImpl<X> implements Type<X>
 {

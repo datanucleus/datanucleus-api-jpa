@@ -22,7 +22,7 @@ import javax.persistence.metamodel.EmbeddableType;
 import org.datanucleus.metadata.AbstractClassMetaData;
 
 /**
- * Implementation of JPA2 Metamodel "EmbeddableType".
+ * Implementation of JPA Metamodel "EmbeddableType".
  */
 public class EmbeddableTypeImpl<X> extends ManagedTypeImpl<X> implements EmbeddableType<X>
 {

@@ -150,7 +150,7 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
      */
     public boolean isCollection()
     {
-        // In JPA a "collection" is a Collection or Map ...
+        // In JPA a "collection" is a Collection or Map (even though we have CollectionAttribute and MapAttribute ...). Totally weird.
         return Collection.class.isAssignableFrom(mmd.getType()) || Map.class.isAssignableFrom(mmd.getType());
     }
 
@@ -168,6 +168,7 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
         }
         else if (mmd.hasMap())
         {
+            // In JPA we return the map "value". How we get the map "key" no idea ...
             return owner.model.getType(clr.classForName(mmd.getMap().getValueType()));
         }
         else if (mmd.hasArray())

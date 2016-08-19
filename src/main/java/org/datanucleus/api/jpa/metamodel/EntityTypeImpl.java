@@ -22,7 +22,7 @@ import javax.persistence.metamodel.EntityType;
 import org.datanucleus.metadata.AbstractClassMetaData;
 
 /**
- * Implementation of JPA2 Metamodel "EntityType".
+ * Implementation of JPA Metamodel "EntityType".
  */
 public class EntityTypeImpl<X> extends IdentifiableTypeImpl<X> implements EntityType<X>
 {
