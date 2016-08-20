@@ -59,8 +59,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     protected List eventListeners = new ArrayList();
 
     /** Listeners for notification of when an EntityGraph is registered. */
-    protected List<JPAEntityGraphRegistrationListener> entityGraphListeners = 
-            new ArrayList<JPAEntityGraphRegistrationListener>();
+    protected List<JPAEntityGraphRegistrationListener> entityGraphListeners = new ArrayList<JPAEntityGraphRegistrationListener>();
 
     /**
      * Constructor.
@@ -153,8 +152,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     }
 
     /**
-     * Method to take the FileMetaData and register the relevant parts of it with the various
-     * convenience collections/maps that we use for access.
+     * Method to take the FileMetaData and register the relevant parts of it with the various convenience collections/maps that we use for access.
      * @param fileURLString URL of the metadata file
      * @param filemd The File MetaData
      */
@@ -264,8 +262,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param cls The class to process for callback-annotated methods
      * @param clr ClassLoader resolver
      */
-    private void populateListenerMethodsForClassInEventListener(EventListenerMetaData elmd, Class cls,
-        ClassLoaderResolver clr)
+    private void populateListenerMethodsForClassInEventListener(EventListenerMetaData elmd, Class cls, ClassLoaderResolver clr)
     {
         Method[] methods = cls.getDeclaredMethods();
         if (methods != null)
@@ -301,40 +298,20 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     }
 
     /**
-     * Accessor for the JPA MetaData for a class.
-     * With JPA we either register the classes in "persistence.xml" (via "class", "jar-file"
-     * or "mapping-file") or we have them annotated. If they havent been loaded when we
-     * loaded "persistence.xml" then we only check for annotations in that class.
-     * @param c The class to find MetaData for
-     * @return The ClassMetaData for this class (or null if not found)
-     **/
-    @SuppressWarnings("unchecked")
-    public synchronized AbstractClassMetaData getMetaDataForClassInternal(Class c, ClassLoaderResolver clr)
+     * Load the metadata for the specified class (if available).
+     * With JPA if a class hasn't been loaded at startup (from the persistence-unit) then we only check for annotations in the class itself.
+     * @param c The class
+     * @param clr ClassLoader resolver
+     * @return The metadata for this class (if found)
+     */
+    protected AbstractClassMetaData loadMetaDataForClass(Class c, ClassLoaderResolver clr)
     {
-        if (c.isArray())
-        {
-            // Only particular classes can have metadata
-            return null;
-        }
-
-        // If we know that this class/interface has no MetaData/annotations don't bother searching
-        if (isClassWithoutPersistenceInfo(c.getName()))
-        {
-            return null;
-        }
-
-        // Check for MetaData loaded when we loaded the "persistence-unit"
-        AbstractClassMetaData cmd = classMetaDataByClass.get(c.getName());
-        if (cmd != null)
-        {
-            return cmd;
-        }
-
         if (!allowMetaDataLoad)
         {
             // Not allowing further metadata load so just return
             return null;
         }
+
         try
         {
             // TODO What if a different thread starts loading this class just before we do? it will load then we do too
@@ -342,11 +319,11 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
 
             if (allowAnnotations)
             {
-                // No MetaData so check for annotations
+                // Check for annotations
                 FileMetaData annFilemd = loadAnnotationsForClass(c, clr, true, true);
                 if (annFilemd != null)
                 {
-                    // No MetaData but annotations present so use that
+                    // Annotations present so use that
                     return annFilemd.getPackage(0).getClass(0);
                 }
             }
