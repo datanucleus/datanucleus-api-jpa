@@ -336,6 +336,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             String[] cols = StringUtils.split(colStr, ",");
                             if (cols != null)
                             {
+                                // TODO Support ASC|DESC that can be placed after a column name
                                 for (int k=0;k<cols.length;k++)
                                 {
                                     idxmd.addColumn(cols[k]);
@@ -1671,6 +1672,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             String[] cols = StringUtils.split(colStr, ",");
                             if (cols != null)
                             {
+                                // TODO Support ASC|DESC that can be placed after a column name
                                 for (int k=0;k<cols.length;k++)
                                 {
                                     idxmd.addColumn(cols[k]);
@@ -1769,6 +1771,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             String[] cols = StringUtils.split(colStr, ",");
                             if (cols != null)
                             {
+                                // TODO Support ASC|DESC that can be placed after a column name
                                 for (int k=0;k<cols.length;k++)
                                 {
                                     idxmd.addColumn(cols[k]);
@@ -3324,6 +3327,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 String[] cols = StringUtils.split(colStr, ",");
                                 if (cols != null)
                                 {
+                                    // TODO Support ASC|DESC that can be placed after a column name
                                     for (int l=0;l<cols.length;l++)
                                     {
                                         idxmd.addColumn(cols[l]);
@@ -3403,6 +3407,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         String[] cols = StringUtils.split(colStr, ",");
                         if (cols != null)
                         {
+                            // TODO Support ASC|DESC that can be placed after a column name
                             for (int k=0;k<cols.length;k++)
                             {
                                 idxmd.addColumn(cols[k]);
