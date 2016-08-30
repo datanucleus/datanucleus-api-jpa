@@ -2297,6 +2297,22 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 embmd = elemmd.newEmbeddedMetaData();
             }
         }
+        else if (mmd.hasMap())
+        {
+            // TODO Have way of applying to key?
+            type = clr.classForName(mmd.getMap().getValueType()); // Update to the value type
+            ValueMetaData valmd = mmd.getValueMetaData();
+            if (valmd == null)
+            {
+                valmd = new ValueMetaData();
+                mmd.setValueMetaData(valmd);
+            }
+            embmd = valmd.getEmbeddedMetaData();
+            if (embmd == null)
+            {
+                embmd = valmd.newEmbeddedMetaData();
+            }
+        }
         else
         {
             // Embedded 1-1

@@ -2303,16 +2303,59 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     // Override mappings for embedded field
                     AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
-                    EmbeddedMetaData embmd = mmd.getEmbeddedMetaData();
-                    if (embmd == null)
+                    if (mmd.hasCollection())
                     {
-                        embmd = new EmbeddedMetaData();
-                        embmd.setParent(mmd);
-                        mmd.setEmbeddedMetaData(embmd);
+                        // Override of embedded collection element fields
+                        ElementMetaData elemmd = mmd.getElementMetaData();
+                        if (elemmd == null)
+                        {
+                            elemmd = new ElementMetaData();
+                            mmd.setElementMetaData(elemmd);
+                        }
+                        EmbeddedMetaData embmd = elemmd.getEmbeddedMetaData();
+                        if (embmd == null)
+                        {
+                            embmd = elemmd.newEmbeddedMetaData();
+                        }
+
+                        AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
+                        embmd.addMember(embMmd);
+                        pushStack(mmd);
                     }
-                    AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
-                    embmd.addMember(embMmd);
-                    pushStack(mmd);
+                    else if (mmd.hasMap())
+                    {
+                        // Override of embedded map value fields
+                        ValueMetaData valmd = mmd.getValueMetaData();
+                        if (valmd == null)
+                        {
+                            valmd = new ValueMetaData();
+                            mmd.setValueMetaData(valmd);
+                        }
+                        EmbeddedMetaData embmd = valmd.getEmbeddedMetaData();
+                        if (embmd == null)
+                        {
+                            embmd = valmd.newEmbeddedMetaData();
+                        }
+
+                        AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
+                        embmd.addMember(embMmd);
+                        pushStack(mmd);
+                    }
+                    else
+                    {
+                        // Override of embedded 1-1/N-1 field
+                        EmbeddedMetaData embmd = mmd.getEmbeddedMetaData();
+                        if (embmd == null)
+                        {
+                            embmd = new EmbeddedMetaData();
+                            embmd.setParent(mmd);
+                            mmd.setEmbeddedMetaData(embmd);
+                        }
+
+                        AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
+                        embmd.addMember(embMmd);
+                        pushStack(mmd);
+                    }
                 }
             }
             else if (localName.equals("exclude-default-listeners"))
