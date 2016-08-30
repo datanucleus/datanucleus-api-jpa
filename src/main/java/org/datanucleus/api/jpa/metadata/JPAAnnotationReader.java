@@ -1552,8 +1552,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     mmd.setEmbedded(true);
 
                     // Embedded field override
-                    processEmbeddedAttributeOverride(mmd, (String)annotationValues.get("name"), 
-                        member.getType(), (Column)annotationValues.get("column"));
+                    processEmbeddedAttributeOverride(mmd, (String)annotationValues.get("name"), member.getType(), (Column)annotationValues.get("column"));
                 }
                 else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDES))
                 {
@@ -2291,6 +2290,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected void processEmbeddedAttributeOverride(AbstractMemberMetaData mmd, String overriddenName, Class type, Column column)
     {
+        String overrideName = overriddenName;
+
         // Get the EmbeddedMetaData, creating as necessary
         EmbeddedMetaData embmd = null;
         if (mmd.hasCollection())
@@ -2311,18 +2312,42 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else if (mmd.hasMap())
         {
-            // TODO Have way of applying to key?
-            type = clr.classForName(mmd.getMap().getValueType()); // Update to the value type
-            ValueMetaData valmd = mmd.getValueMetaData();
-            if (valmd == null)
+            if (overrideName.startsWith("key."))
             {
-                valmd = new ValueMetaData();
-                mmd.setValueMetaData(valmd);
+                overrideName = overrideName.substring(4);
+                type = clr.classForName(mmd.getMap().getKeyType()); // Update to the key type
+                KeyMetaData keymd = mmd.getKeyMetaData();
+                if (keymd == null)
+                {
+                    keymd = new KeyMetaData();
+                    mmd.setKeyMetaData(keymd);
+                }
+                embmd = keymd.getEmbeddedMetaData();
+                if (embmd == null)
+                {
+                    embmd = keymd.newEmbeddedMetaData();
+                }
             }
-            embmd = valmd.getEmbeddedMetaData();
-            if (embmd == null)
+            else if (overrideName.startsWith("value."))
             {
-                embmd = valmd.newEmbeddedMetaData();
+                overrideName = overrideName.substring(6);
+                type = clr.classForName(mmd.getMap().getValueType()); // Update to the value type
+                ValueMetaData valmd = mmd.getValueMetaData();
+                if (valmd == null)
+                {
+                    valmd = new ValueMetaData();
+                    mmd.setValueMetaData(valmd);
+                }
+                embmd = valmd.getEmbeddedMetaData();
+                if (embmd == null)
+                {
+                    embmd = valmd.newEmbeddedMetaData();
+                }
+            }
+            else
+            {
+                NucleusLogger.METADATA.warn("Attempt to override '" + overriddenName + "' on Map field. Should prefix key field(s) with 'key.' and value fields with 'value.'");
+                return;
             }
         }
         else
@@ -2338,11 +2363,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             mmd.setEmbeddedMetaData(embmd);
         }
 
-        if (overriddenName.indexOf('.') > 0)
+        if (overrideName.indexOf('.') > 0)
         {
-            int position = overriddenName.indexOf('.');
-            String baseMemberName = overriddenName.substring(0, position);
-            String nestedMemberName = overriddenName.substring(position+1);
+            int position = overrideName.indexOf('.');
+            String baseMemberName = overrideName.substring(0, position);
+            String nestedMemberName = overrideName.substring(position+1);
             AbstractMemberMetaData ammd = null;
 
             // Try as field
@@ -2371,7 +2396,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (ammd == null)
             {
                 throw new NucleusException("Cannot obtain override field/property "+
-                    overriddenName + " of class " + type + " for persistent class " + mmd.getClassName(true));
+                        overrideName + " of class " + type + " for persistent class " + mmd.getClassName(true));
             }
 
             embmd.addMember(ammd);
@@ -2389,9 +2414,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             // Try as field
             try
             {
-                overrideMember = type.getDeclaredField(overriddenName);
+                overrideMember = type.getDeclaredField(overrideName);
                 overriddenMember = new Member((Field)overrideMember);
-                ammd = new FieldMetaData(embmd, overriddenName);
+                ammd = new FieldMetaData(embmd, overrideName);
             }
             catch (Exception e)
             {
@@ -2402,9 +2427,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 // Try as property
                 try
                 {
-                    overrideMember = type.getDeclaredMethod(ClassUtils.getJavaBeanGetterName(overriddenName, false));
+                    overrideMember = type.getDeclaredMethod(ClassUtils.getJavaBeanGetterName(overrideName, false));
                     overriddenMember = new Member((Method)overrideMember);
-                    ammd = new PropertyMetaData(embmd, overriddenName);
+                    ammd = new PropertyMetaData(embmd, overrideName);
                 }
                 catch (Exception e)
                 {
@@ -2414,7 +2439,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (ammd == null)
             {
                 throw new NucleusException("Cannot obtain override field/property "+
-                    overriddenName + " of class " + type + " for persistent class " + mmd.getClassName(true));
+                        overrideName + " of class " + type + " for persistent class " + mmd.getClassName(true));
             }
 
             embmd.addMember(ammd);

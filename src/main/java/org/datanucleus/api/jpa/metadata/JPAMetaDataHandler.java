@@ -2315,6 +2315,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     }
                     else if (mmd.hasMap())
                     {
+                        // TODO Support key?
                         ValueMetaData valmd = mmd.getValueMetaData();
                         if (valmd == null)
                         {
