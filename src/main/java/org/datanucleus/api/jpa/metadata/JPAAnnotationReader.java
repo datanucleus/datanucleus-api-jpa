@@ -1543,8 +1543,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     AttributeOverride[] attributeOverride = (AttributeOverride[])annotationValues.get("value");
                     for (int j=0; j<attributeOverride.length; j++)
                     {
-                        processEmbeddedAttributeOverride(mmd, attributeOverride[j].name(), 
-                            member.getType(), attributeOverride[j].column());
+                        processEmbeddedAttributeOverride(mmd, attributeOverride[j].name(), member.getType(), attributeOverride[j].column());
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDE))
@@ -1555,6 +1554,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     // Embedded field override
                     processEmbeddedAttributeOverride(mmd, (String)annotationValues.get("name"), 
                         member.getType(), (Column)annotationValues.get("column"));
+                }
+                else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDES))
+                {
+                    // TODO Not yet processed
+                }
+                else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDE))
+                {
+                    // TODO Not yet processed
                 }
                 else if (annName.equals(JPAAnnotationUtils.JOIN_TABLE))
                 {
@@ -2300,6 +2307,22 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (embmd == null)
             {
                 embmd = elemmd.newEmbeddedMetaData();
+            }
+        }
+        else if (mmd.hasMap())
+        {
+            // TODO Have way of applying to key?
+            type = clr.classForName(mmd.getMap().getValueType()); // Update to the value type
+            ValueMetaData valmd = mmd.getValueMetaData();
+            if (valmd == null)
+            {
+                valmd = new ValueMetaData();
+                mmd.setValueMetaData(valmd);
+            }
+            embmd = valmd.getEmbeddedMetaData();
+            if (embmd == null)
+            {
+                embmd = valmd.newEmbeddedMetaData();
             }
         }
         else
