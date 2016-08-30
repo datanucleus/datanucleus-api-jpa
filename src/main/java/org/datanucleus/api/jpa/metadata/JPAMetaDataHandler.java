@@ -2274,38 +2274,9 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 }
                 else
                 {
-                    // Override mappings for embedded field
-                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
-                    EmbeddedMetaData embmd = mmd.getEmbeddedMetaData();
-                    if (embmd == null)
-                    {
-                        embmd = new EmbeddedMetaData();
-                        embmd.setParent(mmd);
-                        mmd.setEmbeddedMetaData(embmd);
-                    }
-                    AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
-                    embmd.addMember(embMmd);
-                    pushStack(mmd);
-                }
-            }
-            else if (localName.equals("association-override"))
-            {
-                MetaData md = getStack();
-                if (md instanceof AbstractClassMetaData)
-                {
-                    // Override columns for a superclass field
-                    AbstractClassMetaData cmd = (AbstractClassMetaData)getStack();
-                    AbstractMemberMetaData fmd = newOverriddenFieldObject(cmd, attrs);
-                    cmd.addMember(fmd);
-                    pushStack(fmd);
-                }
-                else
-                {
-                    // Override mappings for embedded field
                     AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
                     if (mmd.hasCollection())
                     {
-                        // Override of embedded collection element fields
                         ElementMetaData elemmd = mmd.getElementMetaData();
                         if (elemmd == null)
                         {
@@ -2324,7 +2295,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     }
                     else if (mmd.hasMap())
                     {
-                        // Override of embedded map value fields
+                        // TODO Detect key/value prefixes?
                         ValueMetaData valmd = mmd.getValueMetaData();
                         if (valmd == null)
                         {
@@ -2343,7 +2314,6 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     }
                     else
                     {
-                        // Override of embedded 1-1/N-1 field
                         EmbeddedMetaData embmd = mmd.getEmbeddedMetaData();
                         if (embmd == null)
                         {
@@ -2356,6 +2326,33 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         embmd.addMember(embMmd);
                         pushStack(mmd);
                     }
+                }
+            }
+            else if (localName.equals("association-override"))
+            {
+                MetaData md = getStack();
+                if (md instanceof AbstractClassMetaData)
+                {
+                    // Override columns for a superclass field
+                    AbstractClassMetaData cmd = (AbstractClassMetaData)getStack();
+                    AbstractMemberMetaData fmd = newOverriddenFieldObject(cmd, attrs);
+                    cmd.addMember(fmd);
+                    pushStack(fmd);
+                }
+                else
+                {
+                    // Override mappings for embedded field
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
+                    EmbeddedMetaData embmd = mmd.getEmbeddedMetaData();
+                    if (embmd == null)
+                    {
+                        embmd = new EmbeddedMetaData();
+                        embmd.setParent(mmd);
+                        mmd.setEmbeddedMetaData(embmd);
+                    }
+                    AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
+                    embmd.addMember(embMmd);
+                    pushStack(mmd);
                 }
             }
             else if (localName.equals("exclude-default-listeners"))
