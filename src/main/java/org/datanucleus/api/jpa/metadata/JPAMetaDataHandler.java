@@ -2293,7 +2293,6 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 else
                 {
                     // Override mappings for embedded field (1-1)
-                    // TODO Support Collection/Map overrides
                     AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
                     if (mmd.hasCollection())
                     {
@@ -2315,20 +2314,45 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     }
                     else if (mmd.hasMap())
                     {
-                        // TODO Support key?
-                        ValueMetaData valmd = mmd.getValueMetaData();
-                        if (valmd == null)
+                        String memberNameOverride = getAttr(attrs, "name");
+                        EmbeddedMetaData embmd = null;
+                        String memberName = memberNameOverride;
+                        if (memberNameOverride.startsWith("key."))
                         {
-                            valmd = new ValueMetaData();
-                            mmd.setValueMetaData(valmd);
+                            memberName = memberNameOverride.substring(4);
+                            KeyMetaData keymd = mmd.getKeyMetaData();
+                            if (keymd == null)
+                            {
+                                keymd = new KeyMetaData();
+                                mmd.setKeyMetaData(keymd);
+                            }
+                            embmd = keymd.getEmbeddedMetaData();
+                            if (embmd == null)
+                            {
+                                embmd = keymd.newEmbeddedMetaData();
+                            }
                         }
-                        EmbeddedMetaData embmd = valmd.getEmbeddedMetaData();
-                        if (embmd == null)
+                        else if (memberNameOverride.startsWith("value."))
                         {
-                            embmd = valmd.newEmbeddedMetaData();
+                            memberName = memberNameOverride.substring(6);
+                            ValueMetaData valmd = mmd.getValueMetaData();
+                            if (valmd == null)
+                            {
+                                valmd = new ValueMetaData();
+                                mmd.setValueMetaData(valmd);
+                            }
+                            embmd = valmd.getEmbeddedMetaData();
+                            if (embmd == null)
+                            {
+                                embmd = valmd.newEmbeddedMetaData();
+                            }
+                        }
+                        else
+                        {
+                            throw new RuntimeException("<attribute-override> specified for map field with name of " + memberName + " yet should start with 'key.' or 'value.'!");
                         }
 
-                        AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, attrs);
+                        AbstractMemberMetaData embMmd = newOverriddenEmbeddedFieldObject(embmd, memberName, getAttr(attrs, "column"));
                         embmd.addMember(embMmd);
                         pushStack(mmd);
                     }
@@ -2414,7 +2438,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 throw new RuntimeException(message);
             }
         }
-        catch(RuntimeException ex)
+        catch (RuntimeException ex)
         {
             NucleusLogger.METADATA.error(Localiser.msg("044042", qName, getStack(), uri), ex);
             throw ex;
