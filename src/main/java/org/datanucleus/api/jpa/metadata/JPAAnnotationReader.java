@@ -941,10 +941,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
             if (discriminatorValue != null || discriminatorColumnName != null || discriminatorColumnLength != null || discriminatorColumnType != null)
             {
-                if (cmd.getInheritanceMetaData() == null)
+                if (inhmd == null)
                 {
                     // No inheritance specified, but discriminator is, so add empty inheritance metadata to store discriminator info
-                    cmd.newInheritanceMetadata();
+                    inhmd = cmd.newInheritanceMetadata();
                 }
 
                 // Add discriminator information to the inheritance of this class
