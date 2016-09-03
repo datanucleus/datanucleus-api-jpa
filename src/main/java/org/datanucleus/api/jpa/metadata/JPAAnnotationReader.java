@@ -932,15 +932,21 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 inhmd = cmd.newInheritanceMetadata().setStrategy(inheritanceStrategy);
                 inhmd.setStrategyForTree(inheritanceStrategyForTree);
             }
-            else if (discriminatorValue != null || discriminatorColumnName != null || 
-                    discriminatorColumnLength != null || discriminatorColumnType != null)
+            else if (inheritanceStrategyForTree != null)
             {
-                // Discriminator specified so we need inheritance data
-                inhmd = cmd.newInheritanceMetadata().setStrategyForTree(inheritanceStrategyForTree);
+                // Strategy for tree defined, so add inheritance metadata to store this info
+                inhmd = cmd.newInheritanceMetadata();
+                inhmd.setStrategyForTree(inheritanceStrategyForTree);
             }
 
             if (discriminatorValue != null || discriminatorColumnName != null || discriminatorColumnLength != null || discriminatorColumnType != null)
             {
+                if (cmd.getInheritanceMetaData() == null)
+                {
+                    // No inheritance specified, but discriminator is, so add empty inheritance metadata to store discriminator info
+                    cmd.newInheritanceMetadata();
+                }
+
                 // Add discriminator information to the inheritance of this class
                 DiscriminatorMetaData dismd = inhmd.newDiscriminatorMetadata();
                 if (discriminatorValue != null)
