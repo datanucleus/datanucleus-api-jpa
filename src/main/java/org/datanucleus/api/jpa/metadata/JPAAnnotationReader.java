@@ -74,6 +74,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 
 import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.JPAEntityGraph;
 import org.datanucleus.api.jpa.JPASubgraph;
 import org.datanucleus.api.jpa.annotations.Extension;
@@ -953,18 +954,27 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     // Value specified so assumed to be value-map
                     dismd.setColumnName(discriminatorColumnName);
-                    dismd.setValue(discriminatorValue).setStrategy(DiscriminatorStrategy.VALUE_MAP).setIndexed("false");
+                    dismd.setValue(discriminatorValue).setStrategy(DiscriminatorStrategy.VALUE_MAP).setIndexed("true");
                 }
                 else
                 {
-                    if (!Modifier.isAbstract(cls.getModifiers()))
+                    if (mgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
                     {
-                        // No value and concrete class so use class-name
-                        discriminatorValue = cls.getName();
-                        dismd.setValue(discriminatorValue);
+                        // Legacy handling, DN <= 5.0.2
+                        if (!Modifier.isAbstract(cls.getModifiers()))
+                        {
+                            // No value and concrete class so use class-name
+                            discriminatorValue = cls.getName();
+                            dismd.setValue(discriminatorValue);
+                        }
+                        dismd.setColumnName(discriminatorColumnName);
+                        dismd.setStrategy(DiscriminatorStrategy.CLASS_NAME).setIndexed("true");
                     }
-                    dismd.setColumnName(discriminatorColumnName);
-                    dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP).setIndexed("false");
+                    else
+                    {
+                        dismd.setColumnName(discriminatorColumnName);
+                        dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME).setIndexed("true");
+                    }
                 }
 
                 ColumnMetaData discolmd = null;

@@ -30,6 +30,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
 import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.JPAEntityGraph;
 import org.datanucleus.api.jpa.AbstractJPAGraph;
 import org.datanucleus.api.jpa.JPASubgraph;
@@ -1689,15 +1690,27 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     inhmd = new InheritanceMetaData();
                     cmd.setInheritanceMetaData(inhmd);
                 }
+
                 DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
                 if (dismd == null)
                 {
-                    // User hasn't specified discriminator value so use "provider-specific function" (JPA 9.1.3.1) - what a joke spec
-                    dismd = inhmd.newDiscriminatorMetadata();
-                    dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
-                    dismd.setValue(cmd.getFullClassName()); // Default to class name as value unless set
-                    dismd.setIndexed("true");
+                    // User hasn't specified discriminator value so use "provider-specific function" (JPA 9.1.3.1)
+                    if (mgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
+                    {
+                        // Legacy handling, DN <= 5.0.2
+                        dismd = inhmd.newDiscriminatorMetadata();
+                        dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
+                        dismd.setValue(cmd.getFullClassName()); // Default to class name as value unless set
+                        dismd.setIndexed("true");
+                    }
+                    else
+                    {
+                        dismd = inhmd.newDiscriminatorMetadata();
+                        dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME);
+                        dismd.setIndexed("true");
+                    }
                 }
+
                 String jdbcType = null;
                 String discType = getAttr(attrs, "discriminator-type");
                 if (discType != null)
