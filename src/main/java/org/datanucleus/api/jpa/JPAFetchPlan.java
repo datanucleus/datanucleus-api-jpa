@@ -45,7 +45,7 @@ public class JPAFetchPlan implements Serializable
      * Accessor for the groups.
      * @return The groups
      */
-    public Set getGroups()
+    public Set<String> getGroups()
     {
         return fp.getGroups();
     }
