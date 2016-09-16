@@ -137,9 +137,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
     public JPAMetaDataHandler(MetaDataManager mgr, String filename, EntityResolver resolver)
     {
         super(mgr, filename, resolver);
-        metadata = new FileMetaData();
-        ((FileMetaData)metadata).setFilename(filename);
-        ((FileMetaData)metadata).setMetaDataManager(mgr); // Parsing via this manager, so set it
+        metadata = new FileMetaData(filename);
         pushStack(metadata); // Start with FileMetaData on the stack
     }
 
