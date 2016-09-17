@@ -92,7 +92,6 @@ import org.datanucleus.metadata.DiscriminatorStrategy;
 import org.datanucleus.metadata.ElementMetaData;
 import org.datanucleus.metadata.EmbeddedMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
-import org.datanucleus.metadata.ExtensionMetaData;
 import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.ForeignKeyMetaData;
@@ -237,7 +236,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             Set<IndexMetaData> indexes = null;
             Set<AbstractMemberMetaData> overriddenFields = null;
             List<QueryResultMetaData> resultMappings = null;
-            Set<ExtensionMetaData> extensions = null;
+            Map<String,String> extensions = null;
 
             for (int i=0;i<annotations.length;i++)
             {
@@ -859,13 +858,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 else if (annName.equals(JPAAnnotationUtils.EXTENSION))
                 {
                     // extension
-                    ExtensionMetaData extmd = new ExtensionMetaData((String)annotationValues.get("vendorName"), 
-                        (String)annotationValues.get("key"), (String)annotationValues.get("value"));
                     if (extensions == null)
                     {
-                        extensions = new HashSet<ExtensionMetaData>(1);
+                        extensions = new HashMap<String,String>(1);
                     }
-                    extensions.add(extmd);
+                    extensions.put((String)annotationValues.get("key"), (String)annotationValues.get("value"));
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXTENSIONS))
                 {
@@ -875,12 +872,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         if (extensions == null)
                         {
-                            extensions = new HashSet<ExtensionMetaData>(values.length);
+                            extensions = new HashMap<String,String>(values.length);
                         }
                         for (int j=0;j<values.length;j++)
                         {
-                            ExtensionMetaData extmd = new ExtensionMetaData(values[j].vendorName(), values[j].key().toString(), values[j].value().toString());
-                            extensions.add(extmd);
+                            extensions.put(values[j].key().toString(), values[j].value().toString());
                         }
                     }
                 }
@@ -1057,12 +1053,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             if (extensions != null)
             {
-                Iterator<ExtensionMetaData> iter = extensions.iterator();
-                while (iter.hasNext())
-                {
-                    ExtensionMetaData extmd = iter.next();
-                    cmd.addExtension(extmd.getVendorName(), extmd.getKey(), extmd.getValue());
-                }
+                cmd.addExtensions(extensions);
             }
 
             // Process any secondary tables
@@ -2517,7 +2508,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         String mapsIdAttribute = null;
         boolean orphanRemoval = false;
         CascadeType[] cascades = null;
-        Set<ExtensionMetaData> extensions = null;
+        Map<String, String> extensions = null;
         String valueStrategy = null;
         String valueGenerator = null;
         boolean storeInLob = false;
@@ -2687,13 +2678,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             else if (annName.equals(JPAAnnotationUtils.EXTENSION))
             {
-                ExtensionMetaData extmd = new ExtensionMetaData((String)annotationValues.get("vendorName"), 
-                    (String)annotationValues.get("key"), (String)annotationValues.get("value"));
                 if (extensions == null)
                 {
-                    extensions = new HashSet<ExtensionMetaData>(1);
+                    extensions = new HashMap<String,String>(1);
                 }
-                extensions.add(extmd);
+                extensions.put((String)annotationValues.get("key"), (String)annotationValues.get("value"));
             }
             else if (annName.equals(JPAAnnotationUtils.EXTENSIONS))
             {
@@ -2702,13 +2691,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (extensions == null)
                     {
-                        extensions = new HashSet<ExtensionMetaData>(values.length);
+                        extensions = new HashMap<String,String>(values.length);
                     }
                     for (int j=0;j<values.length;j++)
                     {
-                        ExtensionMetaData extmd = new ExtensionMetaData(values[j].vendorName(),
-                            values[j].key().toString(), values[j].value().toString());
-                        extensions.add(extmd);
+                        extensions.put(values[j].key().toString(), values[j].value().toString());
                     }
                 }
             }
@@ -2901,12 +2888,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         // Extensions
         if (extensions != null)
         {
-            Iterator<ExtensionMetaData> iter = extensions.iterator();
-            while (iter.hasNext())
-            {
-                ExtensionMetaData extmd = iter.next();
-                mmd.addExtension(extmd.getVendorName(), extmd.getKey(), extmd.getValue());
-            }
+            mmd.addExtensions(extensions);
         }
 
         return mmd;

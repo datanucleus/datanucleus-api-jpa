@@ -2423,12 +2423,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             else if (localName.equals("extension"))
             {
                 MetaData md = getStack();
-                String vendorName = getAttr(attrs, "vendor-name");
-                if (vendorName == null)
-                {
-                    vendorName = "datanucleus";
-                }
-                md.addExtension(vendorName, getAttr(attrs,"key"), getAttr(attrs,"value"));
+                md.addExtension(getAttr(attrs,"key"), getAttr(attrs,"value"));
             }
             else if (localName.equals("query-hint"))
             {
