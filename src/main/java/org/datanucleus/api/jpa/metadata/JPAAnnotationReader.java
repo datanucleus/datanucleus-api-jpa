@@ -132,7 +132,6 @@ import org.datanucleus.metadata.annotations.Member;
 import org.datanucleus.store.types.ContainerHandler;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
-import org.datanucleus.store.types.converters.TypeConverterHelper;
 import org.datanucleus.util.ClassUtils;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
@@ -2111,8 +2110,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
                         else
                         {
-                            attrType = TypeConverterHelper.getMemberTypeForTypeConverter(conv, dbType);
-                            dbType = TypeConverterHelper.getDatastoreTypeForTypeConverter(conv, attrType);
+                            attrType = typeMgr.getMemberTypeForTypeConverter(conv, dbType);
+                            dbType = typeMgr.getDatastoreTypeForTypeConverter(conv, attrType);
                         }
 
                         if (StringUtils.isWhitespace(convAttrName))
@@ -3618,7 +3617,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     if (attrType != null)
                     {
                         TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
-                        typeMgr.registerConverter(cls.getName(), conv, autoApply, attrType.getName());
+                        typeMgr.registerConverter(cls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }
                 return true;

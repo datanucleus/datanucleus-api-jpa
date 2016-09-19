@@ -1170,7 +1170,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         // Register the TypeConverter under the name of the AttributeConverter class
                         TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
-                        typeMgr.registerConverter(converterCls.getName(), conv, autoApply, attrType.getName());
+                        typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }
             }
