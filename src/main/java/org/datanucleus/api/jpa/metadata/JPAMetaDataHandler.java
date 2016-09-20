@@ -1142,7 +1142,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
 
                         // Register the TypeConverter under the name of the AttributeConverter class
-                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                        TypeConverter conv = new JPATypeConverter(entityConv);
                         typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, false, null);
                     }
                 }
@@ -1169,7 +1169,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     if (attrType != null)
                     {
                         // Register the TypeConverter under the name of the AttributeConverter class
-                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                        TypeConverter conv = new JPATypeConverter(entityConv);
                         typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }

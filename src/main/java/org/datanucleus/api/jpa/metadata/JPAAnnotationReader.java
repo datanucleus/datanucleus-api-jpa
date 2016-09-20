@@ -2006,7 +2006,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(converterCls, attrType, null);
 
                                 // Register the TypeConverter under the name of the AttributeConverter class
-                                TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                                TypeConverter conv = new JPATypeConverter(entityConv);
                                 typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, false, null);
                             }
 
@@ -2105,7 +2105,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
 
                             // Register the TypeConverter under the name of the AttributeConverter class
-                            conv = new JPATypeConverter(entityConv, attrType, dbType);
+                            conv = new JPATypeConverter(entityConv);
                             typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, false, null);
                         }
                         else
@@ -3616,7 +3616,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     // Register the TypeConverter under the name of the AttributeConverter class
                     if (attrType != null)
                     {
-                        TypeConverter conv = new JPATypeConverter(entityConv, attrType, dbType);
+                        TypeConverter conv = new JPATypeConverter(entityConv);
                         typeMgr.registerConverter(cls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }

@@ -23,8 +23,6 @@ import org.datanucleus.store.types.converters.TypeConverter;
 
 /**
  * Wrapper for a type converter provided by a user, so it can be used by the internal TypeConverter mechanism.
- * Note that we also retain the member and datastore types here since when interrogating the methods of
- * this wrapper by reflection the return types don't show up as the X and Y types but instead Object.
  */
 public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
 {
@@ -33,29 +31,9 @@ public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
     /** The user-provided entity converter. */
     AttributeConverter<X, Y> entityConverter;
 
-    /** The member type. */
-    Class<X> memberType;
-
-    /** The datastore type. */
-    Class<Y> dbType;
-
-    public JPATypeConverter(AttributeConverter<X, Y> entityConv, Class<X> memberType, Class<Y> dbType)
+    public JPATypeConverter(AttributeConverter<X, Y> entityConv)
     {
         this.entityConverter = entityConv;
-        this.dbType = dbType;
-        this.memberType = memberType;
-    }
-
-    // TODO Drop this. not needed now
-    public Class<X> getMemberClass()
-    {
-        return memberType;
-    }
-
-    // TODO Drop this. not needed now
-    public Class<Y> getDatastoreClass()
-    {
-        return dbType;
     }
 
     public Y toDatastoreType(X memberValue)
@@ -70,6 +48,6 @@ public class JPATypeConverter<X, Y> implements TypeConverter<X, Y>
 
     public String toString()
     {
-        return "JPATypeConverter<" + memberType.getName() + "," + dbType.getName() + ">";
+        return "JPATypeConverter for " + entityConverter;
     }
 }
