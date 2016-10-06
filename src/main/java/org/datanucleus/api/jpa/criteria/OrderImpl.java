@@ -23,12 +23,17 @@ import javax.persistence.criteria.Order;
 import org.datanucleus.query.expression.OrderExpression;
 
 /**
- * Implementation of JPA2 Criteria "Order".
+ * Implementation of JPA Criteria "Order".
  */
 public class OrderImpl implements Order
 {
     Expression<?> expr;
+
     boolean ascending = true;
+
+    private enum NullPrecedence {NULLS_FIRST, NULLS_LAST}
+
+    NullPrecedence nullPrecedence = null;
 
     /**
      * Constructor for an Order.
@@ -66,13 +71,36 @@ public class OrderImpl implements Order
         return this;
     }
 
+    public Order nullsFirst()
+    {
+        this.nullPrecedence = NullPrecedence.NULLS_FIRST;
+        return this;
+    }
+
+    public Order nullsLast()
+    {
+        this.nullPrecedence = NullPrecedence.NULLS_LAST;
+        return this;
+    }
+
     /**
      * Method to return the underlying DataNucleus query expression that this equates to.
      * @return The order Expression
      */
     public org.datanucleus.query.expression.OrderExpression getQueryExpression()
     {
-        return new OrderExpression(((ExpressionImpl)expr).getQueryExpression(), ascending ? "ascending" : "descending");
+        OrderExpression orderExpr = null;
+        if (nullPrecedence == null)
+        {
+            orderExpr = new OrderExpression(((ExpressionImpl)expr).getQueryExpression(), ascending ? "ascending" : "descending");
+        }
+        else
+        {
+            orderExpr = new OrderExpression(((ExpressionImpl)expr).getQueryExpression(), ascending ? "ascending" : "descending", 
+                    nullPrecedence == NullPrecedence.NULLS_FIRST ? "nulls first" : "nulls last");
+        }
+        
+        return orderExpr;
     }
 
     /**
@@ -81,6 +109,6 @@ public class OrderImpl implements Order
      */
     public String toString()
     {
-        return expr.toString() + " " + (ascending ? "ASC" : "DESC");
+        return expr.toString() + " " + (ascending ? "ASC" : "DESC") + (nullPrecedence != null ? ((nullPrecedence == NullPrecedence.NULLS_FIRST) ? " NULLS FIRST" : " NULLS LAST") : "");
     }
 }
