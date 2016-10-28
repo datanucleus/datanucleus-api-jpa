@@ -34,6 +34,7 @@ import javax.persistence.metamodel.Type;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.api.jpa.JPAEntityManagerFactory;
 import org.datanucleus.exceptions.ClassNotResolvedException;
+import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.ClassMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
@@ -46,22 +47,25 @@ import org.datanucleus.metadata.PackageMetaData;
  */
 public class MetamodelImpl implements Metamodel
 {
+    MetaDataManager mmgr;
+
     ClassLoaderResolver clr;
 
     /** The entity types handled here. */
-    Map<String, EntityType<?>> entityTypes = new HashMap<String, EntityType<?>>();
+    Map<String, EntityType<?>> entityTypes = new HashMap<>();
 
     /** The MappedSuperclass types handled here. */
-    Map<String, MappedSuperclassTypeImpl<?>> mappedSuperTypes = new HashMap<String, MappedSuperclassTypeImpl<?>>();
+    Map<String, MappedSuperclassTypeImpl<?>> mappedSuperTypes = new HashMap<>();
 
     /** The Embeddable types handled here. */
-    Map<String, EmbeddableType<?>> embeddedTypes = new HashMap<String, EmbeddableType<?>>();
+    Map<String, EmbeddableType<?>> embeddedTypes = new HashMap<>();
 
     /** Basic types, can act as a cache. */
-    Map<String, Type<?>> basicTypes = new HashMap<String, Type<?>>();
+    Map<String, Type<?>> basicTypes = new HashMap<>();
 
     public MetamodelImpl(MetaDataManager mmgr)
     {
+        this.mmgr = mmgr;
         this.clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
 
         // Load up known types
@@ -172,12 +176,23 @@ public class MetamodelImpl implements Metamodel
         throw new IllegalArgumentException("Type " + cls.getName() + " is not a known embeddable type");
     }
 
+    public <X> EmbeddableType<X> embeddable(String entityName)
+    {
+        AbstractClassMetaData cmd = mmgr.getMetaDataForEntityName(entityName);
+        if (cmd == null)
+        {
+            return null;
+        }
+        Class cls = clr.classForName(cmd.getFullClassName());
+        return embeddable(cls);
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.metamodel.Metamodel#getEmbeddables()
      */
     public Set<EmbeddableType<?>> getEmbeddables()
     {
-        Set<EmbeddableType<?>> results = new HashSet<EmbeddableType<?>>();
+        Set<EmbeddableType<?>> results = new HashSet<>();
         results.addAll(embeddedTypes.values());
         return results;
     }
@@ -195,12 +210,23 @@ public class MetamodelImpl implements Metamodel
         throw new IllegalArgumentException("Type " + cls.getName() + " is not a known entity type");
     }
 
+    public <X> EntityType<X> entity(String entityName)
+    {
+        AbstractClassMetaData cmd = mmgr.getMetaDataForEntityName(entityName);
+        if (cmd == null)
+        {
+            return null;
+        }
+        Class cls = clr.classForName(cmd.getFullClassName());
+        return entity(cls);
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.metamodel.Metamodel#getEntities()
      */
     public Set<EntityType<?>> getEntities()
     {
-        Set<EntityType<?>> results = new HashSet<EntityType<?>>();
+        Set<EntityType<?>> results = new HashSet<>();
         results.addAll(entityTypes.values());
         return results;
     }
@@ -229,12 +255,23 @@ public class MetamodelImpl implements Metamodel
         throw new IllegalArgumentException("Type " + cls.getName() + " is not a known managed type");
     }
 
+    public <X> ManagedType<X> managedType(String entityName)
+    {
+        AbstractClassMetaData cmd = mmgr.getMetaDataForEntityName(entityName);
+        if (cmd == null)
+        {
+            return null;
+        }
+        Class cls = clr.classForName(cmd.getFullClassName());
+        return managedType(cls);
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.metamodel.Metamodel#getManagedTypes()
      */
     public Set<ManagedType<?>> getManagedTypes()
     {
-        Set<ManagedType<?>> results = new HashSet<ManagedType<?>>();
+        Set<ManagedType<?>> results = new HashSet<>();
         results.addAll(entityTypes.values());
         results.addAll(embeddedTypes.values());
         results.addAll(mappedSuperTypes.values());
