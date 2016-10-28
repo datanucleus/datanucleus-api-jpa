@@ -86,7 +86,7 @@ public abstract class JPAGraph<T>
         }
     }
 
-    public void addAttributeNodes(Attribute<T, ?>... attributes)
+    public void addAttributeNodes(Attribute<? super T, ?>... attributes)
     {
         if (!mutable)
         {
@@ -104,7 +104,7 @@ public abstract class JPAGraph<T>
         }
     }
 
-    public <X> Subgraph<X> addSubgraph(Attribute<T, X> attribute)
+    public <X> Subgraph<X> addSubgraph(Attribute<? super T, X> attribute)
     {
         if (!mutable)
         {
@@ -127,7 +127,7 @@ public abstract class JPAGraph<T>
         return subgraph;
     }
 
-    public <X> Subgraph<? extends X> addSubgraph(Attribute<T, X> attribute, Class<? extends X> type)
+    public <X> Subgraph<? extends X> addSubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
     {
         if (!mutable)
         {
@@ -196,7 +196,7 @@ public abstract class JPAGraph<T>
         return subgraph;
     }
 
-    public <X> Subgraph<X> addKeySubgraph(Attribute<T, X> attribute)
+    public <X> Subgraph<X> addKeySubgraph(Attribute<? super T, X> attribute)
     {
         if (!mutable)
         {
@@ -207,7 +207,7 @@ public abstract class JPAGraph<T>
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    public <X> Subgraph<? extends X> addKeySubgraph(Attribute<T, X> attribute, Class<? extends X> type)
+    public <X> Subgraph<? extends X> addKeySubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
     {
         if (!mutable)
         {
