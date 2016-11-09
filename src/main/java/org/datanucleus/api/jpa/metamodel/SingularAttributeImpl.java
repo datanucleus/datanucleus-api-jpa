@@ -100,6 +100,12 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     public javax.persistence.metamodel.Bindable.BindableType getBindableType()
     {
+        if (mmd.getEmbeddedMetaData() != null)
+        {
+            // JPA spec says nothing about whether embeddable should be ENTITY_TYPE or SINGULAR_ATTRIBUTE or what.
+            return BindableType.SINGULAR_ATTRIBUTE;
+        }
+
         RelationType relationType = mmd.getRelationType(owner.model.clr);
         if (RelationType.isRelationSingleValued(relationType))
         {
