@@ -117,6 +117,7 @@ Contributors:
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ReadOnly" handler="org.datanucleus.api.jpa.annotations.ReadOnlyHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateTimestamp" handler="org.datanucleus.api.jpa.annotations.CreateTimestampHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateTimestamp" handler="org.datanucleus.api.jpa.annotations.UpdateTimestampHandler"/>
+        <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.MultiTenant" handler="org.datanucleus.api.jpa.annotations.MultiTenantHandler"/>
     </extension>
 
     <!-- EXTENSION MEMBER ANNOTATIONS -->
