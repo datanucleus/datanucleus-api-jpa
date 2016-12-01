@@ -939,6 +939,48 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         return select;
     }
 
+    public Expression<Integer> year(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getYear", null);
+        return select;
+    }
+
+    public Expression<Integer> month(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMonth", null);
+        return select;
+    }
+
+    public Expression<Integer> day(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getDay", null);
+        return select;
+    }
+
+    public Expression<Integer> hour(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getHour", null);
+        return select;
+    }
+
+    public Expression<Integer> minute(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMinute", null);
+        return select;
+    }
+
+    public Expression<Integer> second(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getSecond", null);
+        return select;
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.criteria.CriteriaBuilder#function(java.lang.String, java.lang.Class, javax.persistence.criteria.Expression<?>[])
      */
