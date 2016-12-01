@@ -22,9 +22,10 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 
 
 
-## JPA 2.2
+## JPA 2.2 Status
 
-The JPA "expert group" is currently dead, yet they provide an issue tracker for people to raise issues of what they would like to see in the next release of JPA (if it ever happens).
+The latest JPA spec is currently v2.1 and the JPA "expert group" is seemingly dead, yet they provide an issue tracker for people to raise issues of what they would like to see in 
+the next release of JPA (if it ever happens). 
 DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues
 
 [JPA_SPEC-25](https://java.net/jira/browse/JPA_SPEC-25) : access the JPQL string query and native query from a JPA Query object. Done  
@@ -40,7 +41,7 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [JPA_SPEC-77](https://java.net/jira/browse/JPA_SPEC-77) : EMF should implement AutoCloseable. Done  
 [JPA_SPEC-85](https://java.net/jira/browse/JPA_SPEC-85) : Metamodel methods to get entity by name. Provided in javax.persistence-2.2.jar  
 [JPA_SPEC-86](https://java.net/jira/browse/JPA_SPEC-86) : Allow multiple level inheritance strategy. Not explicitly done but we do this for JDO so likely mostly there  
-[JPA_SPEC-102](https://java.net/jira/browse/JPA_SPEC-102) : JPQL : DATE/TIME functions. Done  
+[JPA_SPEC-102](https://java.net/jira/browse/JPA_SPEC-102) : JPQL : DATE/TIME functions. Done, with Criteria changes in javax.persistence-2.2.jar  
 [JPA_SPEC-103](https://java.net/jira/browse/JPA_SPEC-103) : JPQL : Allow use of parameter in more than just WHERE/HAVING. Done  
 [JPA_SPEC-105](https://java.net/jira/browse/JPA_SPEC-105) : Allow AttributeConverter to multiple columns. Done but using vendor extension  
 [JPA_SPEC-107](https://java.net/jira/browse/JPA_SPEC-107) : JPQL : support subqueries in SELECT. Done  
