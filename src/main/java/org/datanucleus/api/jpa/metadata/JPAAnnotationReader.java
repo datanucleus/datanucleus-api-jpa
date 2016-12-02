@@ -2362,9 +2362,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             embmd = mmd.getEmbeddedMetaData();
             if (embmd == null)
             {
+                mmd.setEmbedded(true);
                 embmd = new EmbeddedMetaData();
                 embmd.setParent(mmd);
-                mmd.setEmbeddedMetaData(embmd);
             }
             mmd.setEmbeddedMetaData(embmd);
         }
