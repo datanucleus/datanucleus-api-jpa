@@ -41,6 +41,7 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [JPA_SPEC-77](https://java.net/jira/browse/JPA_SPEC-77) : EMF should implement AutoCloseable. Done  
 [JPA_SPEC-85](https://java.net/jira/browse/JPA_SPEC-85) : Metamodel methods to get entity by name. Provided in javax.persistence-2.2.jar  
 [JPA_SPEC-86](https://java.net/jira/browse/JPA_SPEC-86) : Allow multiple level inheritance strategy. Not explicitly done but we do this for JDO so likely mostly there  
+[JPA_SPEC-100](https://java.net/jira/browse/JPA_SPEC-100) : Allow an empty collection_valued_input_parameter in an "IN" expression. Already works like this  
 [JPA_SPEC-102](https://java.net/jira/browse/JPA_SPEC-102) : JPQL : DATE/TIME functions. Done, with Criteria changes in javax.persistence-2.2.jar  
 [JPA_SPEC-103](https://java.net/jira/browse/JPA_SPEC-103) : JPQL : Allow use of parameter in more than just WHERE/HAVING. Done  
 [JPA_SPEC-105](https://java.net/jira/browse/JPA_SPEC-105) : Allow AttributeConverter to multiple columns. Done but using vendor extension  
