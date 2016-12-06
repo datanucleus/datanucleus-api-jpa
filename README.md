@@ -31,6 +31,7 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [JPA_SPEC-25](https://java.net/jira/browse/JPA_SPEC-25) : access the JPQL string query and native query from a JPA Query object. Done  
 [JPA_SPEC-30](https://java.net/jira/browse/JPA_SPEC-30) : case sensitive JPQL queries. _Not implemented but would simply need JDOQL semantics copying_  
 [JPA_SPEC-35](https://java.net/jira/browse/JPA_SPEC-35) : support for more types. DataNucleus has provided way more types since JPA1 days!  
+[JPA_SPEC-41](https://java.net/jira/browse/JPA_SPEC-41) : targetClass attribute for @Embedded. Provided in javax.persistence-2.2.jar  
 [JPA_SPEC-42](https://java.net/jira/browse/JPA_SPEC-42) : allow null embedded objects. Provided by extension  
 [JPA_SPEC-48](https://java.net/jira/browse/JPA_SPEC-48) : @CurrentUser on a field. _Not implemented but the same idea applies to DataNucleus multitenancy support_  
 [JPA_SPEC-49](https://java.net/jira/browse/JPA_SPEC-49) : @CreateTimestamp, @UpdateTimestamp. Implemented using DN extension annotations  
