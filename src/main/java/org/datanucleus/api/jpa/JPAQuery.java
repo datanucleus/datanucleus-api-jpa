@@ -323,10 +323,11 @@ public class JPAQuery<X> implements TypedQuery<X>
     public int getMaxResults()
     {
         assertIsOpen();
-        if (maxResults == -1)
+        // This was used datanucleus-api-jpa <= v5.0.6 but would prevent getting correct results when allowing "RANGE" in the JPQL, so commented out.
+        /*if (maxResults == -1)
         {
             return Integer.MAX_VALUE;
-        }
+        }*/
         long queryMin = query.getRangeFromIncl();
         long queryMax = query.getRangeToExcl();
         long max = queryMax - queryMin;
