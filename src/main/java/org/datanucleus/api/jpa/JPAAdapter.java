@@ -33,6 +33,7 @@ import org.datanucleus.api.jpa.state.LifeCycleStateFactory;
 import org.datanucleus.enhancement.Detachable;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.enhancement.Persistable.ObjectIdFieldConsumer;
+import org.datanucleus.enhancement.StateManager;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.MetaDataManager;
@@ -120,7 +121,7 @@ public class JPAAdapter implements ApiAdapter
         return (getExecutionContext(pc) != null);
     }
 
-    /*public StateManager getStateManager(Object pc)
+    public StateManager getStateManager(Object pc)
     {
         if (pc == null)
         {
@@ -132,7 +133,7 @@ public class JPAAdapter implements ApiAdapter
             return ((Persistable)pc).dnGetStateManager();
         }
         return null;
-    }*/
+    }
 
     /**
      * Method to return the ExecutionContext (if any) associated with the passed object.
