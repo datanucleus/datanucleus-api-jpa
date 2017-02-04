@@ -298,7 +298,18 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         // Initialise the NucleusContext
+        if (NucleusLogger.PERSISTENCE.isDebugEnabled())
+        {
+            NucleusLogger.PERSISTENCE.debug("Creating EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
+            Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
+            while (propsIter.hasNext())
+            {
+                Map.Entry<String, Object> entry = propsIter.next();
+                NucleusLogger.PERSISTENCE.debug(">> OverridingProperty name=" + entry.getKey() + " value=" + entry.getValue());
+            }
+        }
         nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
+
         if (entityGraphsToRegister != null)
         {
             for (JPAEntityGraph eg : entityGraphsToRegister)
