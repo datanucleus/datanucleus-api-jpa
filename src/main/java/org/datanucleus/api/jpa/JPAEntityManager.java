@@ -1572,7 +1572,15 @@ public class JPAEntityManager implements EntityManager
         {
             return tx.isActive();
         }
-        return ((JTATransactionImpl) ec.getTransaction()).isJoined();
+        JTATransactionImpl jtaTxn = (JTATransactionImpl) ec.getTransaction();
+        if (jtaTxn.isJoined())
+        {
+            return true;
+        }
+
+        // Try to join now, since maybe the UserTransaction has been started now?
+        jtaTxn.joinTransaction();
+        return jtaTxn.isJoined();
     }
 
     /**
@@ -1629,8 +1637,7 @@ public class JPAEntityManager implements EntityManager
      */
     private void assertTransactionNotRequired()
     {
-        if (isContainerManaged() && persistenceContextType == PersistenceContextType.TRANSACTION && 
-            !isTransactionActive())
+        if (isContainerManaged() && persistenceContextType == PersistenceContextType.TRANSACTION && !isTransactionActive())
         {
             throw new TransactionRequiredException(Localiser.msg("EM.TransactionRequired"));
         }
