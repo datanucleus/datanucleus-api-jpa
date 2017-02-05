@@ -233,7 +233,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             overridingProps = new HashMap(overridingProps);
         }
 
-        // unit info will give us a javax.sql.DataSource instance, so we give that to context
+        // PersistenceUnitInfo will give us javax.sql.DataSource instance(s), so we give that to context
         PersistenceUnitTransactionType type = unitInfo.getTransactionType();
         if (type == PersistenceUnitTransactionType.RESOURCE_LOCAL)
         {
@@ -242,10 +242,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getNonJtaDataSource());
             }
+            if (unitInfo.getJtaDataSource() != null)
+            {
+                LOGGER.warn(Localiser.msg("EMF.ContainerLocalWithJTADataSource"));
+            }
         }
         else
         {
-            // Assumed to have jta datasource for primary connections
+            // Assumed to have JTA datasource for primary connections
             if (unitInfo.getJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getJtaDataSource());
@@ -300,12 +304,12 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         // Initialise the NucleusContext
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
-            NucleusLogger.PERSISTENCE.debug("Creating EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
+            NucleusLogger.PERSISTENCE.debug("Container EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
             Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
             while (propsIter.hasNext())
             {
                 Map.Entry<String, Object> entry = propsIter.next();
-                NucleusLogger.PERSISTENCE.debug(">> OverridingProperty name=" + entry.getKey() + " value=" + entry.getValue());
+                NucleusLogger.PERSISTENCE.debug("Container EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
             }
         }
         nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
@@ -477,7 +481,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     }
 
     /**
-     * Accessor for whether the EMF is managed by a container.
+     * Accessor for whether the EMF is managed by a container (JavaEE).
      * @return Whether managed by a container
      */
     public boolean isContainerManaged()
