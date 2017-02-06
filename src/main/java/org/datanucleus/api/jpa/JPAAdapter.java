@@ -502,7 +502,7 @@ public class JPAAdapter implements ApiAdapter
         props.put(PropertyNames.PROPERTY_RETAIN_VALUES, "true");
 //        props.put("datanucleus.RestoreValues", "true");
         props.put(PropertyNames.PROPERTY_OPTIMISTIC, "true"); // JPA uses optimistic txns
-        props.put(PropertyNames.PROPERTY_NONTX_ATOMIC, "false"); // JPA assumes non-atomic non-tx ops
+        props.put(PropertyNames.PROPERTY_TRANSACTION_NONTX_ATOMIC, "false"); // JPA assumes non-atomic non-tx ops
         props.put(PropertyNames.PROPERTY_METADATA_ALLOW_LOAD_AT_RUNTIME, "false"); // Default to no load later on
         props.put(PropertyNames.PROPERTY_IDENTIFIER_NAMING_FACTORY, "jpa"); // JPA identifier naming (non-RDBMS)
         props.put(PropertyNames.PROPERTY_IDENTIFIER_FACTORY, "jpa"); // JPA identifier naming (RDBMS)

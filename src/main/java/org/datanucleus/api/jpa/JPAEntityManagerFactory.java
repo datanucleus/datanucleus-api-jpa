@@ -459,8 +459,53 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         // Cache the unit definition
         unitMetaData = pumd;
 
+        // Convert any jta-data-source and non-jta-data-source into the requisite internal persistent property
+        if (unitMetaData.getTransactionType() == TransactionType.RESOURCE_LOCAL)
+        {
+            // Assumed to have non-jta datasource for connections
+            if (unitMetaData.getNonJtaDataSource() != null)
+            {
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
+            }
+            if (unitMetaData.getJtaDataSource() != null)
+            {
+                // TODO Update the message
+                LOGGER.warn(Localiser.msg("EMF.ContainerLocalWithJTADataSource"));
+            }
+        }
+        else if (unitMetaData.getTransactionType() == TransactionType.JTA)
+        {
+            // Assumed to have non-JTA datasource for primary connections
+            if (unitMetaData.getJtaDataSource() != null)
+            {
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
+            }
+            if (unitMetaData.getNonJtaDataSource() != null)
+            {
+                // Use non-jta for secondary connections
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
+            }
+            else
+            {
+                // TODO Update the message
+                LOGGER.warn(Localiser.msg("EMF.ContainerJTAWithNoNonJTADataSource"));
+            }
+        }
+
         // Initialise the context (even if unitMetaData is null)
+        if (NucleusLogger.PERSISTENCE.isDebugEnabled())
+        {
+            NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
+            Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
+            while (propsIter.hasNext())
+            {
+                Map.Entry<String, Object> entry = propsIter.next();
+                NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
+            }
+        }
+
         nucleusCtx = initialiseNucleusContext(pumd, overridingProps, pluginMgr);
+
         if (entityGraphsToRegister != null)
         {
             for (JPAEntityGraph eg : entityGraphsToRegister)
@@ -1252,6 +1297,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             unitMetaDataCache.put(unitName, pumd);
         }
+
         return pumd;
     }
 

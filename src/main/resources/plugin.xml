@@ -25,9 +25,11 @@ Contributors:
         <persistence-property name="javax.persistence.jdbc.url" internal-name="datanucleus.ConnectionURL"/>
         <persistence-property name="javax.persistence.jdbc.user" internal-name="datanucleus.ConnectionUserName"/>
         <persistence-property name="javax.persistence.jdbc.password" internal-name="datanucleus.ConnectionPassword"/>
+
         <persistence-property name="javax.persistence.query.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0" validator="org.datanucleus.properties.IntegerPropertyValidator"/>
         <persistence-property name="javax.persistence.lock.timeout" internal-name="datanucleus.datastoreReadTimeout" value="0" validator="org.datanucleus.properties.IntegerPropertyValidator"/>
-        <persistence-property name="javax.persistence.transactionType" internal-name="datanucleus.TransactionType" validator="org.datanucleus.properties.CorePropertyValidator"/>
+
+        <persistence-property name="javax.persistence.transactionType" internal-name="datanucleus.transaction.type" validator="org.datanucleus.properties.CorePropertyValidator"/>
         <persistence-property name="javax.persistence.jtaDataSource" internal-name="datanucleus.ConnectionFactoryName"/>
         <persistence-property name="javax.persistence.nonJtaDataSource" internal-name="datanucleus.ConnectionFactory2Name"/>
 
