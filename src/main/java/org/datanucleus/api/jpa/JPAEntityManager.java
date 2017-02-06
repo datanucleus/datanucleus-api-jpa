@@ -1560,9 +1560,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             return true;
         }
 
-        // Try to join now, since maybe the UserTransaction has been started now?
-        jtaTxn.joinTransaction();
-        return jtaTxn.isJoined();
+        return jtaTxn.isActive();
     }
 
     /**
