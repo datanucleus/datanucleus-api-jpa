@@ -85,15 +85,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         {
             return se.getSingleton();
         }
-        catch (NotProviderException npe)
-        {
-            return null;
-        }
-        catch (NoPersistenceUnitException npue)
-        {
-            return null;
-        }
-        catch (NoPersistenceXmlException npxe)
+        catch (NotProviderException|NoPersistenceUnitException|NoPersistenceXmlException ne)
         {
             return null;
         }
@@ -115,15 +107,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         {
             return se.getSingleton();
         }
-        catch (NotProviderException npe)
-        {
-            return null;
-        }
-        catch (NoPersistenceUnitException npue)
-        {
-            return null;
-        }
-        catch (NoPersistenceXmlException npxe)
+        catch (NotProviderException|NoPersistenceUnitException|NoPersistenceXmlException ne)
         {
             return null;
         }
@@ -175,6 +159,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             }
             return LoadState.UNKNOWN;
         }
+
         ObjectProvider op = ec.findObjectProvider(entity);
         if (op == null)
         {
@@ -248,8 +233,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         }
 
         boolean allLoaded = true;
-        AbstractClassMetaData cmd =
-                ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
+        AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
         int[] dfgFieldNumbers = cmd.getDFGMemberPositions();
         for (int i=0;i<dfgFieldNumbers.length;i++)
         {
@@ -369,8 +353,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
      * Called by the container when schema generation is to occur as a separate phase from creation of the entity manager factory.
      * @param unitName Name of the persistence unit
      * @param overridingProps properties for schema generation; these may also include provider-specific properties
-     * @throws PersistenceException if insufficient or inconsistent configuration information is provided 
-     *     or if schema generation otherwise fails.
+     * @throws PersistenceException if insufficient or inconsistent configuration information is provided or if schema generation otherwise fails.
      * @since JPA2.1
      */
     public boolean generateSchema(String unitName, Map overridingProps)
