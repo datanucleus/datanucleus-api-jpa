@@ -241,6 +241,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             if (unitInfo.getJtaDataSource() != null)
             {
@@ -253,11 +254,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitInfo.getJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2, unitInfo.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
@@ -466,6 +469,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitMetaData.getNonJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             if (unitMetaData.getJtaDataSource() != null)
             {
@@ -479,11 +483,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitMetaData.getJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitMetaData.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
