@@ -688,10 +688,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public EntityManager createEntityManager(Map overridingProps)
     {
-        assertIsClosed();
-
-        // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        return newEntityManager(initialiseNucleusContext(unitMetaData, overridingProps, null), persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        return createEntityManager(SynchronizationType.SYNCHRONIZED, overridingProps);
     }
 
     /**
@@ -700,19 +697,12 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * The isOpen method will return true on the returned instance.
      * @param syncType how and when the entity manager should be synchronized with the current JTA transaction
      * @return entity manager instance
-     * @throws IllegalStateException if the entity manager factory has been configured for 
-     *     resource-local entity managers or has been closed
+     * @throws IllegalStateException if the entity manager factory has been configured for resource-local entity managers or has been closed
      * @since JPA2.1
      */
     public EntityManager createEntityManager(SynchronizationType syncType)
     {
-        assertIsClosed();
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
-        {
-            throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
-        }
-
-        return newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        return createEntityManager(syncType, null);
     }
 
     /**
@@ -734,8 +724,18 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
         }
 
-        // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        return newEntityManager(initialiseNucleusContext(unitMetaData, overridingProps, null), persistenceContextType, syncType);
+        JPAEntityManager em = (JPAEntityManager)newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        if (overridingProps != null && !overridingProps.isEmpty())
+        {
+            Iterator<Map.Entry> propIter = overridingProps.entrySet().iterator();
+            while (propIter.hasNext())
+            {
+                Map.Entry entry = propIter.next();
+                em.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
+
+        return em;
     }
 
     /**
