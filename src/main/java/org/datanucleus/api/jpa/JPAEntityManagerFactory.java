@@ -688,7 +688,18 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public EntityManager createEntityManager(Map overridingProps)
     {
-        return createEntityManager(SynchronizationType.SYNCHRONIZED, overridingProps);
+        JPAEntityManager em = (JPAEntityManager)newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        if (overridingProps != null && !overridingProps.isEmpty())
+        {
+            Iterator<Map.Entry> propIter = overridingProps.entrySet().iterator();
+            while (propIter.hasNext())
+            {
+                Map.Entry entry = propIter.next();
+                em.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
+
+        return em;
     }
 
     /**
@@ -712,8 +723,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param syncType how and when the entity manager should be synchronized with the current JTA transaction
      * @param overridingProps properties for entity manager; may be null
      * @return entity manager instance
-     * @throws IllegalStateException if the entity manager factory has been configured for resource-local 
-     *     entity managers or has been closed
+     * @throws IllegalStateException if the entity manager factory has been configured for resource-local entity managers or has been closed
      * @since JPA2.1
      */
     public EntityManager createEntityManager(SynchronizationType syncType, Map overridingProps)
