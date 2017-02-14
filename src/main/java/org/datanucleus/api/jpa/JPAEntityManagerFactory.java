@@ -679,7 +679,18 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public EntityManager createEntityManager(Map overridingProps)
     {
-        return createEntityManager(SynchronizationType.SYNCHRONIZED, overridingProps);
+        JPAEntityManager em = (JPAEntityManager)newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        if (overridingProps != null && !overridingProps.isEmpty())
+        {
+            Iterator<Map.Entry> propIter = overridingProps.entrySet().iterator();
+            while (propIter.hasNext())
+            {
+                Map.Entry entry = propIter.next();
+                em.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
+
+        return em;
     }
 
     /**
@@ -693,13 +704,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      */
     public EntityManager createEntityManager(SynchronizationType syncType)
     {
-        assertIsClosed();
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
-        {
-            throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
-        }
-
-        return newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        return createEntityManager(syncType, null);
     }
 
     /**
