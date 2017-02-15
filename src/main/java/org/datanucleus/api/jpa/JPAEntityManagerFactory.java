@@ -1029,13 +1029,26 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             // Not managed
             return false;
         }
-        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(entity.getClass(), nucleusCtx.getClassLoaderResolver(entity.getClass().getClassLoader()));
+
+        AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
         if (cmd == null)
         {
             // No metadata
             return false;
         }
-        return op.isLoaded(cmd.getAbsolutePositionOfMember(attrName));
+
+        String[] loadedFields = op.getLoadedFieldNames();
+        if (loadedFields != null)
+        {
+            for (int j=0;j<loadedFields.length;j++)
+            {
+                if (loadedFields[j].equals(attrName))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /* (non-Javadoc)
