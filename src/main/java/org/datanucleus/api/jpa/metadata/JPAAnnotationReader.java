@@ -1797,6 +1797,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
                     }
                 }
+                else if (annName.equals(JPAAnnotationUtils.MAP_KEY_CLASS))
+                {
+                    MapMetaData mapmd = mmd.getMap();
+                    if (mmd.getMap() == null)
+                    {
+                        mapmd = mmd.newMapMetaData();
+                    }
+                    mapmd.setKeyType(((Class) annotationValues.get("value")).getName());
+                }
                 else if (annName.equals(JPAAnnotationUtils.MAP_KEY_COLUMN))
                 {
                     if (keymd == null)
