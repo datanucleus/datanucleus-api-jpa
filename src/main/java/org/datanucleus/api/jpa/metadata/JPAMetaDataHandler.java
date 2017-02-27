@@ -58,6 +58,7 @@ import org.datanucleus.metadata.InheritanceStrategy;
 import org.datanucleus.metadata.InvalidClassMetaDataException;
 import org.datanucleus.metadata.JoinMetaData;
 import org.datanucleus.metadata.KeyMetaData;
+import org.datanucleus.metadata.MapMetaData;
 import org.datanucleus.metadata.MetaData;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.metadata.MetadataFileType;
@@ -1383,8 +1384,18 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             }
             else if (localName.equals("map-key-class"))
             {
-                // TODO Support this
-                NucleusLogger.METADATA.info(">> Dont currently support map-key-class element");
+                MetaData md = getStack();
+                String clsName = getAttr(attrs, "class");
+                if (md instanceof AbstractMemberMetaData)
+                {
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
+                    MapMetaData mapmd = mmd.getMap();
+                    if (mapmd == null)
+                    {
+                        mapmd = mmd.newMapMetaData();
+                    }
+                    mapmd.setKeyType(clsName);
+                }
             }
             else if (localName.equals("index"))
             {
