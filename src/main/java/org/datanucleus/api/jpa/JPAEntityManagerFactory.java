@@ -494,11 +494,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
             NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
-            Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
-            while (propsIter.hasNext())
+            if (overridingProps != null)
             {
-                Map.Entry<String, Object> entry = propsIter.next();
-                NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
+                Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
+                while (propsIter.hasNext())
+                {
+                    Map.Entry<String, Object> entry = propsIter.next();
+                    NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
+                }
             }
         }
         nucleusCtx = initialiseNucleusContext(pumd, overridingProps, pluginMgr);
