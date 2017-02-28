@@ -3504,6 +3504,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         seqmd.setDatastoreSequence(seqName);
         seqmd.setInitialValue(initialValue.intValue());
         seqmd.setAllocationSize(allocationSize.intValue());
+
+        String catalogName = (String)annotationValues.get("catalog");
+        if (!StringUtils.isWhitespace(catalogName))
+        {
+            seqmd.setCatalogName(catalogName);
+        }
+        String schemaName = (String)annotationValues.get("schema");
+        if (!StringUtils.isWhitespace(schemaName))
+        {
+            seqmd.setSchemaName(schemaName);
+        }
     }
 
     /**

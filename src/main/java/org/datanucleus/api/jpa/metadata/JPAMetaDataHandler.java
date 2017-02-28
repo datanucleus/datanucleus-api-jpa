@@ -558,6 +558,16 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 seqmd.setDatastoreSequence(datastoreSeqName);
                 seqmd.setInitialValue(initValue);
                 seqmd.setAllocationSize(allocSize);
+                String catalogName = getAttr(attrs, "catalog");
+                if (StringUtils.isWhitespace(catalogName))
+                {
+                    seqmd.setCatalogName(catalogName);
+                }
+                String schemaName = getAttr(attrs, "schema");
+                if (StringUtils.isWhitespace(schemaName))
+                {
+                    seqmd.setSchemaName(schemaName);
+                }
             }
             else if (localName.equals("table-generator"))
             {
