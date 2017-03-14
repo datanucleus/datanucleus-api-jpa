@@ -1817,6 +1817,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     Class keyType = mmd.getMap() != null && mmd.getMap().getKeyType() != null ? clr.classForName(mmd.getMap().getKeyType()) : Object.class;
                     keymd.addColumn(newColumnMetaDataForAnnotation(keymd, keyType, annotationValues));
                 }
+                else if (annName.equals(JPAAnnotationUtils.MAP_KEY_JOIN_COLUMN))
+                {
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+
+                    Class keyType = mmd.getMap() != null && mmd.getMap().getKeyType() != null ? clr.classForName(mmd.getMap().getKeyType()) : Object.class;
+                    keymd.addColumn(newColumnMetaDataForAnnotation(keymd, keyType, annotationValues));
+                }
                 else if (annName.equals(JPAAnnotationUtils.MAP_KEY))
                 {
                     String keyMappedBy = (String)annotationValues.get("name");

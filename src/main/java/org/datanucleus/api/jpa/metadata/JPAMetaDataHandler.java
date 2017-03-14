@@ -1948,8 +1948,53 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             }
             else if (localName.equals("map-key-join-column"))
             {
-                // TODO Support this
-                NucleusLogger.METADATA.info(">> Dont currently support map-key-join-column element");
+                // Column for the current field
+                MetaData md = getStack();
+                
+                ColumnMetaData colmd = new ColumnMetaData();
+                colmd.setName(getAttr(attrs, "name"));
+                if (getAttr(attrs, "precision")!=null)
+                {
+                    colmd.setLength(getAttr(attrs, "precision"));
+                }
+                else
+                {
+                    colmd.setLength(getAttr(attrs, "length"));
+                }
+                colmd.setScale(getAttr(attrs, "scale"));
+                colmd.setAllowsNull(getAttr(attrs, "nullable"));
+                colmd.setInsertable(getAttr(attrs, "insertable"));
+                colmd.setUpdateable(getAttr(attrs, "updatable"));
+                colmd.setUnique(getAttr(attrs, "unique"));
+                String columnDdl = getAttr(attrs, "column-definition");
+                if (columnDdl != null)
+                {
+                    colmd.setColumnDdl(columnDdl);
+                }
+
+                if (md instanceof JoinMetaData)
+                {
+                    JoinMetaData joinmd = (JoinMetaData)md;
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)joinmd.getParent();
+                    KeyMetaData keymd = mmd.getKeyMetaData();
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+                    keymd.addColumn(colmd);
+                }
+                else if (md instanceof AbstractMemberMetaData)
+                {
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
+                    KeyMetaData keymd = mmd.getKeyMetaData();
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+                    keymd.addColumn(colmd);
+                }
             }
             else if (localName.equals("join-column"))
             {
