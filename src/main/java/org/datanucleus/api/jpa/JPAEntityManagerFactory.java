@@ -71,6 +71,7 @@ import org.datanucleus.api.jpa.exceptions.NotProviderException;
 import org.datanucleus.api.jpa.metadata.JPAEntityGraphRegistrationListener;
 import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
 import org.datanucleus.api.jpa.metamodel.MetamodelImpl;
+import org.datanucleus.identity.SingleFieldId;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.MetaDataUtils;
 import org.datanucleus.metadata.PersistenceFileMetaData;
@@ -1022,6 +1023,26 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     public Object getIdentifier(Object entity)
     {
         assertIsClosed();
+        if (entity == null)
+        {
+            throw new IllegalArgumentException("Supplied object is null, so cannot have an identifier");
+        }
+
+        AbstractClassMetaData cmd = nucleusCtx.getMetaDataManager().getMetaDataForClass(entity.getClass(), nucleusCtx.getClassLoaderResolver(null));
+        if (cmd == null)
+        {
+            throw new IllegalArgumentException("Object of type " + entity.getClass().getName() + " is not an entity");
+        }
+
+        if (cmd.usesSingleFieldIdentityClass())
+        {
+            // Convert to the single-field key value
+            Object id = nucleusCtx.getApiAdapter().getIdForObject(entity);
+            if (id instanceof SingleFieldId)
+            {
+                return ((SingleFieldId)id).getKeyAsObject();
+            }
+        }
 
         return nucleusCtx.getApiAdapter().getIdForObject(entity);
     }
