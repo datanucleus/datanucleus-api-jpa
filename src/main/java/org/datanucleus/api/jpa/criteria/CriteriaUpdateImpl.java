@@ -38,12 +38,10 @@ import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.query.compiler.JPQLSymbolResolver;
 import org.datanucleus.query.compiler.PropertySymbol;
 import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.query.compiler.Symbol;
 import org.datanucleus.query.compiler.SymbolTable;
 import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.query.expression.DyadicExpression;
 import org.datanucleus.query.expression.Literal;
-import org.datanucleus.query.expression.ParameterExpression;
 
 /**
  * Implementation of a Criteria Update query.
@@ -258,25 +256,7 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
                 if (val instanceof ExpressionImpl)
                 {
                     valQueryExpr = ((ExpressionImpl)val).getQueryExpression();
-                    if (valQueryExpr instanceof ParameterExpression)
-                    {
-                        // Add symbol for any parameter
-                        ParameterExpression paramExpr = (ParameterExpression) valQueryExpr;
-                        if (paramExpr.getId() != null)
-                        {
-                            if (!symtbl.hasSymbol(paramExpr.getId()))
-                            {
-                                Symbol symbol = new PropertySymbol(paramExpr.getId());
-                                symbol.setType(Symbol.PARAMETER);
-                                if (paramExpr.getType() != null)
-                                {
-                                    // Add valueType if known
-                                    symbol.setValueType(paramExpr.getType());
-                                }
-                                symtbl.addSymbol(symbol);
-                            }
-                        }
-                    }
+                    valQueryExpr.bind(symtbl);
                 }
                 else
                 {
