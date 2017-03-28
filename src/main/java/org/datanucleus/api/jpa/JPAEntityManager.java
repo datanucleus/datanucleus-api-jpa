@@ -343,36 +343,37 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
             try
             {
-                // Get the identity
-                Object id = primaryKey;
-                if (cmd.getIdentityType() == IdentityType.DATASTORE)
-                {
-                    if (!IdentityUtils.isDatastoreIdentity(id))
-                    {
-                        // Create an OID
-                        id = ec.getNucleusContext().getIdentityManager().getDatastoreId(cmd.getFullClassName(), primaryKey);
-                    }
-                }
-                else if (!primaryKey.getClass().getName().equals(cmd.getObjectidClass()))
-                {
-                    // primaryKey is just the key (when using single-field identity), so create a PK object
-                    try
-                    {
-                        id = ec.newObjectId(entityClass, primaryKey);
-                    }
-                    catch (NucleusException ne)
-                    {
-                        throw new IllegalArgumentException(ne);
-                    }
-                }
-
                 if (lock != null && lock != LockModeType.NONE)
                 {
+                    // Get the identity so that we can lock it
+                    Object id = primaryKey;
+                    if (cmd.getIdentityType() == IdentityType.DATASTORE)
+                    {
+                        if (!IdentityUtils.isDatastoreIdentity(id))
+                        {
+                            // Create an OID
+                            id = ec.getNucleusContext().getIdentityManager().getDatastoreId(cmd.getFullClassName(), primaryKey);
+                        }
+                    }
+                    else if (!primaryKey.getClass().getName().equals(cmd.getObjectidClass()))
+                    {
+                        // primaryKey is just the key (when using single-field identity), so create a PK object
+                        try
+                        {
+                            id = ec.newObjectId(entityClass, primaryKey);
+                        }
+                        catch (NucleusException ne)
+                        {
+                            throw new IllegalArgumentException(ne);
+                        }
+                    }
+
                     // Register the object for locking
                     ec.getLockManager().lock(id, getLockTypeForJPALockModeType(lock));
                 }
 
-                pc = ec.findObjectById(id, true);
+                pc = ec.findObject(entityClass, primaryKey);
+
                 if (pc != null && fetchGraphSpecified)
                 {
                     // Force loading of FetchPlan fields of primary object since entity graph specified
@@ -499,7 +500,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
         try
         {
-            return ec.findObjectById(id, false);
+            return ec.findObject(id, false);
         }
         catch (NucleusObjectNotFoundException ne)
         {
