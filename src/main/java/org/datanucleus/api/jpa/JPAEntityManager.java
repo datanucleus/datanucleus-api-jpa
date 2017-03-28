@@ -372,7 +372,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                     ec.getLockManager().lock(id, getLockTypeForJPALockModeType(lock));
                 }
 
-                pc = ec.findObject(id, true, true, null);
+                pc = ec.findObjectById(id, true);
                 if (pc != null && fetchGraphSpecified)
                 {
                     // Force loading of FetchPlan fields of primary object since entity graph specified
@@ -499,7 +499,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
         try
         {
-            return ec.findObject(id, false, false, null);
+            return ec.findObjectById(id, false);
         }
         catch (NucleusObjectNotFoundException ne)
         {
