@@ -417,6 +417,26 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     }
 
     /**
+     * Method to look up the instance of the given type with the given key.
+     * @param cls Class of the persistable
+     * @param fieldNames Name(s) of the field(s) making up the unique key
+     * @param fieldValues Value(s) for the field(s) making up the unique key
+     * @return The object meeting this selection.
+     */
+    public <T> T findByUnique(Class<T> cls, String[] fieldNames, Object[] fieldValues)
+    {
+        try
+        {
+            return ec.findObjectByUnique(cls, fieldNames, fieldValues);
+        }
+        catch (NucleusException ne)
+        {
+            // Convert any DataNucleus exceptions into what JPA expects
+            throw new IllegalArgumentException("Exception finding object by unique values", ne);
+        }
+    }
+
+    /**
      * Return the underlying provider object for the EntityManager, if available.
      * The result of this method is implementation specific.
      * @return The ExecutionContext
