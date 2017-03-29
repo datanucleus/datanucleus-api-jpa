@@ -273,8 +273,8 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * @param primaryKey The PK value
      * @param properties standard and vendor-specific properties
      * @return the found entity instance or null if the entity does not exist
-     * @throws IllegalArgumentException if the first argument does not denote an entity type or the 
-     *     second argument is is not a valid type for that entity's primary key or is null
+     * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is is not a valid type for that entity's primary key or is null
+     * @param <T> Type of the persistable
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, Map<String, Object> properties)
     {
@@ -292,6 +292,8 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * @param primaryKey PK. Can be an instanceof the PK type, or the key when using single-field
      * @param lock Any locking to apply
      * @param properties Any optional properties to control the operation
+     * @return The object meeting this selection.
+     * @param <T> Type of the persistable
      */
     public <T> T find(Class<T> entityClass, Object primaryKey, LockModeType lock, Map<String, Object> properties)
     {
@@ -422,6 +424,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * @param fieldNames Name(s) of the field(s) making up the unique key
      * @param fieldValues Value(s) for the field(s) making up the unique key
      * @return The object meeting this selection.
+     * @param <T> Type of the persistable
      */
     public <T> T findByUnique(Class<T> cls, String[] fieldNames, Object[] fieldValues)
     {
