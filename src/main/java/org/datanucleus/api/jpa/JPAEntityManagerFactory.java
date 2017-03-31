@@ -1114,6 +1114,10 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     {
         assertIsClosed();
 
+        if (ClassConstants.PERSISTENCE_NUCLEUS_CONTEXT.isAssignableFrom(cls))
+        {
+            return (T) nucleusCtx;
+        }
         if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
         {
             return (T) nucleusCtx;
