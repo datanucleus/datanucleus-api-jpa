@@ -1323,8 +1323,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                 validate = Boolean.getBoolean((String)overridingProps.get(PropertyNames.PROPERTY_METADATA_XML_VALIDATE));
             }
         }
-        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, 
-            validate, new ClassLoaderResolverImpl());
+
+        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, validate, new ClassLoaderResolverImpl());
         if (files == null)
         {
             // No "persistence.xml" files found
@@ -1365,6 +1365,26 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         else
         {
             unitMetaDataCache.put(unitName, pumd);
+
+            if (overridingProps != null)
+            {
+                if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_JTA_DATASOURCE))
+                {
+                    pumd.setJtaDataSource((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_JTA_DATASOURCE));
+                }
+                if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_NONJTA_DATASOURCE))
+                {
+                    pumd.setNonJtaDataSource((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_NONJTA_DATASOURCE));
+                }
+                if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_TRANSACTION_TYPE))
+                {
+                    pumd.setTransactionType((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_TRANSACTION_TYPE));
+                }
+                if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE))
+                {
+                    pumd.setCaching((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE));
+                }
+            }
         }
 
         return pumd;
