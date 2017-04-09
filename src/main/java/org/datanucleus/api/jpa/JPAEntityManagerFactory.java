@@ -443,6 +443,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             throw new IllegalArgumentException("Persistence-unit supplied to initialise was null!");
         }
+        Map extraProps = new HashMap<>();
+        if (overridingProps != null)
+        {
+            extraProps.putAll(overridingProps);
+        }
 
         // Check the provider is ok for our use
         boolean validProvider = false;
@@ -450,7 +455,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             validProvider = true;
         }
-        else if (overridingProps != null && PersistenceProviderImpl.class.getName().equals(overridingProps.get("javax.persistence.provider")))
+        else if (PersistenceProviderImpl.class.getName().equals(extraProps.get("javax.persistence.provider")))
         {
             validProvider = true;
         }
@@ -469,12 +474,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             // Assumed to have non-jta datasource for connections
             if (unitMetaData.getNonJtaDataSource() != null)
             {
-                if (overridingProps == null)
-                {
-                    overridingProps = new HashMap();
-                }
-                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             if (unitMetaData.getJtaDataSource() != null)
             {
@@ -487,22 +488,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             // Assumed to have non-JTA datasource for primary connections
             if (unitMetaData.getJtaDataSource() != null)
             {
-                if (overridingProps == null)
-                {
-                    overridingProps = new HashMap();
-                }
-                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitMetaData.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
-                if (overridingProps == null)
-                {
-                    overridingProps = new HashMap();
-                }
-                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
@@ -515,18 +508,15 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (NucleusLogger.PERSISTENCE.isDebugEnabled())
         {
             NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory with persistence-unit defined as follows : \n" + unitMetaData.toString("", "    "));
-            if (overridingProps != null)
+            Iterator<Map.Entry<String, Object>> propsIter = extraProps.entrySet().iterator();
+            while (propsIter.hasNext())
             {
-                Iterator<Map.Entry<String, Object>> propsIter = overridingProps.entrySet().iterator();
-                while (propsIter.hasNext())
-                {
-                    Map.Entry<String, Object> entry = propsIter.next();
-                    NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
-                }
+                Map.Entry<String, Object> entry = propsIter.next();
+                NucleusLogger.PERSISTENCE.debug("Application EntityManagerFactory overriding property : name=" + entry.getKey() + " value=" + entry.getValue());
             }
         }
 
-        nucleusCtx = initialiseNucleusContext(pumd, overridingProps, pluginMgr);
+        nucleusCtx = initialiseNucleusContext(pumd, extraProps, pluginMgr);
 
         if (entityGraphsToRegister != null)
         {
