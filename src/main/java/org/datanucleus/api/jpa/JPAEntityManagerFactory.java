@@ -241,19 +241,26 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+            }
+            if (unitInfo.getJtaDataSource() != null)
+            {
+                LOGGER.warn(Localiser.msg("EMF.ContainerLocalWithJTADataSource"));
             }
         }
         else
         {
-            // Assumed to have jta datasource for primary connections
+            // Assumed to have JTA datasource for primary connections
             if (unitInfo.getJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2, unitInfo.getNonJtaDataSource());
+                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
@@ -427,6 +434,11 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             throw new IllegalArgumentException("Persistence-unit supplied to initialise was null!");
         }
+        Map extraProps = new HashMap<>();
+        if (overridingProps != null)
+        {
+            extraProps.putAll(overridingProps);
+        }
 
         // Check the provider is ok for our use
         boolean validProvider = false;
@@ -434,7 +446,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             validProvider = true;
         }
-        else if (overridingProps != null && PersistenceProviderImpl.class.getName().equals(overridingProps.get("javax.persistence.provider")))
+        else if (PersistenceProviderImpl.class.getName().equals(extraProps.get("javax.persistence.provider")))
         {
             validProvider = true;
         }
@@ -447,8 +459,45 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         // Cache the unit definition
         unitMetaData = pumd;
 
+        // Convert any jta-data-source and non-jta-data-source into the requisite internal persistent property
+        if (unitMetaData.getTransactionType() == TransactionType.RESOURCE_LOCAL)
+        {
+            // Assumed to have non-jta datasource for connections
+            if (unitMetaData.getNonJtaDataSource() != null)
+            {
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+            }
+            if (unitMetaData.getJtaDataSource() != null)
+            {
+                // TODO Update the message
+                LOGGER.warn(Localiser.msg("EMF.ContainerLocalWithJTADataSource"));
+            }
+        }
+        else if (unitMetaData.getTransactionType() == TransactionType.JTA)
+        {
+            // Assumed to have non-JTA datasource for primary connections
+            if (unitMetaData.getJtaDataSource() != null)
+            {
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
+            }
+            if (unitMetaData.getNonJtaDataSource() != null)
+            {
+                // Use non-jta for secondary connections
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
+                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+            }
+            else
+            {
+                // TODO Update the message
+                LOGGER.warn(Localiser.msg("EMF.ContainerJTAWithNoNonJTADataSource"));
+            }
+        }
+
         // Initialise the context (even if unitMetaData is null)
-        nucleusCtx = initialiseNucleusContext(pumd, overridingProps, pluginMgr);
+        nucleusCtx = initialiseNucleusContext(pumd, extraProps, pluginMgr);
+
         if (entityGraphsToRegister != null)
         {
             for (JPAEntityGraph eg : entityGraphsToRegister)
