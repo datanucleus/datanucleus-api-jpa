@@ -615,10 +615,18 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
     {
         assertIsClosed();
 
-        // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
+        JPAEntityManager em = (JPAEntityManager)newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        if (overridingProps != null && !overridingProps.isEmpty())
+        {
+            Iterator<Map.Entry> propIter = overridingProps.entrySet().iterator();
+            while (propIter.hasNext())
+            {
+                Map.Entry entry = propIter.next();
+                em.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
 
-        return newEntityManager(nucleusCtx, persistenceContextType, SynchronizationType.SYNCHRONIZED);
+        return em;
     }
 
     /**
@@ -627,19 +635,12 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * The isOpen method will return true on the returned instance.
      * @param syncType how and when the entity manager should be synchronized with the current JTA transaction
      * @return entity manager instance
-     * @throws IllegalStateException if the entity manager factory has been configured for 
-     *     resource-local entity managers or has been closed
+     * @throws IllegalStateException if the entity manager factory has been configured for resource-local entity managers or has been closed
      * @since JPA2.1
      */
     public EntityManager createEntityManager(SynchronizationType syncType)
     {
-        assertIsClosed();
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
-        {
-            throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
-        }
-
-        return newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        return createEntityManager(syncType, null);
     }
 
     /**
@@ -649,22 +650,30 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
      * @param syncType how and when the entity manager should be synchronized with the current JTA transaction
      * @param overridingProps properties for entity manager; may be null
      * @return entity manager instance
-     * @throws IllegalStateException if the entity manager factory has been configured for resource-local 
-     *     entity managers or has been closed
+     * @throws IllegalStateException if the entity manager factory has been configured for resource-local entity managers or has been closed
      * @since JPA2.1
      */
     public EntityManager createEntityManager(SynchronizationType syncType, Map overridingProps)
     {
         assertIsClosed();
+
         if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
         {
             throw new IllegalStateException("EntityManagerFactory is configured for RESOURCE_LOCAL");
         }
 
-        // Create a NucleusContext to do the actual persistence, using the original persistence-unit, plus these properties
-        PersistenceNucleusContext nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
+        JPAEntityManager em = (JPAEntityManager)newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        if (overridingProps != null && !overridingProps.isEmpty())
+        {
+            Iterator<Map.Entry> propIter = overridingProps.entrySet().iterator();
+            while (propIter.hasNext())
+            {
+                Map.Entry entry = propIter.next();
+                em.setProperty((String) entry.getKey(), entry.getValue());
+            }
+        }
 
-        return newEntityManager(nucleusCtx, persistenceContextType, syncType);
+        return em;
     }
 
     /**
