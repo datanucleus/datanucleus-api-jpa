@@ -795,13 +795,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH), unitMetaData.getTransactionType().toString());
         }
 
-        if (unitMetaData.getCaching().equalsIgnoreCase("NONE"))
+        if (unitMetaData.getSharedCacheMode().equalsIgnoreCase("NONE"))
         {
             props.put(PropertyNames.PROPERTY_CACHE_L2_TYPE, "none");
         }
-        else if (!unitMetaData.getCaching().equalsIgnoreCase("UNSPECIFIED"))
+        else if (!unitMetaData.getSharedCacheMode().equalsIgnoreCase("UNSPECIFIED"))
         {
-            props.put(PropertyNames.PROPERTY_CACHE_L2_MODE, unitMetaData.getCaching());
+            props.put(PropertyNames.PROPERTY_CACHE_L2_MODE, unitMetaData.getSharedCacheMode());
         }
 
         Properties unitProps = unitMetaData.getProperties();
@@ -1372,7 +1372,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
                 }
                 if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE))
                 {
-                    pumd.setCaching((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE));
+                    pumd.setSharedCacheMode((String)overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE));
                 }
             }
         }
