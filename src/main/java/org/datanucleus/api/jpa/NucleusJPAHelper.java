@@ -26,7 +26,6 @@ import javax.persistence.PersistenceException;
 
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.enhancement.Persistable;
-import org.datanucleus.enhancement.StateManager;
 import org.datanucleus.exceptions.NucleusCanRetryException;
 import org.datanucleus.exceptions.NucleusDataStoreException;
 import org.datanucleus.exceptions.NucleusException;
@@ -244,7 +243,7 @@ public class NucleusJPAHelper
 
             // Temporarily attach a StateManager to access the detached field information
             ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
-            pc.dnReplaceStateManager((StateManager) op);
+            pc.dnReplaceStateManager(op);
             op.retrieveDetachState(op);
             String[] dirtyFieldNames = op.getDirtyFieldNames();
             pc.dnReplaceStateManager(null);
@@ -276,7 +275,7 @@ public class NucleusJPAHelper
             // Temporarily attach a StateManager to access the detached field information
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
             ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
-            pc.dnReplaceStateManager((StateManager) op);
+            pc.dnReplaceStateManager(op);
             op.retrieveDetachState(op);
             String[] loadedFieldNames = op.getLoadedFieldNames();
             pc.dnReplaceStateManager(null);
