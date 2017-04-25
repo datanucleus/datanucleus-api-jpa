@@ -133,5 +133,6 @@ Contributors:
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.SharedRelation" handler="org.datanucleus.api.jpa.annotations.SharedRelationHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateTimestamp" handler="org.datanucleus.api.jpa.annotations.CreateTimestampHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateTimestamp" handler="org.datanucleus.api.jpa.annotations.UpdateTimestampHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ComparatorClass" handler="org.datanucleus.api.jpa.annotations.ComparatorClassHandler"/>
     </extension>
 </plugin>
