@@ -292,7 +292,7 @@ public class JPACallbackHandler implements CallbackHandler
                         if (methodName != null)
                         {
                             // Separate listener class taking the PC object as input
-                            Object listener = listenerClass.newInstance();
+                            Object listener = getListenerInstance(listenerClass);
                             invokeCallbackMethod(listener, methodName, pc, clr);
                         }
                     }
@@ -331,7 +331,7 @@ public class JPACallbackHandler implements CallbackHandler
                             else
                             {
                                 // Separate listener class taking the PC object as input
-                                Object listener = listenerClass.newInstance();
+                                Object listener = getListenerInstance(listenerClass);
                                 invokeCallbackMethod(listener, methodName, pc, clr);
                             }
                         }
@@ -515,5 +515,11 @@ public class JPACallbackHandler implements CallbackHandler
                     return null;
                 }
             });
+    }
+
+    protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException
+    {
+        // TODO Support injectable listener via CDI
+        return listenerCls.newInstance();
     }
 }

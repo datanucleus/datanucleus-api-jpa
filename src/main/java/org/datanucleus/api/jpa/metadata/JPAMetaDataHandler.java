@@ -1142,6 +1142,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     if (typeMgr.getTypeConverterForName(converterClassName) == null)
                     {
                         // Not yet cached an instance of this converter so create one
+                        // TODO Support injectable AttributeConverters
                         ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                         Class entityConvCls = clr.classForName(converterClassName);
                         AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);
@@ -1166,6 +1167,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 if (typeMgr.getTypeConverterForName(converterClassName) == null)
                 {
                     // Not yet cached an instance of this converter so create one
+                    // TODO Support injectable AttributeConverters
                     ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                     Class entityConvCls = clr.classForName(converterClassName);
                     AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);

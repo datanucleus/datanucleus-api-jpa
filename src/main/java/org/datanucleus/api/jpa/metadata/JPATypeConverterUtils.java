@@ -82,6 +82,7 @@ public class JPATypeConverterUtils
 
     public static AttributeConverter createAttributeConverterInstance(Class attrConverterCls)
     {
+        // Create a stateless AttributeConverter
         // TODO Change this to use CDI if we want to support injecting information into an AttributeConverter
         return (AttributeConverter) ClassUtils.newInstance(attrConverterCls, null, null);
     }
