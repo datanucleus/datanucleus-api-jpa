@@ -21,8 +21,10 @@ import java.lang.reflect.Method;
 
 import javax.persistence.AttributeConverter;
 
+import org.datanucleus.util.ClassUtils;
+
 /**
- * Convenience methods for handling AttributeConverters.
+ * Convenience methods for handling JPA AttributeConverters.
  */
 public class JPATypeConverterUtils
 {
@@ -76,5 +78,11 @@ public class JPATypeConverterUtils
         {
         }
         return dbType;
+    }
+
+    public static AttributeConverter createAttributeConverterInstance(Class attrConverterCls)
+    {
+        // TODO Change this to use CDI if we want to support injecting information into an AttributeConverter
+        return (AttributeConverter) ClassUtils.newInstance(attrConverterCls, null, null);
     }
 }

@@ -82,7 +82,6 @@ import org.datanucleus.metadata.VersionStrategy;
 import org.datanucleus.metadata.xml.AbstractMetaDataHandler;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
-import org.datanucleus.util.ClassUtils;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
@@ -1144,9 +1143,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         // Not yet cached an instance of this converter so create one
                         ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
-                        Class converterCls = clr.classForName(converterClassName);
-
-                        AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                        Class entityConvCls = clr.classForName(converterClassName);
+                        AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);
 
                         // Extract attribute and datastore types for this converter
                         Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
@@ -1154,7 +1152,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
 
                         // Register the TypeConverter under the name of the AttributeConverter class
                         TypeConverter conv = new JPATypeConverter(entityConv);
-                        typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, false, null);
+                        typeMgr.registerConverter(converterClassName, conv, attrType, dbType, false, null);
                     }
                 }
 
@@ -1169,9 +1167,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     // Not yet cached an instance of this converter so create one
                     ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
-                    Class converterCls = clr.classForName(converterClassName);
-
-                    AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                    Class entityConvCls = clr.classForName(converterClassName);
+                    AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);
 
                     // Extract field and datastore types for this converter
                     Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
@@ -1181,7 +1178,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         // Register the TypeConverter under the name of the AttributeConverter class
                         TypeConverter conv = new JPATypeConverter(entityConv);
-                        typeMgr.registerConverter(converterCls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
+                        typeMgr.registerConverter(converterClassName, conv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }
             }

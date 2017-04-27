@@ -2012,7 +2012,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
                             {
                                 // Not yet cached an instance of this converter so create one
-                                AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                                AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(converterCls);
 
                                 // Extract field and datastore types for this converter
                                 Class attrType = member.getType();
@@ -2097,7 +2097,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         if (typeMgr.getTypeConverterForName(converterCls.getName()) == null)
                         {
                             // Not yet cached an instance of this converter so create one
-                            AttributeConverter entityConv = (AttributeConverter) ClassUtils.newInstance(converterCls, null, null);
+                            AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(converterCls);
 
                             // Extract attribute and datastore types for this converter
                             attrType = member.getType();
