@@ -44,6 +44,8 @@ Contributors:
         <persistence-property name="javax.persistence.validation.group.pre-remove" internal-name="datanucleus.validation.group.pre-remove"/>
         <persistence-property name="javax.persistence.validation.factory" internal-name="datanucleus.validation.factory"/>
 
+        <persistence-property name="javax.persistence.bean.manager" internal-name="datanucleus.cdi.bean.manager"/>
+
         <persistence-property name="javax.persistence.schema-generation.create-database-schemas" internal-name="datanucleus.generateSchema.create-schemas"/>
         <persistence-property name="javax.persistence.schema-generation.database.action" internal-name="datanucleus.generateSchema.database.mode"/>
         <persistence-property name="javax.persistence.schema-generation.scripts.action" internal-name="datanucleus.generateSchema.scripts.mode"/>
