@@ -147,25 +147,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         persistenceContextType = PersistenceContextType.TRANSACTION;
         setPersistenceContextTypeFromProperties(props, overridingProps);
 
-        Object validationFactory = null;
-        if (overridingProps != null)
-        {
-            if (overridingProps.containsKey("javax.persistence.bean.manager"))
-            {
-                // Get any CDI BeanManager
-                /*Object beanMgr =*/ overridingProps.get("javax.persistence.bean.manager");
-                // TODO Make use of BeanManager in CDI
-            }
-
-            if (overridingProps.containsKey("javax.persistence.validation.factory"))
-            {
-                // Get any ValidationFactory
-                validationFactory = overridingProps.get("javax.persistence.validation.factory");
-            }
-        }
-
-        // Strictly speaking this is only required for the other constructor since the J2EE container should check
-        // before calling us but we check anyway
+        // Strictly speaking this is only required for the other constructor since the J2EE container should check before calling us but we check anyway
         boolean validProvider = false;
         if (unitInfo.getPersistenceProviderClassName() == null ||
             unitInfo.getPersistenceProviderClassName().equals(PersistenceProviderImpl.class.getName()) ||
@@ -334,12 +316,6 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             }
         }
         nucleusCtx = initialiseNucleusContext(unitMetaData, overridingProps, null);
-
-        if (validationFactory != null)
-        {
-            // Make use of JavaEE ValidationFactory
-            nucleusCtx.setValidationFactory(validationFactory);
-        }
 
         if (entityGraphsToRegister != null)
         {
