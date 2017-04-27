@@ -147,6 +147,14 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         persistenceContextType = PersistenceContextType.TRANSACTION;
         setPersistenceContextTypeFromProperties(props, overridingProps);
 
+        if (overridingProps != null && overridingProps.containsKey("javax.persistence.bean.manager"))
+        {
+            // Get any CDI BeanManager
+            Object beanMgr = overridingProps.get("javax.persistence.bean.manager");
+            // TODO Make use of this in CDI
+            NucleusLogger.PERSISTENCE.debug("BeanManager : " + beanMgr);
+        }
+
         // Strictly speaking this is only required for the other constructor since the J2EE container should check
         // before calling us but we check anyway
         boolean validProvider = false;
