@@ -35,6 +35,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 
+import org.datanucleus.BeanValidationHandler;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.NucleusContext;
@@ -51,14 +52,14 @@ public class JPACallbackHandler implements CallbackHandler
 {
     NucleusContext nucleusCtx;
 
-    CallbackHandler beanValidationHandler;
+    BeanValidationHandler beanValidationHandler;
 
     public JPACallbackHandler(NucleusContext nucleusCtx)
     {
         this.nucleusCtx = nucleusCtx;
     }
 
-    public void setValidationListener(CallbackHandler handler)
+    public void setBeanValidationHandler(BeanValidationHandler handler)
     {
         beanValidationHandler = handler;
     }

@@ -50,7 +50,7 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-import org.datanucleus.BeanValidatorHandler;
+import org.datanucleus.BeanValidationHandler;
 import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
@@ -140,10 +140,10 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             tx = new JPAEntityTransaction(ec);
         }
 
-        BeanValidatorHandler beanValidator = nucleusCtx.getValidationHandler(ec);
+        BeanValidationHandler beanValidator = nucleusCtx.getBeanValidationHandler(ec);
         if (beanValidator != null)
         {
-            ec.getCallbackHandler().setValidationListener(beanValidator);
+            ec.getCallbackHandler().setBeanValidationHandler(beanValidator);
         }
 
         fetchPlan = new JPAFetchPlan(ec.getFetchPlan());
