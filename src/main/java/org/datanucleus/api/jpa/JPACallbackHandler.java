@@ -64,15 +64,6 @@ public class JPACallbackHandler implements CallbackHandler
     }
 
     /**
-     * Callback after the object has been created.
-     * @param pc The Object
-     */
-    public void postCreate(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
      * Callback before the object is persisted (just before the lifecycle state change).
      * @param pc The Object
      */
@@ -126,24 +117,6 @@ public class JPACallbackHandler implements CallbackHandler
     }
 
     /**
-     * Callback before the fields of the object are cleared.
-     * @param pc The Object
-     */
-    public void preClear(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback after the fields of the object are cleared.
-     * @param pc The Object
-     */
-    public void postClear(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
      * Callback before the object is deleted (after calling remove() but before the lifecycle state change).
      * @param pc The Object
      */
@@ -166,77 +139,12 @@ public class JPACallbackHandler implements CallbackHandler
     }
 
     /**
-     * Callback before the object is made dirty.
-     * @param pc The Object
-     */
-    public void preDirty(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback after the object is made dirty.
-     * @param pc The Object
-     */
-    public void postDirty(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
      * Callback after the fields of the object are loaded.
      * @param pc The Object
      */
     public void postLoad(Object pc)
     {
         invokeCallback(pc, PostLoad.class);
-    }
-
-    /**
-     * Callback after the fields of the object are refreshed.
-     * @param pc The Object
-     */
-    public void postRefresh(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback before the object is detached.
-     * @param pc The Object
-     */
-    public void preDetach(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback after the object is detached.
-     * @param pc The Object
-     * @param detachedPC The detached object
-     */
-    public void postDetach(Object pc, Object detachedPC)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback before the object is attached.
-     * @param pc The Object
-     */
-    public void preAttach(Object pc)
-    {
-        // Not supported by JPA
-    }
-
-    /**
-     * Callback after the object is attached.
-     * @param pc The attached Object
-     * @param detachedPC The detached object
-     */
-    public void postAttach(Object pc, Object detachedPC)
-    {
-        // Not supported by JPA
     }
 
     /**
