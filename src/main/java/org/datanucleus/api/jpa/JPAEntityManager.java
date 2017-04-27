@@ -50,6 +50,7 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
+import org.datanucleus.BeanValidatorHandler;
 import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
@@ -75,7 +76,6 @@ import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.state.CallbackHandler;
 import org.datanucleus.state.LockManager;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.NucleusConnection;
@@ -140,7 +140,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             tx = new JPAEntityTransaction(ec);
         }
 
-        CallbackHandler beanValidator = nucleusCtx.getValidationHandler(ec);
+        BeanValidatorHandler beanValidator = nucleusCtx.getValidationHandler(ec);
         if (beanValidator != null)
         {
             ec.getCallbackHandler().setValidationListener(beanValidator);
