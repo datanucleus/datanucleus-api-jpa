@@ -38,7 +38,7 @@ import javax.persistence.PreUpdate;
 import org.datanucleus.BeanValidationHandler;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
-import org.datanucleus.NucleusContext;
+import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
@@ -50,11 +50,11 @@ import org.datanucleus.state.ObjectProvider;
  */
 public class JPACallbackHandler implements CallbackHandler
 {
-    NucleusContext nucleusCtx;
+    PersistenceNucleusContext nucleusCtx;
 
     BeanValidationHandler beanValidationHandler;
 
-    public JPACallbackHandler(NucleusContext nucleusCtx)
+    public JPACallbackHandler(PersistenceNucleusContext nucleusCtx)
     {
         this.nucleusCtx = nucleusCtx;
     }
