@@ -133,8 +133,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         }
         ec = nucleusCtx.getExecutionContext(this, options);
 
-        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(
-            TransactionType.RESOURCE_LOCAL.toString()))
+        if (nucleusCtx.getConfiguration().getStringProperty(PropertyNames.PROPERTY_TRANSACTION_TYPE).equalsIgnoreCase(TransactionType.RESOURCE_LOCAL.toString()))
         {
             // Using ResourceLocal transaction so allocate a transaction
             tx = new JPAEntityTransaction(ec);
@@ -184,8 +183,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * Close an (application-managed) EntityManager.
      * After the close method has been invoked, all methods on the EntityManager instance and any Query objects obtained
      * from it will throw the  IllegalStateException except for getTransaction and isOpen (which will return false).
-     * If this method is called when the EntityManager is associated with an active transaction, the persistence context 
-     * remains managed until the transaction completes.
+     * If this method is called when the EntityManager is associated with an active transaction, the persistence context remains managed until the transaction completes.
      */
     public void close()
     {
@@ -210,8 +208,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     /**
      * Return the entity manager factory for the entity manager.
      * @return EntityManagerFactory instance
-     * @throws IllegalStateException if the entity manager has
-     * been closed.
+     * @throws IllegalStateException if the entity manager has been closed.
      */
     public EntityManagerFactory getEntityManagerFactory()
     {
@@ -353,7 +350,6 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                     {
                         if (!IdentityUtils.isDatastoreIdentity(id))
                         {
-                            // Create an OID
                             id = ec.getNucleusContext().getIdentityManager().getDatastoreId(cmd.getFullClassName(), primaryKey);
                         }
                     }
@@ -454,10 +450,10 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     /**
      * Return an object of the specified type to allow access to the provider-specific API.
      * If the provider's EntityManager implementation does not support the specified class, the PersistenceException is thrown.
-     * @param cls the class of the object to be returned. This is normally either the underlying 
-     * EntityManager implementation class or an interface that it implements.
+     * @param cls the class of the object to be returned. This is normally either the underlying EntityManager implementation class or an interface that it implements.
      * @return an instance of the specified class
      * @throws PersistenceException if the provider does not support the call.
+     * @param <T> Type of the object to unwrap
      */
     public <T> T unwrap(Class<T> cls)
     {
@@ -472,6 +468,10 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         if (ClassConstants.METADATA_MANAGER.isAssignableFrom(cls))
         {
             return (T) ec.getMetaDataManager();
+        }
+        if (ClassConstants.PERSISTENCE_NUCLEUS_CONTEXT.isAssignableFrom(cls))
+        {
+            return (T) ec.getNucleusContext();
         }
         if (ClassConstants.NUCLEUS_CONTEXT.isAssignableFrom(cls))
         {
@@ -494,17 +494,16 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     }
 
     /**
-     * Get an instance, whose state may be lazily fetched. If the requested instance does not exist in the database, the EntityNotFoundException is
-     * thrown when the instance state is first accessed. The persistence provider runtime is permitted to throw the EntityNotFoundException when
-     * getReference is called. The application should not expect that the instance state will be available upon detachment, unless it was accessed
-     * by the application while the entity manager was open.
+     * Get an instance, whose state may be lazily fetched. 
+     * If the requested instance does not exist in the database, the EntityNotFoundException is thrown when the instance state is first accessed.
+     * The persistence provider runtime is permitted to throw the EntityNotFoundException when getReference is called. 
+     * The application should not expect that the instance state will be available upon detachment, unless it was accessed by the application while the entity manager was open.
      * @param entityClass Class of the entity
      * @param primaryKey The PK
      * @return the found entity instance
      * @throws IllegalArgumentException if the first argument does not denote an entity type or the second argument is not a valid type for that entities PK
      * @throws EntityNotFoundException if the entity state cannot be accessed
      */
-    @SuppressWarnings("unchecked")
     public Object getReference(Class entityClass, Object primaryKey)
     {
         assertIsOpen();
@@ -561,14 +560,14 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertEntity(entity);
         if (ec.getApiAdapter().isDetached(entity))
         {
-            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached",
-                StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
+            throw new IllegalArgumentException(Localiser.msg("EM.EntityIsDetached", StringUtils.toJVMIDString(entity), "" + ec.getApiAdapter().getIdForObject(entity)));
         }
         if (!contains(entity))
         {
             // The object is not contained (the javadoc doesnt explicitly say which exception to throw here)
             throwException(new PersistenceException("Entity is not contained in this persistence context so cant lock it"));
         }
+
         if (properties != null) // TODO Should be for just this operation
         {
             ec.setProperties(properties);
@@ -582,6 +581,8 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
         if (lock != null && lock != LockModeType.NONE)
         {
+            // For pessimistic modes this will do a "SELECT ... FOR UPDATE" on the object.
+            // For optimistic modes this will just mark the lock type in the ObjectProvider for later handling
             ec.getLockManager().lock(ec.findObjectProvider(entity), getLockTypeForJPALockModeType(lock));
         }
     }
@@ -590,11 +591,9 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * Make an instance managed and persistent.
      * @param entity The Entity
      * @throws EntityExistsException if the entity already exists.
-     *     (The EntityExistsException may be thrown when the persist operation is invoked, 
-     *     or the EntityExistsException/PersistenceException may be thrown at flush/commit time.)
+     *     (The EntityExistsException may be thrown when the persist operation is invoked, or the EntityExistsException/PersistenceException may be thrown at flush/commit time.)
      * @throws IllegalArgumentException if not an entity
-     * @throws TransactionRequiredException if invoked on a container-managed entity manager
-     *     of type PersistenceContextType.TRANSACTION and there is no transaction.
+     * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction.
      */
     public void persist(Object entity)
     {
@@ -648,14 +647,11 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         for (Object entity : entities)
         {
             assertEntity(entity);
-            if (ec.exists(entity))
+            if (ec.exists(entity) && ec.getApiAdapter().isDetached(entity))
             {
-                if (ec.getApiAdapter().isDetached(entity))
-                {
-                    // The JPA spec is very confused about when this exception is thrown, however the JPA TCK invokes this operation multiple times over the same instance
-                    // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
-                    throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
-                }
+                // The JPA spec is very confused about when this exception is thrown, however the JPA TCK invokes this operation multiple times over the same instance
+                // Entity is already persistent. Maybe the ExecutionContext.exists method isnt the best way of checking
+                throwException(new EntityExistsException(Localiser.msg("EM.EntityIsPersistent", StringUtils.toJVMIDString(entity))));
             }
         }
 
@@ -741,10 +737,9 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     }
 
     /**
-     * Remove the given entity from the persistence context, causing a managed entity to become 
-     * detached. Unflushed changes made to the entity if any (including removal of the entity),
-     * will not be synchronized to the database. Entities which previously referenced the detached 
-     * entity will continue to reference it.
+     * Remove the given entity from the persistence context, causing a managed entity to become detached. 
+     * Unflushed changes made to the entity if any (including removal of the entity) will not be synchronized to the database. 
+     * Entities which previously referenced the detached entity will continue to reference it.
      * @param entity The entity
      * @throws IllegalArgumentException if the instance is not an entity
      */
@@ -807,8 +802,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * Refresh the state of the instance from the database, overwriting changes made to the entity, if any.
      * @param entity The Entity
      * @throws IllegalArgumentException if not an entity or entity is not managed
-     * @throws TransactionRequiredException if invoked on a container-managed entity manager
-     *     of type PersistenceContextType.TRANSACTION and there is no transaction.
+     * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction.
      * @throws EntityNotFoundException if the entity no longer exists in the database
      */
     public void refresh(Object entity)
@@ -817,14 +811,12 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     }
 
     /**
-     * Refresh the state of the instance from the database, using the specified properties, 
-     * and overwriting changes made to the entity, if any.
+     * Refresh the state of the instance from the database, using the specified properties, and overwriting changes made to the entity if any.
      * If a vendor-specific property or hint is not recognised, it is silently ignored.
      * @param entity The entity
      * @param properties standard and vendor-specific properties
      * @throws IllegalArgumentException if the instance is not an entity or the entity is not managed
-     * @throws TransactionRequiredException if invoked on a container-managed entity manager 
-     *     of type PersistenceContextType.TRANSACTION and there is no transaction.
+     * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction.
      * @throws EntityNotFoundException if the entity no longer exists in the database
      */
     public void refresh(Object entity, Map<String, Object> properties)
@@ -876,8 +868,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * Remove the entity instance.
      * @param entity The Entity
      * @throws IllegalArgumentException if not an entity or if a detached entity
-     * @throws TransactionRequiredException if invoked on a container-managed entity manager
-     *     of type PersistenceContextType.TRANSACTION and there is no transaction.
+     * @throws TransactionRequiredException if invoked on a container-managed entity manager of type PersistenceContextType.TRANSACTION and there is no transaction.
      */
     public void remove(Object entity)
     {
@@ -1074,12 +1065,12 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
     /**
      * Method to return a query for the specified Criteria Query.
-     * @param criteriaQuery The Criteria query
+     * @param cq The Criteria query
      * @return The JPA query to use
      */
-    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery)
+    public <T> TypedQuery<T> createQuery(CriteriaQuery<T> cq)
     {
-        CriteriaQueryImpl<T> criteria = (CriteriaQueryImpl<T>)criteriaQuery;
+        CriteriaQueryImpl<T> criteria = (CriteriaQueryImpl<T>)cq;
         String jpqlString = criteria.toString();
         TypedQuery<T> query = null;
         QueryCompilation compilation = criteria.getCompilation(ec.getMetaDataManager(), ec.getClassLoaderResolver());
@@ -1379,8 +1370,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.STOREDPROC.toString(), ec, procName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procName);
             return new JPAStoredProcedureQuery(this, internalQuery);
         }
         catch (NucleusException ne)
@@ -1423,8 +1413,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * @param procedureName name of the stored procedure in the database
      * @param resultSetMappings the names of the result set mappings to be used in mapping result sets returned by the stored procedure
      * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a stored procedure or result set mapping of the given name does not exist
-     * or the query execution will fail
+     * @throws IllegalArgumentException if a stored procedure or result set mapping of the given name does not exist or the query execution will fail
      */
     public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings)
     {
@@ -1462,14 +1451,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         if (resultClass != null)
         {
             // Catch special case of javax.persistence.Tuple
-            if (resultClass.getName().equals("javax.persistence.Tuple"))
-            {
-                jpaQuery.setResultClass(JPAQueryTuple.class);
-            }
-            else
-            {
-                jpaQuery.setResultClass(resultClass);
-            }
+            jpaQuery.setResultClass(resultClass.getName().equals("javax.persistence.Tuple") ? JPAQueryTuple.class : resultClass);
         }
         return jpaQuery;
     }
@@ -1485,8 +1467,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.JPQL.toString(), ec, queryString);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.JPQL.toString(), ec, queryString);
             return new JPAQuery(this, internalQuery, QueryLanguage.JPQL.toString());
         }
         catch (NucleusException ne)
@@ -1527,8 +1508,8 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
      * Get the names of the properties that are supported for use with the entity manager.
      * These correspond to properties and hints that may be passed to the methods of the EntityManager 
      * interface that take a properties argument or used with the PersistenceContext annotation. 
-     * These properties include all standard entity manager hints and properties as well as 
-     * vendor-specific one supported by the provider. These properties may or may not currently be in effect.
+     * These properties include all standard entity manager hints and properties as well as vendor-specific one supported by the provider. 
+     * These properties may or may not currently be in effect.
      * @return property names Names of the properties accepted
      */
     public Set<String> getSupportedProperties()
@@ -1590,8 +1571,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
     /**
      * Method to throw a TransactionRequiredException if the provided lock mode is not valid
-     * for the current transaction situation (i.e if lock mode other than NONE is specified then
-     * the transaction has to be active).
+     * for the current transaction situation (i.e if lock mode other than NONE is specified then the transaction has to be active).
      * @param lock The lock mode
      */
     private void assertLockModeValid(LockModeType lock)
@@ -1614,18 +1594,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             throw new IllegalArgumentException(Localiser.msg("EM.EntityNotAnEntity", entity));
         }
 
-        Class cls = null;
-        if (entity instanceof Class)
-        {
-            // Class passed in so just check that
-            cls = (Class)entity;
-        }
-        else
-        {
-            // Object passed in so check its class
-            cls = entity.getClass();
-        }
-
+        Class cls = (entity instanceof Class) ? (Class)entity : entity.getClass();
         try
         {
             ec.assertClassPersistable(cls);
@@ -1662,9 +1631,8 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             {
                 if (conf.getBooleanProperty(JPAPropertyNames.PROPERTY_JPA_TRANSACTION_ROLLBACK_ON_EXCEPTION))
                 {
-                    // The JPA spec says that all PersistenceExceptions thrown should mark the transaction for 
-                    // rollback. Seems stupid to me. e.g you try to find an object with a particular id and it 
-                    // doesn't exist so you then have to rollback the txn and start again. FFS.
+                    // The JPA spec says that all PersistenceExceptions thrown should mark the transaction for rollback.
+                    // Seems stupid to me. e.g you try to find an object with a particular id and it doesn't exist so you then have to rollback the txn and start again. FFS.
                     getTransaction().setRollbackOnly();
                 }
             }
