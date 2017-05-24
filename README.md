@@ -33,6 +33,7 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [jpa-spec-35](https://github.com/javaee/jpa-spec/issues/35) : support for more types. DataNucleus has provided way more types since JPA1 days!  
 [jpa-spec-41](https://github.com/javaee/jpa-spec/issues/41) : targetClass attribute for @Embedded. Provided in javax.persistence-2.2.jar  
 [jpa-spec-42](https://github.com/javaee/jpa-spec/issues/42) : allow null embedded objects. Provided by extension  
+[jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
 [jpa-spec-48](https://github.com/javaee/jpa-spec/issues/48) : @CurrentUser on a field. _Not implemented but the same idea applies to DataNucleus multitenancy support_  
 [jpa-spec-49](https://github.com/javaee/jpa-spec/issues/49) : @CreateTimestamp, @UpdateTimestamp. Implemented using DN extension annotations  
 [jpa-spec-52](https://github.com/javaee/jpa-spec/issues/52) : EM.createNativeQuery(String,Class). DN already works like that  
