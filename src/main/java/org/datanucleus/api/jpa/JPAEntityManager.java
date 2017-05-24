@@ -767,7 +767,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
         try
         {
-            ec.detachObject(entity, new DetachState(ec.getApiAdapter()));
+            ec.detachObject(new DetachState(ec.getApiAdapter()), entity);
         }
         catch (NucleusException ne)
         {
@@ -782,19 +782,13 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
 
     public void detach(Object... entities)
     {
-        for (Object entity : entities)
+        try
         {
-            assertEntity(entity);
-
-            // TODO Change this when we have detachObjects in ExecutionContext
-            try
-            {
-                ec.detachObject(entity, new DetachState(ec.getApiAdapter()));
-            }
-            catch (NucleusException ne)
-            {
-                throwException(NucleusJPAHelper.getJPAExceptionForNucleusException(ne));
-            }
+            ec.detachObjects(new DetachState(ec.getApiAdapter()), entities);
+        }
+        catch (NucleusException ne)
+        {
+            throwException(NucleusJPAHelper.getJPAExceptionForNucleusException(ne));
         }
     }
 
