@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * Extension annotation allowing for specification of jdbc-type in JPA.
  */
-@Target({ElementType.FIELD, ElementType.METHOD}) 
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD}) 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JdbcType
 {

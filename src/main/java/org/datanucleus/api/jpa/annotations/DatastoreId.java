@@ -27,7 +27,8 @@ import javax.persistence.GenerationType;
 /**
  * Extension annotation allowing for use of datastore-identity with JPA.
  */
-@Target(ElementType.TYPE) @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE) 
+@Retention(RetentionPolicy.RUNTIME)
 public @interface DatastoreId
 {
     /** 
