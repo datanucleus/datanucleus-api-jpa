@@ -76,7 +76,7 @@ import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.state.LockManager;
+import org.datanucleus.state.LockMode;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
@@ -367,7 +367,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                     }
 
                     // Register the object for locking
-                    ec.getLockManager().lock(id, getLockTypeForJPALockModeType(lock));
+                    ec.getLockManager().lock(id, getLockModeForJPALockModeType(lock));
                 }
 
                 pc = ec.findObject(entityClass, primaryKey);
@@ -583,7 +583,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         {
             // For pessimistic modes this will do a "SELECT ... FOR UPDATE" on the object.
             // For optimistic modes this will just mark the lock type in the ObjectProvider for later handling
-            ec.getLockManager().lock(ec.findObjectProvider(entity), getLockTypeForJPALockModeType(lock));
+            ec.getLockManager().lock(ec.findObjectProvider(entity), getLockModeForJPALockModeType(lock));
         }
     }
 
@@ -847,7 +847,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             if (lock != null && lock != LockModeType.NONE)
             {
                 // Register the object for locking
-                ec.getLockManager().lock(ec.getApiAdapter().getIdForObject(entity), getLockTypeForJPALockModeType(lock));
+                ec.getLockManager().lock(ec.getApiAdapter().getIdForObject(entity), getLockModeForJPALockModeType(lock));
             }
 
             ec.refreshObject(entity);
@@ -991,7 +991,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         }
 
         ObjectProvider sm = ec.findObjectProvider(entity);
-        return getJPALockModeTypeForLockType(sm.getLockMode());
+        return getJPALockModeTypeForLockMode(ec.getLockManager().getLockMode(sm));
     }
 
     // ------------------------------------ Transactions --------------------------------------
@@ -1635,52 +1635,52 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     }
 
     /**
-     * Convenience method to convert from the JPA LockModeType to the type expected by LockManager
+     * Convenience method to convert from the JPA LockModeType to the internal lock mode.
      * @param lock JPA LockModeType
-     * @return The lock type
+     * @return The internal lock mode
      */
-    public static short getLockTypeForJPALockModeType(LockModeType lock)
+    public static LockMode getLockModeForJPALockModeType(LockModeType lock)
     {
-        short lockModeType = LockManager.LOCK_MODE_NONE;
+        LockMode lockModeType = LockMode.LOCK_NONE;
         if (lock == LockModeType.OPTIMISTIC || lock == LockModeType.READ)
         {
-            lockModeType = LockManager.LOCK_MODE_OPTIMISTIC_READ;
+            lockModeType = LockMode.LOCK_OPTIMISTIC_READ;
         }
         else if (lock == LockModeType.OPTIMISTIC_FORCE_INCREMENT || lock == LockModeType.WRITE)
         {
-            lockModeType = LockManager.LOCK_MODE_OPTIMISTIC_WRITE;
+            lockModeType = LockMode.LOCK_OPTIMISTIC_WRITE;
         }
         else if (lock == LockModeType.PESSIMISTIC_READ)
         {
-            lockModeType = LockManager.LOCK_MODE_PESSIMISTIC_READ;
+            lockModeType = LockMode.LOCK_PESSIMISTIC_READ;
         }
         else if (lock == LockModeType.PESSIMISTIC_FORCE_INCREMENT || lock == LockModeType.PESSIMISTIC_WRITE)
         {
-            lockModeType = LockManager.LOCK_MODE_PESSIMISTIC_WRITE;
+            lockModeType = LockMode.LOCK_PESSIMISTIC_WRITE;
         }
         return lockModeType;
     }
 
     /**
      * Convenience method to convert from LockManager lock type to JPA LockModeType
-     * @param lockType Lock type
+     * @param lockMode Lock mode
      * @return JPA LockModeType
      */
-    public static LockModeType getJPALockModeTypeForLockType(short lockType)
+    public static LockModeType getJPALockModeTypeForLockMode(LockMode lockMode)
     {
-        if (lockType == LockManager.LOCK_MODE_OPTIMISTIC_READ)
+        if (lockMode == LockMode.LOCK_OPTIMISTIC_READ)
         {
             return LockModeType.OPTIMISTIC;
         }
-        else if (lockType == LockManager.LOCK_MODE_OPTIMISTIC_WRITE)
+        else if (lockMode == LockMode.LOCK_OPTIMISTIC_WRITE)
         {
             return LockModeType.OPTIMISTIC_FORCE_INCREMENT;
         }
-        else if (lockType == LockManager.LOCK_MODE_PESSIMISTIC_READ)
+        else if (lockMode == LockMode.LOCK_PESSIMISTIC_READ)
         {
             return LockModeType.PESSIMISTIC_READ;
         }
-        else if (lockType == LockManager.LOCK_MODE_PESSIMISTIC_WRITE)
+        else if (lockMode == LockMode.LOCK_PESSIMISTIC_WRITE)
         {
             return LockModeType.PESSIMISTIC_WRITE;
         }
