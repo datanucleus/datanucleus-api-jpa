@@ -106,8 +106,6 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         // Enable closure of results at ExecutionContext close (i.e EntityManager close). User can turn it off by adding this hint as "false"
         this.query.addExtension(Query.EXTENSION_CLOSE_RESULTS_AT_EC_CLOSE, "true");
-
-//        this.lockMode = em.getLockMode();
     }
 
     public JPAFetchPlan getFetchPlan()
@@ -240,12 +238,12 @@ public class JPAQuery<X> implements TypedQuery<X>
                 em.flush();
             }
 
-            query.setUnique(true);
-
             if (lockMode == LockModeType.PESSIMISTIC_READ || lockMode == LockModeType.PESSIMISTIC_WRITE)
             {
                 query.setSerializeRead(Boolean.TRUE);
             }
+
+            query.setUnique(true);
 
             return (X)query.executeWithMap(null); // Params defined using setParameter() earlier
         }
