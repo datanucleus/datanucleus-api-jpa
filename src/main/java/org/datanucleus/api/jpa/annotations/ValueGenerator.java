@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * Extension annotation allowing for custom value generators in JPA (uuid, timestamp, etc).
  */
-@Target({ElementType.FIELD, ElementType.METHOD}) 
+@Target({ElementType.ANNOTATION_TYPE, ElementType.FIELD, ElementType.METHOD}) 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValueGenerator
 {
