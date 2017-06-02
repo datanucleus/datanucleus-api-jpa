@@ -155,7 +155,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         super(mgr);
 
         // We support JPA and DataNucleus annotations in this reader
-        setSupportedAnnotationPackages(new String[] {"javax.persistence", "org.datanucleus"});
+        setSupportedAnnotationPackages(new String[] {"javax.persistence", "org.datanucleus.api.jpa.annotations"});
     }
 
     /**
