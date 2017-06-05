@@ -129,7 +129,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         try
         {
-            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive()) // TODO Could do this in "query" using EXTENSION_FLUSH_BEFORE_EXECUTION, or using EC FetchMode.QUERY
             {
                 em.flush();
             }
@@ -180,7 +180,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         try
         {
-            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive()) // TODO Could do this in "query" using EXTENSION_FLUSH_BEFORE_EXECUTION, or using EC FetchMode.QUERY
             {
                 em.flush();
             }
@@ -233,7 +233,7 @@ public class JPAQuery<X> implements TypedQuery<X>
 
         try
         {
-            if (flushMode == FlushModeType.AUTO && em.isTransactionActive())
+            if (flushMode == FlushModeType.AUTO && em.isTransactionActive()) // TODO Could do this in "query" using EXTENSION_FLUSH_BEFORE_EXECUTION, or using EC FetchMode.QUERY
             {
                 em.flush();
             }
