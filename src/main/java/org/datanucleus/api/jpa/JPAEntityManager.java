@@ -968,6 +968,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
     {
         assertIsOpen();
         this.flushMode = flushMode;
+        // TODO Map this on to the ExecutionContext mode FlushModeType.COMMIT = FlushMode.MANUAL, FlushModeType.AUTO = FlushMode.QUERY
     }
 
     /**
