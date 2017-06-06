@@ -27,6 +27,7 @@ import org.datanucleus.ExecutionContext;
 import org.datanucleus.TransactionEventListener;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.transaction.NucleusTransactionException;
+import org.datanucleus.transaction.TransactionUtils;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.Localiser;
 
@@ -183,6 +184,12 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void setOption(String option, String value)
     {
+        if (option.equalsIgnoreCase("transaction.isolation"))
+        {
+            int isolationLevel = TransactionUtils.getTransactionIsolationLevelForName(value);
+            tx.setOption(org.datanucleus.Transaction.TRANSACTION_ISOLATION_OPTION, isolationLevel);
+            return;
+        }
         tx.setOption(option, value);
     }
 
