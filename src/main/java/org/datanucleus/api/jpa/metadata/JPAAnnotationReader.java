@@ -2001,8 +2001,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         Class converterCls = converts[0].converter();
                         String convAttrName = converts[0].attributeName();
-                        Boolean disable = converts[0].disableConversion();
-                        if (disable == Boolean.TRUE)
+                        boolean disable = converts[0].disableConversion();
+                        if (disable)
                         {
                             mmd.setTypeConverterDisabled();
                         }
