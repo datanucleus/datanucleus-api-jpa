@@ -70,7 +70,6 @@ public class MetamodelImpl implements Metamodel
 
         // Load up known types
         FileMetaData[] filemds = mmgr.getFileMetaData();
-        ClassLoaderResolver clr = getClassLoaderResolver();
         for (int i=0;i<filemds.length;i++)
         {
             for (int j=0;j<filemds[i].getNoOfPackages();j++)
