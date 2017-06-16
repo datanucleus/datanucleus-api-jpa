@@ -218,6 +218,12 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
     }
 
+//    public Stream<X> getResultStream()
+//    {
+        // TODO Provide custom override, providing more efficient access to results
+//        return TypedQuery.super.getResultStream();
+//    }
+
     /**
      * Method to execute a SELECT statement returning a single result.
      * @return the result
