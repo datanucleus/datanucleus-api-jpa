@@ -121,6 +121,8 @@ Contributors:
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ReadOnly" handler="org.datanucleus.api.jpa.annotations.ReadOnlyHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateTimestamp" handler="org.datanucleus.api.jpa.annotations.CreateTimestampHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateTimestamp" handler="org.datanucleus.api.jpa.annotations.UpdateTimestampHandler"/>
+        <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateUser" handler="org.datanucleus.api.jpa.annotations.CreateUserHandler"/>
+        <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateUser" handler="org.datanucleus.api.jpa.annotations.UpdateUserHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.MultiTenant" handler="org.datanucleus.api.jpa.annotations.MultiTenantHandler"/>
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.SoftDelete" handler="org.datanucleus.api.jpa.annotations.SoftDeleteHandler"/>
     </extension>
@@ -135,6 +137,8 @@ Contributors:
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.SharedRelation" handler="org.datanucleus.api.jpa.annotations.SharedRelationHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateTimestamp" handler="org.datanucleus.api.jpa.annotations.CreateTimestampHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateTimestamp" handler="org.datanucleus.api.jpa.annotations.UpdateTimestampHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateUser" handler="org.datanucleus.api.jpa.annotations.CreateUserHandler"/>
+        <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateUser" handler="org.datanucleus.api.jpa.annotations.UpdateUserHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ComparatorClass" handler="org.datanucleus.api.jpa.annotations.ComparatorClassHandler"/>
     </extension>
 </plugin>
