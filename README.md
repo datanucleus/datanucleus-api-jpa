@@ -24,7 +24,19 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 
 ## JPA 2.2 Status
 
-The latest JPA spec is currently v2.1 and the JPA "expert group" is seemingly dead, yet they provide an issue tracker for people to raise issues of what they would like to see in 
+There is a JPA 2.2 Maintenance Release planned. The activity on this is virtually non-existent, and its scope is very weak.
+DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues
+
+[jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
+[jpa-spec-63](https://github.com/javaee/jpa-spec/issues/63) : Support java.time. Implemented fully as far as we can see  
+[jpa-spec-89](https://github.com/javaee/jpa-spec/issues/89) : Add Query.getResultStream()  
+[jpa-spec-115](https://github.com/javaee/jpa-spec/issues/115) : Add @Repeatable to annotations. Done in javax.persistence-2.2.jar  
+
+
+
+## JPA Next Status
+
+The JPA "expert group" is seemingly dead, only providing minimal things in v2.2, yet they provide an issue tracker for people to raise issues of what they would like to see in 
 the next release of JPA (if it ever happens). 
 DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues
 
@@ -33,11 +45,9 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [jpa-spec-35](https://github.com/javaee/jpa-spec/issues/35) : support for more types. DataNucleus has provided way more types since JPA1 days!  
 [jpa-spec-41](https://github.com/javaee/jpa-spec/issues/41) : targetClass attribute for @Embedded. Provided in javax.persistence-2.2.jar  
 [jpa-spec-42](https://github.com/javaee/jpa-spec/issues/42) : allow null embedded objects. Provided by extension  
-[jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
 [jpa-spec-48](https://github.com/javaee/jpa-spec/issues/48) : @CurrentUser on a field. Implemented using DN extension annotations  
 [jpa-spec-49](https://github.com/javaee/jpa-spec/issues/49) : @CreateTimestamp, @UpdateTimestamp. Implemented using DN extension annotations  
 [jpa-spec-52](https://github.com/javaee/jpa-spec/issues/52) : EM.createNativeQuery(String,Class). DN already works like that  
-[jpa-spec-63](https://github.com/javaee/jpa-spec/issues/63) : Support java.time. Implemented fully as far as we can see  
 [jpa-spec-74](https://github.com/javaee/jpa-spec/issues/74) : Method of obtaining @Version value. Available via NucleusJPAHelper  
 [jpa-spec-76](https://github.com/javaee/jpa-spec/issues/76) : Allow specification of null handling in ORDER BY. Provided in javax.persistence-2.2.jar for Criteria and also in JPQL string-based  
 [jpa-spec-77](https://github.com/javaee/jpa-spec/issues/77) : EMF should implement AutoCloseable. Done  
@@ -50,7 +60,7 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [jpa-spec-107](https://github.com/javaee/jpa-spec/issues/107) : JPQL : support subqueries in SELECT. Done  
 [jpa-spec-112](https://github.com/javaee/jpa-spec/issues/112) : EntityGraph generic type incorrect. Fixed in javax.persistence-2.2.jar  
 [jpa-spec-113](https://github.com/javaee/jpa-spec/issues/113) : Allow @GeneratedValue on non-PK fields. Provided since JPA 1  
-[jpa-spec-115](https://github.com/javaee/jpa-spec/issues/115) : Add @Repeatable to annotations. Done in javax.persistence-2.2.jar  
 [jpa-spec-128](https://github.com/javaee/jpa-spec/issues/128) : JPQL : Support JOIN on 2 root candidates. Done  
 [jpa-spec-133](https://github.com/javaee/jpa-spec/issues/133) : Make GeneratedValue strategy=TABLE value available in PrePersist. Done  
 [jpa-spec-137](https://github.com/javaee/jpa-spec/issues/137) : Add methods taking List to Criteria. Done in javax.persistence-2.2.jar  
+
