@@ -62,6 +62,8 @@ public class JPAQuery<X> implements TypedQuery<X>
 {
     public static final String QUERY_HINT_TIMEOUT = "javax.persistence.query.timeout";
 
+    public static final String QUERY_HINT_FETCH_SIZE = "datanucleus.query.fetchSize";
+
     /** Underlying EntityManager handling persistence. */
     JPAEntityManager em;
 
@@ -423,7 +425,7 @@ public class JPAQuery<X> implements TypedQuery<X>
             query.getFetchPlan().addGroup(egName);
             // TODO Need to deregister any temporary EntityGraph
         }
-        else if (hintName.equalsIgnoreCase("datanucleus.query.fetchSize"))
+        else if (hintName.equalsIgnoreCase(QUERY_HINT_FETCH_SIZE))
         {
             if (value instanceof Integer)
             {
