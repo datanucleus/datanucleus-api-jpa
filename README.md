@@ -63,4 +63,5 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [jpa-spec-128](https://github.com/javaee/jpa-spec/issues/128) : JPQL : Support JOIN on 2 root candidates. Done  
 [jpa-spec-133](https://github.com/javaee/jpa-spec/issues/133) : Make GeneratedValue strategy=TABLE value available in PrePersist. Done  
 [jpa-spec-137](https://github.com/javaee/jpa-spec/issues/137) : Add methods taking List to Criteria. Done in javax.persistence-2.2.jar  
+[jpa-spec-150](https://github.com/javaee/jpa-spec/issues/150) : Define requirement of using TransactionSynchronizationRegistry in EE environment. Present since DN v3.x  
 
