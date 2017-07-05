@@ -63,6 +63,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     public static final String QUERY_HINT_TIMEOUT = "javax.persistence.query.timeout";
 
     public static final String QUERY_HINT_FETCH_SIZE = "datanucleus.query.fetchSize";
+    public static final String QUERY_HINT_IGNORE_CACHE = "datanucleus.query.ignoreCache";
 
     /** Underlying EntityManager handling persistence. */
     JPAEntityManager em;
@@ -393,6 +394,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         {
             return this;
         }
+
         if (hintName.equalsIgnoreCase(QUERY_HINT_TIMEOUT))
         {
             query.setDatastoreReadTimeoutMillis((Integer)value);
@@ -436,9 +438,21 @@ public class JPAQuery<X> implements TypedQuery<X>
                 query.getFetchPlan().setFetchSize(((Long)value).intValue());
             }
         }
+        else if (hintName.equalsIgnoreCase(QUERY_HINT_IGNORE_CACHE))
+        {
+            if (value instanceof String)
+            {
+                query.setIgnoreCache(Boolean.valueOf((String)value));
+            }
+            else if (value instanceof Boolean)
+            {
+                query.setIgnoreCache((Boolean)value);
+            }
+        }
 
-        // Just treat a "hint" as an "extension".
+        // Just treat a "hint" as an "extension". Note that this makes "getHints" work consistently, but any of the above will be doubly processed
         query.addExtension(hintName, value);
+
         return this;
     }
 
@@ -446,11 +460,12 @@ public class JPAQuery<X> implements TypedQuery<X>
      * Get the hints and associated values that are in effect for the query instance.
      * @return query hints
      */
-    public Map getHints()
+    public Map<String, Object> getHints()
     {
         assertIsOpen();
-        Map extensions = query.getExtensions();
-        Map map = new HashMap();
+
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> extensions = query.getExtensions();
         if (extensions != null && !extensions.isEmpty())
         {
             map.putAll(extensions);
