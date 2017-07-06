@@ -66,6 +66,7 @@ import org.datanucleus.api.jpa.criteria.CriteriaQueryImpl;
 import org.datanucleus.api.jpa.criteria.CriteriaUpdateImpl;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
+import org.datanucleus.flush.FlushMode;
 import org.datanucleus.identity.IdentityUtils;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.IdentityType;
@@ -1168,12 +1169,18 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             if (qmd.getLanguage().equals(QueryLanguage.JPQL.toString()))
             {
                 // "named-query" so return JPQL
-                org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
+                org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
+                if (ec.getFlushMode() == FlushMode.QUERY)
+                {
+                    // Flush mode implies flush all before executing the query so set the necessary property
+                    internalQuery.addExtension(org.datanucleus.store.query.Query.EXTENSION_FLUSH_BEFORE_EXECUTION, Boolean.TRUE);
+                }
+
                 return new JPAQuery(this, internalQuery, qmd.getLanguage());
             }
 
             // "named-native-query" so return native query
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
             if (qmd.getResultClass() != null)
             {
                 // Named native query with result class
@@ -1183,6 +1190,12 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                 {
                     resultClass = ec.getClassLoaderResolver().classForName(resultClassName);
                     internalQuery.setResultClass(resultClass);
+                    if (ec.getFlushMode() == FlushMode.QUERY)
+                    {
+                        // Flush mode implies flush all before executing the query so set the necessary property
+                        internalQuery.addExtension(org.datanucleus.store.query.Query.EXTENSION_FLUSH_BEFORE_EXECUTION, Boolean.TRUE);
+                    }
+
                     return new JPAQuery(this, internalQuery, qmd.getLanguage());
                 }
                 catch (Exception e)
@@ -1199,6 +1212,12 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                     throw new IllegalArgumentException(Localiser.msg("Query.ResultSetMappingNotFound", qmd.getResultMetaDataName()));
                 }
                 internalQuery.setResultMetaData(qrmd);
+                if (ec.getFlushMode() == FlushMode.QUERY)
+                {
+                    // Flush mode implies flush all before executing the query so set the necessary property
+                    internalQuery.addExtension(org.datanucleus.store.query.Query.EXTENSION_FLUSH_BEFORE_EXECUTION, Boolean.TRUE);
+                }
+
                 return new JPAQuery(this, internalQuery, qmd.getLanguage());
             }
             else
@@ -1240,7 +1259,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                 throw new IllegalArgumentException("This datastore does not support 'native' queries");
             }
 
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(nativeQueryLanguage, ec, queryString);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(nativeQueryLanguage, ec, queryString);
             if (resultClass != null)
             {
                 internalQuery.setResultClass(resultClass);
@@ -1271,7 +1290,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                 throw new IllegalArgumentException("This datastore does not support 'native' queries");
             }
 
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(nativeQueryLanguage, ec, queryString);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(nativeQueryLanguage, ec, queryString);
             QueryResultMetaData qrmd = ec.getMetaDataManager().getMetaDataForQueryResult(resultSetMapping);
             if (qrmd == null)
             {
@@ -1311,7 +1330,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         try
         {
             org.datanucleus.store.query.AbstractStoredProcedureQuery internalQuery =
-                (AbstractStoredProcedureQuery) ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, qmd.getProcedureName());
+                (AbstractStoredProcedureQuery) ec.getStoreManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, qmd.getProcedureName());
 
             if (qmd.getParameters() != null)
             {
@@ -1365,7 +1384,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procName);
             return new JPAStoredProcedureQuery(this, internalQuery);
         }
         catch (NucleusException ne)
@@ -1388,7 +1407,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
             if (resultClasses != null && resultClasses.length > 0)
             {
                 ((AbstractStoredProcedureQuery)internalQuery).setResultClasses(resultClasses);
@@ -1415,7 +1434,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procedureName);
             if (resultSetMappings != null && resultSetMappings.length > 0)
             {
                 QueryResultMetaData[] qrmds = new QueryResultMetaData[resultSetMappings.length];
@@ -1462,7 +1481,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.JPQL.toString(), ec, queryString);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.JPQL.toString(), ec, queryString);
             return new JPAQuery(this, internalQuery, QueryLanguage.JPQL.toString());
         }
         catch (NucleusException ne)
