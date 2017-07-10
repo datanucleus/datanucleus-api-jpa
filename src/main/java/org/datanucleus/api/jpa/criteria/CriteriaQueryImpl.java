@@ -51,6 +51,7 @@ import org.datanucleus.query.expression.OrderExpression;
 import org.datanucleus.query.expression.PrimaryExpression;
 import org.datanucleus.query.expression.SubqueryExpression;
 import org.datanucleus.query.expression.VariableExpression;
+import org.datanucleus.store.query.Query;
 
 /**
  * Implementation of JPA2 Criteria "Query".
@@ -650,7 +651,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             {
                 compilation.setResultDistinct();
             }
-            compilation.setQueryLanguage("JPQL");
+            compilation.setQueryLanguage(Query.LANGUAGE_JPQL);
         }
 
         if (subqueries != null && !subqueries.isEmpty())
@@ -666,7 +667,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     VariableExpression subqueryVar = (VariableExpression) subqueryExpr.getRight();
                     CriteriaQueryImpl<T> subDelegate = (CriteriaQueryImpl<T>) sub.getDelegate();
                     QueryCompilation subCompilation = subDelegate.getCompilation(mmgr, clr, compilation.getSymbolTable());
-                    subCompilation.setQueryLanguage("JPQL");
+                    subCompilation.setQueryLanguage(Query.LANGUAGE_JPQL);
                     compilation.addSubqueryCompilation(subqueryVar.getId(), subCompilation);
                 }
                 else if (subExpr instanceof VariableExpression)
@@ -674,7 +675,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     VariableExpression subVarExpr = (VariableExpression)subExpr;
                     CriteriaQueryImpl<T> subDelegate = (CriteriaQueryImpl<T>) sub.getDelegate();
                     QueryCompilation subCompilation = subDelegate.getCompilation(mmgr, clr, compilation.getSymbolTable());
-                    subCompilation.setQueryLanguage("JPQL");
+                    subCompilation.setQueryLanguage(Query.LANGUAGE_JPQL);
                     compilation.addSubqueryCompilation(subVarExpr.getId(), subCompilation);
                 }
             }

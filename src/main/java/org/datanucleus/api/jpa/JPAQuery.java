@@ -1152,7 +1152,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     public LockModeType getLockMode()
     {
         assertIsOpen();
-        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals("JPQL"))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(Query.LANGUAGE_JPQL))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }
@@ -1163,7 +1163,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     public TypedQuery<X> setLockMode(LockModeType lock)
     {
         assertIsOpen();
-        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals("JPQL"))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(Query.LANGUAGE_JPQL))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }

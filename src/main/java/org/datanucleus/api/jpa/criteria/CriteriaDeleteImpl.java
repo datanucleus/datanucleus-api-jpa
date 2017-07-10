@@ -36,6 +36,7 @@ import org.datanucleus.query.compiler.PropertySymbol;
 import org.datanucleus.query.compiler.QueryCompilation;
 import org.datanucleus.query.compiler.SymbolTable;
 import org.datanucleus.query.expression.ClassExpression;
+import org.datanucleus.store.query.Query;
 
 /**
  * Implementation of a Criteria Delete query.
@@ -225,7 +226,7 @@ public class CriteriaDeleteImpl<T> implements CriteriaDelete<T>, Serializable
 
             compilation = new QueryCompilation(candidateClass, candidateAlias, symtbl, null,
                 fromExprs, filterExpr, null, null, null, null);
-            compilation.setQueryLanguage("JPQL");
+            compilation.setQueryLanguage(Query.LANGUAGE_JPQL);
         }
 
         // TODO Handle subqueries
