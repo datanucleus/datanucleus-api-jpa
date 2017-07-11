@@ -30,8 +30,8 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 [jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
 [jpa-spec-63](https://github.com/javaee/jpa-spec/issues/63) : Support java.time. Implemented fully as far as we can see  
 [jpa-spec-89](https://github.com/javaee/jpa-spec/issues/89) : Add Query.getResultStream()  
+[jpa-spec-109](https://github.com/javaee/jpa-spec/issues/109) : Allow AttributeConverters to be CDI injectable  
 [jpa-spec-115](https://github.com/javaee/jpa-spec/issues/115) : Add @Repeatable to annotations. Done in javax.persistence-2.2.jar  
-[jpa-spec-115](https://github.com/javaee/jpa-spec/issues/109) : Allow AttributeConverters to be CDI injectable  
 
 
 
