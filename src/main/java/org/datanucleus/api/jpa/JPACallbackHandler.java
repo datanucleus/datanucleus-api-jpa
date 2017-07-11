@@ -44,6 +44,7 @@ import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
 import org.datanucleus.state.CallbackHandler;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.util.NucleusLogger;
 
 /**
  * CallbackHandler implementation for JPA.
@@ -428,7 +429,19 @@ public class JPACallbackHandler implements CallbackHandler
 
     protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException
     {
-        // TODO Support injectable listener via CDI
+        if (nucleusCtx.getCDIHandler() != null)
+        {
+            try
+            {
+                return nucleusCtx.getCDIHandler().createObjectWithInjectedDependencies(listenerCls);
+            }
+            catch (Exception e)
+            {
+                NucleusLogger.PERSISTENCE.warn("Error creating listener of type " + listenerCls.getName() + " using CDI BeanHandler", e);
+            }
+        }
+
+        // Return stateless listener
         return listenerCls.newInstance();
     }
 }

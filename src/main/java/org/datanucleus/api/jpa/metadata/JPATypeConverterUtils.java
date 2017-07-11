@@ -24,6 +24,7 @@ import javax.persistence.AttributeConverter;
 import org.datanucleus.NucleusContext;
 import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.util.ClassUtils;
+import org.datanucleus.util.NucleusLogger;
 
 /**
  * Convenience methods for handling JPA AttributeConverters.
@@ -89,8 +90,15 @@ public class JPATypeConverterUtils
             PersistenceNucleusContext ctx = (PersistenceNucleusContext)nucCtx;
             if (ctx.getCDIHandler() != null)
             {
-                // Create stateful AttributeConverter with any injected dependencies
-                return (AttributeConverter) ctx.getCDIHandler().createObjectWithInjectedDependencies(attrConverterCls);
+                try
+                {
+                    // Create stateful AttributeConverter with any injected dependencies
+                    return (AttributeConverter) ctx.getCDIHandler().createObjectWithInjectedDependencies(attrConverterCls);
+                }
+                catch (Exception e)
+                {
+                    NucleusLogger.PERSISTENCE.warn("Error creating AttributeConverter of type " + attrConverterCls.getName() + " using CDI BeanHandler", e);
+                }
             }
         }
 
