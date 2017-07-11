@@ -25,7 +25,7 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 ## JPA 2.2 Status
 
 There is a JPA 2.2 Maintenance Release planned. The activity on this is virtually non-existent, and its scope is very weak.
-DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues
+DataNucleus has gone ahead and worked on all of the issues that will affect a JPA provider
 
 [jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
 [jpa-spec-63](https://github.com/javaee/jpa-spec/issues/63) : Support java.time. Implemented fully as far as we can see  
@@ -37,9 +37,10 @@ DataNucleus, not being content to wait for hell to freeze over, has gone ahead a
 
 ## JPA Next Status
 
-The JPA "expert group" is seemingly dead, only providing minimal things in v2.2, yet they provide an issue tracker for people to raise issues of what they would like to see in 
-the next release of JPA (if it ever happens). 
-DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues
+The JPA "expert group" is seemingly dead, only providing minimal things in v2.2 (above), and with no plan beyond that.
+They do, however, provide an issue tracker for people to raise issues of what they would like to see in the "next" release of JPA (if/when it ever happens). 
+DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues. 
+All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until Oracle can be bothered ?
 
 [jpa-spec-25](https://github.com/javaee/jpa-spec/issues/25) : access the JPQL string query and native query from a JPA Query object. Done  
 [jpa-spec-30](https://github.com/javaee/jpa-spec/issues/30) : case sensitive JPQL queries. _Not implemented but would simply need JDOQL semantics copying_  
