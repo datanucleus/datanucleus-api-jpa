@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 
 import javax.persistence.AttributeConverter;
 
+import org.datanucleus.NucleusContext;
+import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.util.ClassUtils;
 
 /**
@@ -80,10 +82,19 @@ public class JPATypeConverterUtils
         return dbType;
     }
 
-    public static AttributeConverter createAttributeConverterInstance(Class attrConverterCls)
+    public static AttributeConverter createAttributeConverterInstance(NucleusContext nucCtx, Class attrConverterCls)
     {
-        // Create a stateless AttributeConverter
-        // TODO Change this to use CDI if we want to support injecting information into an AttributeConverter
+        if (nucCtx instanceof PersistenceNucleusContext)
+        {
+            PersistenceNucleusContext ctx = (PersistenceNucleusContext)nucCtx;
+            if (ctx.getCDIHandler() != null)
+            {
+                // Create stateful AttributeConverter with any injected dependencies
+                return (AttributeConverter) ctx.getCDIHandler().createObjectWithInjectedDependencies(attrConverterCls);
+            }
+        }
+
+        // Create stateless AttributeConverter
         return (AttributeConverter) ClassUtils.newInstance(attrConverterCls, null, null);
     }
 }

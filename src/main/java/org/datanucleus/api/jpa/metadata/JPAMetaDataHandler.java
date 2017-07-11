@@ -1145,7 +1145,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         // TODO Support injectable AttributeConverters
                         ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                         Class entityConvCls = clr.classForName(converterClassName);
-                        AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);
+                        AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls);
 
                         // Extract attribute and datastore types for this converter
                         Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
@@ -1170,7 +1170,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     // TODO Support injectable AttributeConverters
                     ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
                     Class entityConvCls = clr.classForName(converterClassName);
-                    AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(entityConvCls);
+                    AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls);
 
                     // Extract field and datastore types for this converter
                     Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
