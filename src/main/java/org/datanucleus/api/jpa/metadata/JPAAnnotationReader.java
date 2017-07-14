@@ -96,7 +96,7 @@ import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.ForeignKeyMetaData;
 import org.datanucleus.metadata.IdentityMetaData;
-import org.datanucleus.metadata.IdentityStrategy;
+import org.datanucleus.metadata.ValueGenerationStrategy;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IndexMetaData;
 import org.datanucleus.metadata.IndexedValue;
@@ -997,7 +997,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 // extension - datastore-identity
                 IdentityMetaData idmd = cmd.newIdentityMetadata();
                 idmd.setColumnName(identityColumn);
-                idmd.setValueStrategy(IdentityStrategy.getIdentityStrategy(identityStrategy));
+                idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
                 if (identityGenerator != null)
                 {
                     idmd.setSequence(identityGenerator);

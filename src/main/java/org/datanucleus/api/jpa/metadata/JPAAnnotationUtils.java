@@ -98,7 +98,7 @@ import org.datanucleus.api.jpa.annotations.NonDurableId;
 import org.datanucleus.api.jpa.annotations.PersistenceAware;
 import org.datanucleus.api.jpa.annotations.SurrogateVersion;
 import org.datanucleus.metadata.ColumnMetaData;
-import org.datanucleus.metadata.IdentityStrategy;
+import org.datanucleus.metadata.ValueGenerationStrategy;
 import org.datanucleus.metadata.MetaData;
 import org.datanucleus.metadata.annotations.Member;
 import org.datanucleus.util.StringUtils;
@@ -263,19 +263,19 @@ public class JPAAnnotationUtils
     {
         if (type == GenerationType.AUTO)
         {
-            return IdentityStrategy.NATIVE.toString();
+            return ValueGenerationStrategy.NATIVE.toString();
         }
         else if (type == GenerationType.IDENTITY)
         {
-            return IdentityStrategy.IDENTITY.toString();
+            return ValueGenerationStrategy.IDENTITY.toString();
         }
         else if (type == GenerationType.SEQUENCE)
         {
-            return IdentityStrategy.SEQUENCE.toString();
+            return ValueGenerationStrategy.SEQUENCE.toString();
         }
         else if (type == GenerationType.TABLE)
         {
-            return IdentityStrategy.INCREMENT.toString();
+            return ValueGenerationStrategy.INCREMENT.toString();
         }
         else
         {

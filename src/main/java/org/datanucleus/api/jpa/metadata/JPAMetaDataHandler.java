@@ -49,7 +49,7 @@ import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.ForeignKeyMetaData;
 import org.datanucleus.metadata.IdentityMetaData;
-import org.datanucleus.metadata.IdentityStrategy;
+import org.datanucleus.metadata.ValueGenerationStrategy;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IndexMetaData;
 import org.datanucleus.metadata.IndexedValue;
@@ -1776,19 +1776,19 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         if (strategy.equalsIgnoreCase("auto"))
                         {
-                            fmd.setValueStrategy(IdentityStrategy.NATIVE);
+                            fmd.setValueStrategy(ValueGenerationStrategy.NATIVE);
                         }
                         else if (strategy.equalsIgnoreCase("table"))
                         {
-                            fmd.setValueStrategy(IdentityStrategy.INCREMENT);
+                            fmd.setValueStrategy(ValueGenerationStrategy.INCREMENT);
                         }
                         else if (strategy.equalsIgnoreCase("sequence"))
                         {
-                            fmd.setValueStrategy(IdentityStrategy.SEQUENCE);
+                            fmd.setValueStrategy(ValueGenerationStrategy.SEQUENCE);
                         }
                         else if (strategy.equalsIgnoreCase("identity"))
                         {
-                            fmd.setValueStrategy(IdentityStrategy.IDENTITY);
+                            fmd.setValueStrategy(ValueGenerationStrategy.IDENTITY);
                         }
                     }
                     fmd.setValueGeneratorName(getAttr(attrs, "generator"));
@@ -1802,19 +1802,19 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         if (strategy.equalsIgnoreCase("auto"))
                         {
-                            idmd.setValueStrategy(IdentityStrategy.NATIVE);
+                            idmd.setValueStrategy(ValueGenerationStrategy.NATIVE);
                         }
                         else if (strategy.equalsIgnoreCase("table"))
                         {
-                            idmd.setValueStrategy(IdentityStrategy.INCREMENT);
+                            idmd.setValueStrategy(ValueGenerationStrategy.INCREMENT);
                         }
                         else if (strategy.equalsIgnoreCase("sequence"))
                         {
-                            idmd.setValueStrategy(IdentityStrategy.SEQUENCE);
+                            idmd.setValueStrategy(ValueGenerationStrategy.SEQUENCE);
                         }
                         else if (strategy.equalsIgnoreCase("identity"))
                         {
-                            idmd.setValueStrategy(IdentityStrategy.IDENTITY);
+                            idmd.setValueStrategy(ValueGenerationStrategy.IDENTITY);
                         }
                     }
                     idmd.setValueGeneratorName(getAttr(attrs, "generator"));
