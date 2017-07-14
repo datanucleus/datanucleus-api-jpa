@@ -277,6 +277,10 @@ public class JPAAnnotationUtils
         {
             return ValueGenerationStrategy.INCREMENT.toString();
         }
+        else if (type.toString().equals("UUID")) // DN javax.persistence adds UUID
+        {
+            return ValueGenerationStrategy.UUID.toString();
+        }
         else
         {
             return null;

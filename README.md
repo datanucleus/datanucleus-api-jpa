@@ -66,4 +66,6 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-133](https://github.com/javaee/jpa-spec/issues/133) : Make GeneratedValue strategy=TABLE value available in PrePersist. Done  
 [jpa-spec-137](https://github.com/javaee/jpa-spec/issues/137) : Add methods taking List to Criteria. Provided in javax.persistence-2.2.jar  
 [jpa-spec-150](https://github.com/javaee/jpa-spec/issues/150) : Define requirement of using TransactionSynchronizationRegistry in EE environment. Present since DN v3.x  
+[jpa-spec-151](https://github.com/javaee/jpa-spec/issues/151) : GenerationType.UUID. Provided in javax.persistence-2.2.jar. Supported since DN 2.x  
+[jpa-spec-152](https://github.com/javaee/jpa-spec/issues/152) : Native support for UUID class. Supported since DN 2.x  
 

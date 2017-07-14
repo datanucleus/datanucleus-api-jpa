@@ -1816,6 +1816,10 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         {
                             idmd.setValueStrategy(ValueGenerationStrategy.IDENTITY);
                         }
+                        else if (strategy.equalsIgnoreCase("uuid"))
+                        {
+                            idmd.setValueStrategy(ValueGenerationStrategy.UUID);
+                        }
                     }
                     idmd.setValueGeneratorName(getAttr(attrs, "generator"));
                 }
