@@ -262,7 +262,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     identityType = IdentityType.DATASTORE;
                     identityColumn = (String)annotationValues.get("column");
                     GenerationType type = (GenerationType) annotationValues.get("generationType");
-                    identityStrategy = JPAAnnotationUtils.getIdentityStrategyString(type);
+                    identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString(type);
                     identityGenerator = (String) annotationValues.get("generator");
                 }
                 else if (annName.equals(JPAAnnotationUtils.NONDURABLE_IDENTITY))
@@ -2699,7 +2699,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             else if (annName.equals(JPAAnnotationUtils.GENERATED_VALUE))
             {
                 GenerationType type = (GenerationType) annotationValues.get("strategy");
-                valueStrategy = JPAAnnotationUtils.getIdentityStrategyString(type);
+                valueStrategy = JPAAnnotationUtils.getValueGenerationStrategyString(type);
                 valueGenerator = (String) annotationValues.get("generator");
             }
             else if (annName.equals(JPAAnnotationUtils.LOB))

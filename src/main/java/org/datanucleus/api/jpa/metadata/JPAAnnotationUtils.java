@@ -255,11 +255,11 @@ public class JPAAnnotationUtils
     public static final String NAMED_ATTRIBUTE_NODE = NamedAttributeNode.class.getName();
 
     /**
-     * Convenience accessor for the string name of a id generator strategy (from JPA annotations)
+     * Convenience accessor for the string name of a value generator strategy (from JPA annotations)
      * @param type Generation type (strategy)
      * @return The name
      */
-    public static String getIdentityStrategyString(GenerationType type)
+    public static String getValueGenerationStrategyString(GenerationType type)
     {
         if (type == GenerationType.AUTO)
         {
