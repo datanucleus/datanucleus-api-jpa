@@ -17,7 +17,7 @@
     </description>
 
     <properties>
-        <dn.core.version>5.1.0-m1</dn.core.version>
+        <dn.core.version>5.1.0-release</dn.core.version>
     </properties>
 
     <scm>
