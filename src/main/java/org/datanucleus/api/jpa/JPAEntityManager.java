@@ -1262,7 +1262,14 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(nativeQueryLanguage, ec, queryString);
             if (resultClass != null)
             {
-                internalQuery.setResultClass(resultClass);
+                if (ec.getApiAdapter().isPersistable(resultClass))
+                {
+                    internalQuery.setCandidateClass(resultClass);
+                }
+                else
+                {
+                    internalQuery.setResultClass(resultClass);
+                }
             }
             return new JPAQuery(this, internalQuery, nativeQueryLanguage);
         }
