@@ -1189,7 +1189,14 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                 try
                 {
                     resultClass = ec.getClassLoaderResolver().classForName(resultClassName);
-                    internalQuery.setResultClass(resultClass);
+                    if (ec.getApiAdapter().isPersistable(resultClass))
+                    {
+                        internalQuery.setCandidateClass(resultClass);
+                    }
+                    else
+                    {
+                        internalQuery.setResultClass(resultClass);
+                    }
                     if (ec.getFlushMode() == FlushMode.QUERY)
                     {
                         // Flush mode implies flush all before executing the query so set the necessary property
