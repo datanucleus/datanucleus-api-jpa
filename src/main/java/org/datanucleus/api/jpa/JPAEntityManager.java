@@ -1172,7 +1172,14 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
                 try
                 {
                     resultClass = ec.getClassLoaderResolver().classForName(resultClassName);
-                    internalQuery.setResultClass(resultClass);
+                    if (ec.getApiAdapter().isPersistable(resultClass))
+                    {
+                        internalQuery.setCandidateClass(resultClass);
+                    }
+                    else
+                    {
+                        internalQuery.setResultClass(resultClass);
+                    }
                     return new JPAQuery(this, internalQuery, qmd.getLanguage());
                 }
                 catch (Exception e)
@@ -1233,7 +1240,14 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
             org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(nativeQueryLanguage, ec, queryString);
             if (resultClass != null)
             {
-                internalQuery.setResultClass(resultClass);
+                if (ec.getApiAdapter().isPersistable(resultClass))
+                {
+                    internalQuery.setCandidateClass(resultClass);
+                }
+                else
+                {
+                    internalQuery.setResultClass(resultClass);
+                }
             }
             return new JPAQuery(this, internalQuery, nativeQueryLanguage);
         }
@@ -1355,8 +1369,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.STOREDPROC.toString(), ec, procName);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.STOREDPROC.toString(), ec, procName);
             return new JPAStoredProcedureQuery(this, internalQuery);
         }
         catch (NucleusException ne)
@@ -1461,8 +1474,7 @@ public class JPAEntityManager implements EntityManager, AutoCloseable
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(
-                QueryLanguage.JPQL.toString(), ec, queryString);
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().getQueryManager().newQuery(QueryLanguage.JPQL.toString(), ec, queryString);
             return new JPAQuery(this, internalQuery, QueryLanguage.JPQL.toString());
         }
         catch (NucleusException ne)
