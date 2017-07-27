@@ -173,22 +173,22 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
         if (annotations != null && annotations.length > 0)
         {
-            if (isClassPersistable(cls))
+            if (isClassPersistable(annotations))
             {
                 cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
                 cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
             }
-            else if (isClassPersistenceAware(cls))
+            else if (isClassPersistenceAware(annotations))
             {
                 cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
                 cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_AWARE);
             }
-            else if (doesClassHaveNamedQueries(cls))
+            else if (doesClassHaveNamedQueries(annotations))
             {
                 cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
                 cmd.setPersistenceModifier(ClassPersistenceModifier.NON_PERSISTENT);
             }
-            else if (doesClassHaveConverter(cls))
+            else if (doesClassHaveConverter(cls, annotations))
             {
                 // Converter has now been processed so just return
                 return null;
@@ -3560,13 +3560,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Check if class is persistable, by looking at annotations
-     * @param cls the Class
+     * Check if a class is persistable, by looking at its annotations.
+     * @param annotations Annotations for the class
      * @return true if the class has Entity annotation 
      */
-    protected boolean isClassPersistable(Class cls)
+    protected boolean isClassPersistable(AnnotationObject[] annotations)
     {
-        AnnotationObject[] annotations = getClassAnnotationsForClass(cls);
         for (int i = 0; i < annotations.length; i++)
         {
             String annClassName = annotations[i].getName();
@@ -3587,13 +3586,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Check if class is persistence aware, by looking at annotations
-     * @param cls the Class
+     * Check if class is persistence aware, by looking at its annotations.
+     * @param annotations Annotations for the class
      * @return true if the class has @PersistenceAware
      */
-    protected boolean isClassPersistenceAware(Class cls)
+    protected boolean isClassPersistenceAware(AnnotationObject[] annotations)
     {
-        AnnotationObject[] annotations = getClassAnnotationsForClass(cls);
         for (int i = 0; i < annotations.length; i++)
         {
             String annName = annotations[i].getName();
@@ -3606,14 +3604,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Check if class has NamedXXXQuery annotations (for classes that are not persistable but provide
-     * named query definitions.
-     * @param cls the Class
+     * Check if class has NamedXXXQuery annotations (for classes that are not persistable but provide named query definitions.
+     * @param annotations Annotations for the class
      * @return true if the class has Named query annotations
      */
-    protected boolean doesClassHaveNamedQueries(Class cls)
+    protected boolean doesClassHaveNamedQueries(AnnotationObject[] annotations)
     {
-        AnnotationObject[] annotations = getClassAnnotationsForClass(cls);
         for (int i = 0; i < annotations.length; i++)
         {
             String annClassName = annotations[i].getName();
@@ -3631,13 +3627,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     }
 
     /**
-     * Check if class has Converter annotation.
-     * @param cls the Class
+     * Check if class has Converter annotation by inspecting its annotations.
+     * @param cls The class
+     * @param annotations Annotations for the class
      * @return true if the class has Converter annotations
      */
-    protected boolean doesClassHaveConverter(Class cls)
+    protected boolean doesClassHaveConverter(Class cls, AnnotationObject[] annotations)
     {
-        AnnotationObject[] annotations = getClassAnnotationsForClass(cls);
         for (int i = 0; i < annotations.length; i++)
         {
             String annClassName = annotations[i].getName();
