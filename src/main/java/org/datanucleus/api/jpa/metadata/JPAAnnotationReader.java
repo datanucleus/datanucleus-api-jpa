@@ -205,19 +205,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 return cmd;
             }
 
-            IdentityType identityType = IdentityType.APPLICATION;
-            String identityColumn = null;
-            String identityStrategy = null;
-            String identityGenerator = null;
+            cmd.setDetachable(true);
+            cmd.setRequiresExtent(true);
+            cmd.setEmbeddedOnly(false);
+            cmd.setIdentityType(IdentityType.APPLICATION);
 
-            String cacheable = "true";
-            String requiresExtent = "true";
-            String detachable = "true"; // In JPA default is true.
-            String embeddedOnly = "false";
-            String idClassName = null;
-            String catalog = null;
-            String schema = null;
-            String table = null;
             String inheritanceStrategyForTree = null;
             String inheritanceStrategy = null;
             String discriminatorColumnName = null;
@@ -226,15 +218,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             String discriminatorColumnDdl = null;
             String discriminatorValue = null;
             String entityName = null;
+
             Class[] entityListeners = null;
-            boolean excludeSuperClassListeners = false;
-            boolean excludeDefaultListeners = false;
+
             ColumnMetaData[] pkColumnMetaData = null;
-            Set<UniqueMetaData> uniques = null;
-            Set<IndexMetaData> indexes = null;
             Set<AbstractMemberMetaData> overriddenFields = null;
             List<QueryResultMetaData> resultMappings = null;
-            Map<String,String> extensions = null;
 
             for (int i=0;i<annotations.length;i++)
             {
@@ -259,16 +248,23 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 else if (annName.equals(JPAAnnotationUtils.DATASTORE_IDENTITY))
                 {
                     // extension to allow datastore-identity
-                    identityType = IdentityType.DATASTORE;
-                    identityColumn = (String)annotationValues.get("column");
-                    GenerationType type = (GenerationType) annotationValues.get("generationType");
-                    identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString(type);
-                    identityGenerator = (String) annotationValues.get("generator");
+                    cmd.setIdentityType(IdentityType.DATASTORE);
+                    IdentityMetaData idmd = cmd.newIdentityMetadata();
+                    idmd.setColumnName((String)annotationValues.get("column"));
+
+                    String identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString((GenerationType) annotationValues.get("generationType"));
+                    idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
+                    String identityGenerator = (String) annotationValues.get("generator");
+                    if (identityGenerator != null)
+                    {
+                        idmd.setSequence(identityGenerator);
+                        idmd.setValueGeneratorName(identityGenerator);
+                    }
                 }
                 else if (annName.equals(JPAAnnotationUtils.NONDURABLE_IDENTITY))
                 {
                     // extension to allow nondurable-identity
-                    identityType = IdentityType.NONDURABLE;
+                    cmd.setIdentityType(IdentityType.NONDURABLE);
                 }
                 else if (annName.equals(JPAAnnotationUtils.SURROGATE_VERSION))
                 {
@@ -293,9 +289,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.TABLE))
                 {
-                    table = (String)annotationValues.get("name");
-                    catalog = (String)annotationValues.get("catalog");
-                    schema = (String)annotationValues.get("schema");
+                    cmd.setTable((String)annotationValues.get("name"));
+                    cmd.setCatalog((String)annotationValues.get("catalog"));
+                    cmd.setSchema((String)annotationValues.get("schema"));
+
                     UniqueConstraint[] constrs = (UniqueConstraint[])annotationValues.get("uniqueConstraints");
                     if (constrs != null && constrs.length > 0)
                     {
@@ -311,11 +308,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 unimd.addColumn(constrs[j].columnNames()[k]);
                             }
-                            if (uniques == null)
-                            {
-                                uniques = new HashSet<UniqueMetaData>();
-                            }
-                            uniques.add(unimd);
+
+                            cmd.addUniqueConstraint(unimd);
+                            unimd.setParent(cmd);
                         }
                     }
 
@@ -344,17 +339,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             {
                                 idxmd.setUnique(true);
                             }
-                            if (indexes == null)
-                            {
-                                indexes = new HashSet<IndexMetaData>();
-                            }
-                            indexes.add(idxmd);
+
+                            cmd.addIndex(idxmd);
+                            idxmd.setParent(cmd);
                         }
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.ID_CLASS))
                 {
-                    idClassName = ((Class)annotationValues.get("value")).getName();
+                    cmd.setObjectIdClass(((Class)annotationValues.get("value")).getName());
                 }
                 else if (annName.equals(JPAAnnotationUtils.INHERITANCE))
                 {
@@ -404,16 +397,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.EMBEDDABLE))
                 {
-                    embeddedOnly = "true";
-                    identityType = IdentityType.NONDURABLE;
+                    cmd.setEmbeddedOnly(true);
+                    cmd.setIdentityType(IdentityType.NONDURABLE);
                 }
                 else if (annName.equals(JPAAnnotationUtils.CACHEABLE))
                 {
                     Boolean cacheableVal = (Boolean)annotationValues.get("value");
-                    if (cacheableVal == Boolean.FALSE)
-                    {
-                        cacheable = "false";
-                    }
+                    cmd.setCacheable(cacheableVal != null ? cacheableVal : true);
                 }
                 else if (annName.equals(JPAAnnotationUtils.ENTITY_LISTENERS))
                 {
@@ -421,11 +411,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXCLUDE_SUPERCLASS_LISTENERS))
                 {
-                    excludeSuperClassListeners = true;
+                    cmd.excludeSuperClassListeners();
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXCLUDE_DEFAULT_LISTENERS))
                 {
-                    excludeDefaultListeners = true;
+                    cmd.excludeDefaultListeners();
                 }
                 else if (annName.equals(JPAAnnotationUtils.SEQUENCE_GENERATOR))
                 {
@@ -442,6 +432,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     pkColumnMetaData[0] = new ColumnMetaData();
                     pkColumnMetaData[0].setName((String)annotationValues.get("name"));
                     pkColumnMetaData[0].setTarget((String)annotationValues.get("referencedColumnName"));
+
                     ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
                     if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
                     {
@@ -481,6 +472,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         {
                             pkColumnMetaData[j].setColumnDdl(values[j].columnDefinition());
                         }
+
                         if (fkmd != null)
                         {
                             fkmd.addColumn(pkColumnMetaData[j]);
@@ -855,12 +847,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXTENSION))
                 {
-                    // extension
-                    if (extensions == null)
-                    {
-                        extensions = new HashMap<String,String>(1);
-                    }
-                    extensions.put((String)annotationValues.get("key"), (String)annotationValues.get("value"));
+                    cmd.addExtension((String)annotationValues.get("key"), (String)annotationValues.get("value"));
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXTENSIONS))
                 {
@@ -868,13 +855,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     Extension[] values = (Extension[])annotationValues.get("value");
                     if (values != null && values.length > 0)
                     {
-                        if (extensions == null)
-                        {
-                            extensions = new HashMap<String,String>(values.length);
-                        }
                         for (int j=0;j<values.length;j++)
                         {
-                            extensions.put(values[j].key().toString(), values[j].value().toString());
+                            cmd.addExtension(values[j].key().toString(), values[j].value().toString());
                         }
                     }
                 }
@@ -891,24 +874,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
             NucleusLogger.METADATA.debug(Localiser.msg("044200", cls.getName(), "JPA"));
 
-            cmd.setTable(table);
-            cmd.setCatalog(catalog);
-            cmd.setSchema(schema);
             cmd.setEntityName(entityName);
-            cmd.setDetachable(detachable);
-            cmd.setRequiresExtent(requiresExtent);
-            cmd.setObjectIdClass(idClassName);
-            cmd.setEmbeddedOnly(embeddedOnly);
-            cmd.setCacheable(cacheable);
-            cmd.setIdentityType(identityType);
-            if (excludeSuperClassListeners)
-            {
-                cmd.excludeSuperClassListeners();
-            }
-            if (excludeDefaultListeners)
-            {
-                cmd.excludeDefaultListeners();
-            }
+
             if (entityListeners != null)
             {
                 for (int i=0; i<entityListeners.length; i++)
@@ -992,19 +959,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
             }
 
-            if (identityType == IdentityType.DATASTORE)
-            {
-                // extension - datastore-identity
-                IdentityMetaData idmd = cmd.newIdentityMetadata();
-                idmd.setColumnName(identityColumn);
-                idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
-                if (identityGenerator != null)
-                {
-                    idmd.setSequence(identityGenerator);
-                    idmd.setValueGeneratorName(identityGenerator);
-                }
-            }
-
             if (pkColumnMetaData != null)
             {
                 // PK columns overriding those in the root class
@@ -1012,23 +966,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 for (int i=0;i<pkColumnMetaData.length;i++)
                 {
                     pkmd.addColumn(pkColumnMetaData[i]);
-                }
-            }
-            if (uniques != null && !uniques.isEmpty())
-            {
-                // Unique constraints for the primary/secondary tables
-                Iterator<UniqueMetaData> uniquesIter = uniques.iterator();
-                while (uniquesIter.hasNext())
-                {
-                    cmd.addUniqueConstraint(uniquesIter.next());
-                }
-            }
-            if (indexes != null && !indexes.isEmpty())
-            {
-                Iterator<IndexMetaData> indexesIter = indexes.iterator();
-                while (indexesIter.hasNext())
-                {
-                    cmd.addIndex(indexesIter.next());
                 }
             }
 
@@ -1048,10 +985,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     cmd.addQueryResultMetaData(iter.next());
                 }
-            }
-            if (extensions != null)
-            {
-                cmd.addExtensions(extensions);
             }
 
             // Process any secondary tables
