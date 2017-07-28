@@ -201,7 +201,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             processNamedQueries(cmd, annotations);
             if (cmd.getPersistenceModifier() != ClassPersistenceModifier.PERSISTENCE_CAPABLE)
             {
-                // Class is either not persistent, or just hasnamed queries
+                // Class is either not persistent, or just has named queries
                 return cmd;
             }
 
@@ -210,20 +210,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             cmd.setEmbeddedOnly(false);
             cmd.setIdentityType(IdentityType.APPLICATION);
 
-            String inheritanceStrategyForTree = null;
-            String inheritanceStrategy = null;
-            String discriminatorColumnName = null;
-            String discriminatorColumnType = null;
-            Integer discriminatorColumnLength = null;
-            String discriminatorColumnDdl = null;
-            String discriminatorValue = null;
-            String entityName = null;
-
-            Class[] entityListeners = null;
-
-            ColumnMetaData[] pkColumnMetaData = null;
-            Set<AbstractMemberMetaData> overriddenFields = null;
-            List<QueryResultMetaData> resultMappings = null;
+            String entityName = ClassUtils.getClassNameForClass(cls);
+            cmd.setEntityName(entityName);
 
             for (int i=0;i<annotations.length;i++)
             {
@@ -231,10 +219,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 String annName = annotations[i].getName();
                 if (annName.equals(JPAAnnotationUtils.ENTITY))
                 {
-                    entityName = (String) annotationValues.get("name");
-                    if (entityName == null || entityName.length() == 0)
+                    String entName = (String) annotationValues.get("name");
+                    if (!StringUtils.isWhitespace(entName))
                     {
-                        entityName = ClassUtils.getClassNameForClass(cls);
+                        cmd.setEntityName(entName);
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.MAPPED_SUPERCLASS))
@@ -242,7 +230,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     cmd.setMappedSuperclass(true);
                     if (cmd.getPersistenceModifier() == ClassPersistenceModifier.PERSISTENCE_CAPABLE)
                     {
-                        inheritanceStrategy = InheritanceStrategy.SUBCLASS_TABLE.toString();
+                        InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                        if (inhmd == null)
+                        {
+                            inhmd = cmd.newInheritanceMetadata();
+                        }
+                        inhmd.setStrategy(InheritanceStrategy.SUBCLASS_TABLE);
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.DATASTORE_IDENTITY))
@@ -351,9 +344,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.INHERITANCE))
                 {
+                    // Add any InheritanceMetaData
+                    InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                    if (inhmd == null)
+                    {
+                        inhmd = cmd.newInheritanceMetadata();
+                    }
+
                     // Only valid in the root class
                     InheritanceType inhType = (InheritanceType)annotationValues.get("strategy");
-                    inheritanceStrategyForTree = inhType.toString();
+                    String inheritanceStrategy = null;
                     if (inhType == InheritanceType.JOINED)
                     {
                         inheritanceStrategy = InheritanceStrategy.NEW_TABLE.toString();
@@ -367,11 +367,28 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         // Translated to root class as "new-table" and children as "superclass-table"
                         // and @Inheritance should only be specified on root class so defaults to internal default
                     }
+                    inhmd.setStrategy(inheritanceStrategy);
+                    inhmd.setStrategyForTree(inhType.toString());
                 }
                 else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_COLUMN))
                 {
-                    discriminatorColumnName = (String)annotationValues.get("name");
+                    // Add any InheritanceMetaData with nested DiscriminatorMetaData
+                    InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                    if (inhmd == null)
+                    {
+                        inhmd = cmd.newInheritanceMetadata();
+                    }
+                    DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+                    if (dismd == null)
+                    {
+                        dismd = inhmd.newDiscriminatorMetadata();
+                    }
+
+                    String discriminatorColumnName = (String)annotationValues.get("name");
+                    dismd.setColumnName(discriminatorColumnName);
+
                     DiscriminatorType type = (DiscriminatorType)annotationValues.get("discriminatorType");
+                    String discriminatorColumnType = null;
                     if (type == DiscriminatorType.CHAR)
                     {
                         discriminatorColumnType = "CHAR";
@@ -384,16 +401,54 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     {
                         discriminatorColumnType = "VARCHAR";
                     }
-                    discriminatorColumnLength = (Integer)annotationValues.get("length");
+                    Integer discriminatorColumnLength = (Integer)annotationValues.get("length");
+
+                    String discriminatorColumnDdl = null;
                     String tmp = (String)annotationValues.get("columnDefinition");
                     if (!StringUtils.isWhitespace(tmp))
                     {
                         discriminatorColumnDdl = tmp;
                     }
+
+                    ColumnMetaData discolmd = null;
+                    if (discriminatorColumnLength != null || discriminatorColumnType != null || discriminatorColumnDdl != null)
+                    {
+                        // Add required column details for discriminator
+                        discolmd = new ColumnMetaData();
+                        discolmd.setName(discriminatorColumnName);
+                        if (discriminatorColumnType != null)
+                        {
+                            discolmd.setJdbcType(discriminatorColumnType);
+                        }
+                        if (discriminatorColumnLength != null)
+                        {
+                            discolmd.setLength(discriminatorColumnLength);
+                        }
+                        dismd.setColumnMetaData(discolmd);
+                        if (discriminatorColumnDdl != null)
+                        {
+                            discolmd.setColumnDdl(discriminatorColumnDdl);
+                        }
+                    }
                 }
                 else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_VALUE))
                 {
-                    discriminatorValue = (String)annotationValues.get("value");
+                    // Add any InheritanceMetaData with nested DiscriminatorMetaData
+                    InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                    if (inhmd == null)
+                    {
+                        inhmd = cmd.newInheritanceMetadata();
+                    }
+                    DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+                    if (dismd == null)
+                    {
+                        dismd = inhmd.newDiscriminatorMetadata();
+                    }
+
+                    // Using value-map strategy, with the specified value
+                    dismd.setValue((String)annotationValues.get("value"));
+                    dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
+                    dismd.setIndexed("true");
                 }
                 else if (annName.equals(JPAAnnotationUtils.EMBEDDABLE))
                 {
@@ -407,7 +462,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
                 else if (annName.equals(JPAAnnotationUtils.ENTITY_LISTENERS))
                 {
-                    entityListeners = (Class[])annotationValues.get("value");
+                    Class[] entityListeners = (Class[])annotationValues.get("value");
+                    if (entityListeners != null)
+                    {
+                        for (Class entityListener : entityListeners)
+                        {
+                            // Any EventListener will not have their callback methods registered at this point
+                            EventListenerMetaData elmd = new EventListenerMetaData(entityListener.getName());
+                            cmd.addListener(elmd);
+                        }
+                    }
                 }
                 else if (annName.equals(JPAAnnotationUtils.EXCLUDE_SUPERCLASS_LISTENERS))
                 {
@@ -428,10 +492,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMN))
                 {
                     // Override the PK column name when we have a persistent superclass
-                    pkColumnMetaData = new ColumnMetaData[1];
-                    pkColumnMetaData[0] = new ColumnMetaData();
-                    pkColumnMetaData[0].setName((String)annotationValues.get("name"));
-                    pkColumnMetaData[0].setTarget((String)annotationValues.get("referencedColumnName"));
+                    PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+
+                    ColumnMetaData pkcolMd = new ColumnMetaData();
+                    pkcolMd.setName((String)annotationValues.get("name"));
+                    pkcolMd.setTarget((String)annotationValues.get("referencedColumnName"));
+                    pkmd.addColumn(pkcolMd);
 
                     ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
                     if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
@@ -439,7 +505,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         ForeignKeyMetaData fkmd = cmd.newForeignKeyMetadata();
                         fkmd.setName(fk.name());
                         fkmd.setFkDefinition(fk.foreignKeyDefinition());
-                        fkmd.addColumn(pkColumnMetaData[0]);
+                        fkmd.addColumn(pkcolMd);
                         if (fk.value() == ConstraintMode.NO_CONSTRAINT)
                         {
                             fkmd.setFkDefinitionApplies(false);
@@ -450,7 +516,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     // Override the PK column names when we have a persistent superclass
                     PrimaryKeyJoinColumn[] values = (PrimaryKeyJoinColumn[])annotationValues.get("value");
-                    pkColumnMetaData = new ColumnMetaData[values.length];
+
+                    PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+
                     ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
                     ForeignKeyMetaData fkmd = null;
                     if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
@@ -463,19 +531,21 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             fkmd.setFkDefinitionApplies(false);
                         }
                     }
+
                     for (int j=0;j<values.length;j++)
                     {
-                        pkColumnMetaData[j] = new ColumnMetaData();
-                        pkColumnMetaData[j].setName(values[j].name());
-                        pkColumnMetaData[j].setTarget(values[j].referencedColumnName());
+                        ColumnMetaData pkcolMD = new ColumnMetaData();
+                        pkcolMD.setName(values[j].name());
+                        pkcolMD.setTarget(values[j].referencedColumnName());
                         if (!StringUtils.isWhitespace(values[j].columnDefinition()))
                         {
-                            pkColumnMetaData[j].setColumnDdl(values[j].columnDefinition());
+                            pkcolMD.setColumnDdl(values[j].columnDefinition());
                         }
+                        pkmd.addColumn(pkcolMD);
 
                         if (fkmd != null)
                         {
-                            fkmd.addColumn(pkColumnMetaData[j]);
+                            fkmd.addColumn(pkcolMD);
                         }
                     }
                 }
@@ -484,11 +554,6 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     AttributeOverride[] overrides = (AttributeOverride[])annotationValues.get("value");
                     if (overrides != null)
                     {
-                        if (overriddenFields == null)
-                        {
-                            overriddenFields = new HashSet<AbstractMemberMetaData>();
-                        }
-
                         for (int j=0;j<overrides.length;j++)
                         {
                             AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
@@ -504,17 +569,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             colmd.setUpdateable(col.updatable());
                             colmd.setUnique(col.unique());
                             fmd.addColumn(colmd);
-                            overriddenFields.add(fmd);
+
+                            cmd.addMember(fmd);
+                            fmd.setParent(cmd);
                         }
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDE))
                 {
-                    if (overriddenFields == null)
-                    {
-                        overriddenFields = new HashSet<AbstractMemberMetaData>();
-                    }
-
                     AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
                     Column col = (Column)annotationValues.get("column");
                     // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
@@ -527,18 +589,15 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     colmd.setUpdateable(col.updatable());
                     colmd.setUnique(col.unique());
                     fmd.addColumn(colmd);
-                    overriddenFields.add(fmd);
+
+                    cmd.addMember(fmd);
+                    fmd.setParent(cmd);
                 }
                 else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDES))
                 {
                     AssociationOverride[] overrides = (AssociationOverride[])annotationValues.get("value");
                     if (overrides != null)
                     {
-                        if (overriddenFields == null)
-                        {
-                            overriddenFields = new HashSet<AbstractMemberMetaData>();
-                        }
-
                         for (int j=0;j<overrides.length;j++)
                         {
                             AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
@@ -554,17 +613,14 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                                 colmd.setUnique(cols[k].unique());
                                 fmd.addColumn(colmd);
                             }
-                            overriddenFields.add(fmd);
+
+                            cmd.addMember(fmd);
+                            fmd.setParent(cmd);
                         }
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDE))
                 {
-                    if (overriddenFields == null)
-                    {
-                        overriddenFields = new HashSet<AbstractMemberMetaData>();
-                    }
-
                     AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
                     JoinColumn[] cols = (JoinColumn[])annotationValues.get("joinColumns");
                     for (int k=0;k<cols.length;k++)
@@ -578,16 +634,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         colmd.setUnique(cols[k].unique());
                         fmd.addColumn(colmd);
                     }
-                    overriddenFields.add(fmd);
+
+                    cmd.addMember(fmd);
+                    fmd.setParent(cmd);
                 }
                 else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPINGS))
                 {
                     SqlResultSetMapping[] mappings = (SqlResultSetMapping[])annotationValues.get("value");
-                    if (resultMappings == null)
-                    {
-                        resultMappings = new ArrayList<QueryResultMetaData>();
-                    }
-
                     for (int j=0;j<mappings.length;j++)
                     {
                         QueryResultMetaData qrmd = new QueryResultMetaData(mappings[j].name());
@@ -637,16 +690,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                         }
 
-                        resultMappings.add(qrmd);
+                        cmd.addQueryResultMetaData(qrmd);
+                        qrmd.setParent(cmd);
                     }
                 }
                 else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPING))
                 {
-                    if (resultMappings == null)
-                    {
-                        resultMappings = new ArrayList<QueryResultMetaData>();
-                    }
-
                     QueryResultMetaData qrmd = new QueryResultMetaData((String)annotationValues.get("name"));
                     EntityResult[] entityResults = (EntityResult[])annotationValues.get("entities");
                     if (entityResults != null && entityResults.length > 0)
@@ -693,7 +742,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         }
                     }
 
-                    resultMappings.add(qrmd);
+                    cmd.addQueryResultMetaData(qrmd);
+                    qrmd.setParent(cmd);
                 }
                 else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
                 {
@@ -867,123 +917,37 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 }
             }
 
-            if (entityName == null || entityName.length() == 0)
-            {
-                entityName = ClassUtils.getClassNameForClass(cls);
-            }
-
             NucleusLogger.METADATA.debug(Localiser.msg("044200", cls.getName(), "JPA"));
 
-            cmd.setEntityName(entityName);
-
-            if (entityListeners != null)
+            // Add fallback info for discriminator when not explicitly specified
+            InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+            if (inhmd != null)
             {
-                for (int i=0; i<entityListeners.length; i++)
+                DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+                if (dismd != null)
                 {
-                    // Any EventListener will not have their callback methods registered at this point
-                    EventListenerMetaData elmd = new EventListenerMetaData(entityListeners[i].getName());
-                    cmd.addListener(elmd);
-                }
-            }
-
-            // Inheritance
-            InheritanceMetaData inhmd = null;
-            if (inheritanceStrategy != null)
-            {
-                // Strategy specified so create inheritance data
-                inhmd = cmd.newInheritanceMetadata().setStrategy(inheritanceStrategy);
-                inhmd.setStrategyForTree(inheritanceStrategyForTree);
-            }
-            else if (inheritanceStrategyForTree != null)
-            {
-                // Strategy for tree defined, so add inheritance metadata to store this info
-                inhmd = cmd.newInheritanceMetadata();
-                inhmd.setStrategyForTree(inheritanceStrategyForTree);
-            }
-
-            if (discriminatorValue != null || discriminatorColumnName != null || discriminatorColumnLength != null || discriminatorColumnType != null)
-            {
-                if (inhmd == null)
-                {
-                    // No inheritance specified, but discriminator is, so add empty inheritance metadata to store discriminator info
-                    inhmd = cmd.newInheritanceMetadata();
-                }
-
-                // Add discriminator information to the inheritance of this class
-                DiscriminatorMetaData dismd = inhmd.newDiscriminatorMetadata();
-                if (discriminatorValue != null)
-                {
-                    // Value specified so assumed to be value-map
-                    dismd.setColumnName(discriminatorColumnName);
-                    dismd.setValue(discriminatorValue).setStrategy(DiscriminatorStrategy.VALUE_MAP).setIndexed("true");
-                }
-                else
-                {
-                    if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
+                    // Discriminator defined, but no value, so must be using class/entity strategy
+                    String discriminatorValue = dismd.getValue();
+                    if (discriminatorValue == null)
                     {
-                        // Legacy handling, DN <= 5.0.2
-                        if (!Modifier.isAbstract(cls.getModifiers()))
+                        if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
                         {
-                            // No value and concrete class so use class-name
-                            discriminatorValue = cls.getName();
-                            dismd.setValue(discriminatorValue);
+                            // Legacy handling, DN <= 5.0.2
+                            if (!Modifier.isAbstract(cls.getModifiers()))
+                            {
+                                // No value and concrete class so use class-name
+                                discriminatorValue = cls.getName();
+                                dismd.setValue(discriminatorValue);
+                            }
+
+                            dismd.setStrategy(DiscriminatorStrategy.CLASS_NAME);
                         }
-                        dismd.setColumnName(discriminatorColumnName);
-                        dismd.setStrategy(DiscriminatorStrategy.CLASS_NAME).setIndexed("true");
+                        else
+                        {
+                            dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME);
+                        }
+                        dismd.setIndexed("true");
                     }
-                    else
-                    {
-                        dismd.setColumnName(discriminatorColumnName);
-                        dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME).setIndexed("true");
-                    }
-                }
-
-                ColumnMetaData discolmd = null;
-                if (discriminatorColumnLength != null || discriminatorColumnName != null || discriminatorColumnType != null)
-                {
-                    discolmd = new ColumnMetaData();
-                    discolmd.setName(discriminatorColumnName);
-                    if (discriminatorColumnType != null)
-                    {
-                        discolmd.setJdbcType(discriminatorColumnType);
-                    }
-                    if (discriminatorColumnLength != null)
-                    {
-                        discolmd.setLength(discriminatorColumnLength);
-                    }
-                    dismd.setColumnMetaData(discolmd);
-                    if (discriminatorColumnDdl != null)
-                    {
-                        discolmd.setColumnDdl(discriminatorColumnDdl);
-                    }
-                }
-            }
-
-            if (pkColumnMetaData != null)
-            {
-                // PK columns overriding those in the root class
-                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
-                for (int i=0;i<pkColumnMetaData.length;i++)
-                {
-                    pkmd.addColumn(pkColumnMetaData[i]);
-                }
-            }
-
-            if (overriddenFields != null)
-            {
-                // Fields overridden from superclasses
-                Iterator<AbstractMemberMetaData> iter = overriddenFields.iterator();
-                while (iter.hasNext())
-                {
-                    cmd.addMember(iter.next());
-                }
-            }
-            if (resultMappings != null)
-            {
-                Iterator<QueryResultMetaData> iter = resultMappings.iterator();
-                while (iter.hasNext())
-                {
-                    cmd.addQueryResultMetaData(iter.next());
                 }
             }
 
