@@ -166,574 +166,536 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected AbstractClassMetaData processClassAnnotations(PackageMetaData pmd, Class cls, AnnotationObject[] annotations, ClassLoaderResolver clr)
     {
+        if (annotations == null || annotations.length == 0)
+        {
+            return null;
+        }
+
         this.clr = clr;
         ClassMetaData cmd = null;
 
-        if (annotations != null && annotations.length > 0)
+        AnnotationObject persistableAnnotation = isClassPersistable(annotations);
+        if (persistableAnnotation != null)
         {
-            if (isClassPersistable(annotations))
-            {
-                cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
-                cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
-            }
-            else if (isClassPersistenceAware(annotations))
-            {
-                cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
-                cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_AWARE);
-            }
-            else if (doesClassHaveNamedQueries(annotations))
-            {
-                cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
-                cmd.setPersistenceModifier(ClassPersistenceModifier.NON_PERSISTENT);
-            }
-            else if (doesClassHaveConverter(cls, annotations))
-            {
-                // Converter has now been processed so just return
-                return null;
-            }
-            else
-            {
-                return null;
-            }
+            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
-            processNamedQueries(cmd, annotations);
-            if (cmd.getPersistenceModifier() != ClassPersistenceModifier.PERSISTENCE_CAPABLE)
-            {
-                // Class is either not persistent, or just has named queries
-                return cmd;
-            }
-
-            cmd.setDetachable(true);
-            cmd.setRequiresExtent(true);
-            cmd.setEmbeddedOnly(false);
-            cmd.setIdentityType(IdentityType.APPLICATION);
-
+            // Set entity name
             String entityName = ClassUtils.getClassNameForClass(cls);
-            cmd.setEntityName(entityName);
-
-            for (int i=0;i<annotations.length;i++)
+            Map<String, Object> annotationValues = persistableAnnotation.getNameValueMap();
+            if (persistableAnnotation.getName().equals(JPAAnnotationUtils.ENTITY))
             {
-                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
-                String annName = annotations[i].getName();
-                if (annName.equals(JPAAnnotationUtils.ENTITY))
+                String entName = (String) annotationValues.get("name");
+                if (!StringUtils.isWhitespace(entName))
                 {
-                    String entName = (String) annotationValues.get("name");
-                    if (!StringUtils.isWhitespace(entName))
-                    {
-                        cmd.setEntityName(entName);
-                    }
+                    entityName = entName;
                 }
-                else if (annName.equals(JPAAnnotationUtils.MAPPED_SUPERCLASS))
-                {
-                    cmd.setMappedSuperclass(true);
-                    if (cmd.getPersistenceModifier() == ClassPersistenceModifier.PERSISTENCE_CAPABLE)
-                    {
-                        InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
-                        if (inhmd == null)
-                        {
-                            inhmd = cmd.newInheritanceMetadata();
-                        }
-                        inhmd.setStrategy(InheritanceStrategy.SUBCLASS_TABLE);
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.DATASTORE_IDENTITY))
-                {
-                    // extension to allow datastore-identity
-                    cmd.setIdentityType(IdentityType.DATASTORE);
-                    IdentityMetaData idmd = cmd.newIdentityMetadata();
-                    idmd.setColumnName((String)annotationValues.get("column"));
+            }
+            cmd.setEntityName(entityName);
+        }
+        else if (isClassPersistenceAware(annotations))
+        {
+            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_AWARE);
+        }
+        else if (doesClassHaveNamedQueries(annotations))
+        {
+            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd.setPersistenceModifier(ClassPersistenceModifier.NON_PERSISTENT);
+        }
+        else if (doesClassHaveConverter(cls, annotations))
+        {
+            // Converter has now been processed so just return
+            return null;
+        }
+        else
+        {
+            // Not involved in the persistence process
+            return null;
+        }
 
-                    String identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString((GenerationType) annotationValues.get("generationType"));
-                    idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
-                    String identityGenerator = (String) annotationValues.get("generator");
-                    if (identityGenerator != null)
-                    {
-                        idmd.setSequence(identityGenerator);
-                        idmd.setValueGeneratorName(identityGenerator);
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.NONDURABLE_IDENTITY))
-                {
-                    // extension to allow nondurable-identity
-                    cmd.setIdentityType(IdentityType.NONDURABLE);
-                }
-                else if (annName.equals(JPAAnnotationUtils.SURROGATE_VERSION))
-                {
-                    // extension to allow surrogate version
-                    VersionMetaData vermd = cmd.newVersionMetadata();
-                    vermd.setStrategy(VersionStrategy.VERSION_NUMBER);
-                    String colName = (String)annotationValues.get("columnName");
-                    if (!StringUtils.isWhitespace(colName))
-                    {
-                        vermd.setColumnName(colName);
-                    }
-                    String indexed = (String) annotationValues.get("indexed");
-                    if (!StringUtils.isWhitespace(indexed))
-                    {
-                        vermd.setIndexed(IndexedValue.getIndexedValue(indexed));
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.ACCESS))
-                {
-                    AccessType access = (AccessType) annotationValues.get("value");
-                    cmd.setAccessViaField(access == AccessType.FIELD);
-                }
-                else if (annName.equals(JPAAnnotationUtils.TABLE))
-                {
-                    cmd.setTable((String)annotationValues.get("name"));
-                    cmd.setCatalog((String)annotationValues.get("catalog"));
-                    cmd.setSchema((String)annotationValues.get("schema"));
+        // Cater for named queries being specified on a persistence aware, or other class
+        processNamedQueries(cmd, annotations);
 
-                    UniqueConstraint[] constrs = (UniqueConstraint[])annotationValues.get("uniqueConstraints");
-                    if (constrs != null && constrs.length > 0)
-                    {
-                        for (int j=0;j<constrs.length;j++)
-                        {
-                            UniqueMetaData unimd = new UniqueMetaData();
-                            String uniName = constrs[j].name();
-                            if (!StringUtils.isWhitespace(uniName))
-                            {
-                                unimd.setName(uniName);
-                            }
-                            for (int k=0;k<constrs[j].columnNames().length;k++)
-                            {
-                                unimd.addColumn(constrs[j].columnNames()[k]);
-                            }
+        if (cmd.getPersistenceModifier() != ClassPersistenceModifier.PERSISTENCE_CAPABLE)
+        {
+            // Class is either not persistent, or just has named queries
+            return cmd;
+        }
 
-                            cmd.addUniqueConstraint(unimd);
-                            unimd.setParent(cmd);
-                        }
-                    }
+        cmd.setDetachable(true);
+        cmd.setRequiresExtent(true);
+        cmd.setEmbeddedOnly(false);
+        cmd.setIdentityType(IdentityType.APPLICATION);
 
-                    Index[] indexConstrs = (Index[]) annotationValues.get("indexes");
-                    if (indexConstrs != null && indexConstrs.length > 0)
-                    {
-                        for (int j=0;j<indexConstrs.length;j++)
-                        {
-                            IndexMetaData idxmd = new IndexMetaData();
-                            String idxName = indexConstrs[j].name();
-                            if (!StringUtils.isWhitespace(idxName))
-                            {
-                                idxmd.setName(idxName);
-                            }
-                            String colStr = indexConstrs[j].columnList();
-                            String[] cols = StringUtils.split(colStr, ",");
-                            if (cols != null)
-                            {
-                                // TODO Support ASC|DESC that can be placed after a column name
-                                for (int k=0;k<cols.length;k++)
-                                {
-                                    idxmd.addColumn(cols[k]);
-                                }
-                            }
-                            if (indexConstrs[j].unique())
-                            {
-                                idxmd.setUnique(true);
-                            }
+        for (AnnotationObject annotation : annotations)
+        {
+            Map<String, Object> annotationValues = annotation.getNameValueMap();
+            String annName = annotation.getName();
 
-                            cmd.addIndex(idxmd);
-                            idxmd.setParent(cmd);
-                        }
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.ID_CLASS))
+            if (annName.equals(JPAAnnotationUtils.ENTITY))
+            {
+                // Entity name processed above
+            }
+            else if (annName.equals(JPAAnnotationUtils.MAPPED_SUPERCLASS))
+            {
+                cmd.setMappedSuperclass(true);
+                if (cmd.getPersistenceModifier() == ClassPersistenceModifier.PERSISTENCE_CAPABLE)
                 {
-                    cmd.setObjectIdClass(((Class)annotationValues.get("value")).getName());
-                }
-                else if (annName.equals(JPAAnnotationUtils.INHERITANCE))
-                {
-                    // Add any InheritanceMetaData
                     InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                     if (inhmd == null)
                     {
                         inhmd = cmd.newInheritanceMetadata();
                     }
-
-                    // Only valid in the root class
-                    InheritanceType inhType = (InheritanceType)annotationValues.get("strategy");
-                    String inheritanceStrategy = null;
-                    if (inhType == InheritanceType.JOINED)
-                    {
-                        inheritanceStrategy = InheritanceStrategy.NEW_TABLE.toString();
-                    }
-                    else if (inhType == InheritanceType.TABLE_PER_CLASS)
-                    {
-                        inheritanceStrategy = InheritanceStrategy.COMPLETE_TABLE.toString();
-                    }
-                    else if (inhType == InheritanceType.SINGLE_TABLE)
-                    {
-                        // Translated to root class as "new-table" and children as "superclass-table"
-                        // and @Inheritance should only be specified on root class so defaults to internal default
-                    }
-                    inhmd.setStrategy(inheritanceStrategy);
-                    inhmd.setStrategyForTree(inhType.toString());
+                    inhmd.setStrategy(InheritanceStrategy.SUBCLASS_TABLE);
                 }
-                else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_COLUMN))
+            }
+            else if (annName.equals(JPAAnnotationUtils.DATASTORE_IDENTITY))
+            {
+                // extension to allow datastore-identity
+                cmd.setIdentityType(IdentityType.DATASTORE);
+                IdentityMetaData idmd = cmd.newIdentityMetadata();
+                idmd.setColumnName((String)annotationValues.get("column"));
+
+                String identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString((GenerationType) annotationValues.get("generationType"));
+                idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
+                String identityGenerator = (String) annotationValues.get("generator");
+                if (identityGenerator != null)
                 {
-                    // Add any InheritanceMetaData with nested DiscriminatorMetaData
-                    InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
-                    if (inhmd == null)
-                    {
-                        inhmd = cmd.newInheritanceMetadata();
-                    }
-                    DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
-                    if (dismd == null)
-                    {
-                        dismd = inhmd.newDiscriminatorMetadata();
-                    }
+                    idmd.setSequence(identityGenerator);
+                    idmd.setValueGeneratorName(identityGenerator);
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.NONDURABLE_IDENTITY))
+            {
+                // extension to allow nondurable-identity
+                cmd.setIdentityType(IdentityType.NONDURABLE);
+            }
+            else if (annName.equals(JPAAnnotationUtils.SURROGATE_VERSION))
+            {
+                // extension to allow surrogate version
+                VersionMetaData vermd = cmd.newVersionMetadata();
+                vermd.setStrategy(VersionStrategy.VERSION_NUMBER);
+                String colName = (String)annotationValues.get("columnName");
+                if (!StringUtils.isWhitespace(colName))
+                {
+                    vermd.setColumnName(colName);
+                }
+                String indexed = (String) annotationValues.get("indexed");
+                if (!StringUtils.isWhitespace(indexed))
+                {
+                    vermd.setIndexed(IndexedValue.getIndexedValue(indexed));
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.ACCESS))
+            {
+                AccessType access = (AccessType) annotationValues.get("value");
+                cmd.setAccessViaField(access == AccessType.FIELD);
+            }
+            else if (annName.equals(JPAAnnotationUtils.TABLE))
+            {
+                cmd.setTable((String)annotationValues.get("name"));
+                cmd.setCatalog((String)annotationValues.get("catalog"));
+                cmd.setSchema((String)annotationValues.get("schema"));
 
-                    String discriminatorColumnName = (String)annotationValues.get("name");
-                    dismd.setColumnName(discriminatorColumnName);
-
-                    DiscriminatorType type = (DiscriminatorType)annotationValues.get("discriminatorType");
-                    String discriminatorColumnType = null;
-                    if (type == DiscriminatorType.CHAR)
+                UniqueConstraint[] constrs = (UniqueConstraint[])annotationValues.get("uniqueConstraints");
+                if (constrs != null && constrs.length > 0)
+                {
+                    for (UniqueConstraint constr : constrs)
                     {
-                        discriminatorColumnType = "CHAR";
-                    }
-                    else if (type == DiscriminatorType.INTEGER)
-                    {
-                        discriminatorColumnType = "INTEGER";
-                    }
-                    else if (type == DiscriminatorType.STRING)
-                    {
-                        discriminatorColumnType = "VARCHAR";
-                    }
-                    Integer discriminatorColumnLength = (Integer)annotationValues.get("length");
-
-                    String discriminatorColumnDdl = null;
-                    String tmp = (String)annotationValues.get("columnDefinition");
-                    if (!StringUtils.isWhitespace(tmp))
-                    {
-                        discriminatorColumnDdl = tmp;
-                    }
-
-                    ColumnMetaData discolmd = null;
-                    if (discriminatorColumnLength != null || discriminatorColumnType != null || discriminatorColumnDdl != null)
-                    {
-                        // Add required column details for discriminator
-                        discolmd = new ColumnMetaData();
-                        discolmd.setName(discriminatorColumnName);
-                        if (discriminatorColumnType != null)
+                        UniqueMetaData unimd = new UniqueMetaData();
+                        String uniName = constr.name();
+                        if (!StringUtils.isWhitespace(uniName))
                         {
-                            discolmd.setJdbcType(discriminatorColumnType);
+                            unimd.setName(uniName);
                         }
-                        if (discriminatorColumnLength != null)
+                        for (int k=0;k<constr.columnNames().length;k++)
                         {
-                            discolmd.setLength(discriminatorColumnLength);
+                            unimd.addColumn(constr.columnNames()[k]);
                         }
-                        dismd.setColumnMetaData(discolmd);
-                        if (discriminatorColumnDdl != null)
-                        {
-                            discolmd.setColumnDdl(discriminatorColumnDdl);
-                        }
+
+                        cmd.addUniqueConstraint(unimd);
+                        unimd.setParent(cmd);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_VALUE))
-                {
-                    // Add any InheritanceMetaData with nested DiscriminatorMetaData
-                    InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
-                    if (inhmd == null)
-                    {
-                        inhmd = cmd.newInheritanceMetadata();
-                    }
-                    DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
-                    if (dismd == null)
-                    {
-                        dismd = inhmd.newDiscriminatorMetadata();
-                    }
 
-                    // Using value-map strategy, with the specified value
-                    dismd.setValue((String)annotationValues.get("value"));
-                    dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
-                    dismd.setIndexed("true");
-                }
-                else if (annName.equals(JPAAnnotationUtils.EMBEDDABLE))
+                Index[] indexConstrs = (Index[]) annotationValues.get("indexes");
+                if (indexConstrs != null && indexConstrs.length > 0)
                 {
-                    cmd.setEmbeddedOnly(true);
-                    cmd.setIdentityType(IdentityType.NONDURABLE);
-                }
-                else if (annName.equals(JPAAnnotationUtils.CACHEABLE))
-                {
-                    Boolean cacheableVal = (Boolean)annotationValues.get("value");
-                    cmd.setCacheable(cacheableVal != null ? cacheableVal : true);
-                }
-                else if (annName.equals(JPAAnnotationUtils.ENTITY_LISTENERS))
-                {
-                    Class[] entityListeners = (Class[])annotationValues.get("value");
-                    if (entityListeners != null)
+                    for (Index indexConstr : indexConstrs)
                     {
-                        for (Class entityListener : entityListeners)
+                        IndexMetaData idxmd = new IndexMetaData();
+                        String idxName = indexConstr.name();
+                        if (!StringUtils.isWhitespace(idxName))
                         {
-                            // Any EventListener will not have their callback methods registered at this point
-                            EventListenerMetaData elmd = new EventListenerMetaData(entityListener.getName());
-                            cmd.addListener(elmd);
+                            idxmd.setName(idxName);
                         }
+                        String colStr = indexConstr.columnList();
+                        String[] cols = StringUtils.split(colStr, ",");
+                        if (cols != null)
+                        {
+                            // TODO Support ASC|DESC that can be placed after a column name
+                            for (int k=0;k<cols.length;k++)
+                            {
+                                idxmd.addColumn(cols[k]);
+                            }
+                        }
+                        if (indexConstr.unique())
+                        {
+                            idxmd.setUnique(true);
+                        }
+
+                        cmd.addIndex(idxmd);
+                        idxmd.setParent(cmd);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.EXCLUDE_SUPERCLASS_LISTENERS))
+            }
+            else if (annName.equals(JPAAnnotationUtils.ID_CLASS))
+            {
+                cmd.setObjectIdClass(((Class)annotationValues.get("value")).getName());
+            }
+            else if (annName.equals(JPAAnnotationUtils.INHERITANCE))
+            {
+                // Add any InheritanceMetaData
+                InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                if (inhmd == null)
                 {
-                    cmd.excludeSuperClassListeners();
+                    inhmd = cmd.newInheritanceMetadata();
                 }
-                else if (annName.equals(JPAAnnotationUtils.EXCLUDE_DEFAULT_LISTENERS))
-                {
-                    cmd.excludeDefaultListeners();
-                }
-                else if (annName.equals(JPAAnnotationUtils.SEQUENCE_GENERATOR))
-                {
-                    processSequenceGeneratorAnnotation(pmd, annotationValues);
-                }
-                else if (annName.equals(JPAAnnotationUtils.TABLE_GENERATOR))
-                {
-                    processTableGeneratorAnnotation(pmd, annotationValues);
-                }
-                else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMN))
-                {
-                    // Override the PK column name when we have a persistent superclass
-                    PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
 
-                    ColumnMetaData pkcolMd = new ColumnMetaData();
-                    pkcolMd.setName((String)annotationValues.get("name"));
-                    pkcolMd.setTarget((String)annotationValues.get("referencedColumnName"));
-                    pkmd.addColumn(pkcolMd);
+                // Only valid in the root class
+                InheritanceType inhType = (InheritanceType)annotationValues.get("strategy");
+                String inheritanceStrategy = null;
+                if (inhType == InheritanceType.JOINED)
+                {
+                    inheritanceStrategy = InheritanceStrategy.NEW_TABLE.toString();
+                }
+                else if (inhType == InheritanceType.TABLE_PER_CLASS)
+                {
+                    inheritanceStrategy = InheritanceStrategy.COMPLETE_TABLE.toString();
+                }
+                else if (inhType == InheritanceType.SINGLE_TABLE)
+                {
+                    // Translated to root class as "new-table" and children as "superclass-table"
+                    // and @Inheritance should only be specified on root class so defaults to internal default
+                }
+                inhmd.setStrategy(inheritanceStrategy);
+                inhmd.setStrategyForTree(inhType.toString());
+            }
+            else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_COLUMN))
+            {
+                // Add any InheritanceMetaData with nested DiscriminatorMetaData
+                InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                if (inhmd == null)
+                {
+                    inhmd = cmd.newInheritanceMetadata();
+                }
+                DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+                if (dismd == null)
+                {
+                    dismd = inhmd.newDiscriminatorMetadata();
+                }
 
-                    ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
-                    if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
+                String discriminatorColumnName = (String)annotationValues.get("name");
+                dismd.setColumnName(discriminatorColumnName);
+
+                DiscriminatorType type = (DiscriminatorType)annotationValues.get("discriminatorType");
+                String discriminatorColumnType = null;
+                if (type == DiscriminatorType.CHAR)
+                {
+                    discriminatorColumnType = "CHAR";
+                }
+                else if (type == DiscriminatorType.INTEGER)
+                {
+                    discriminatorColumnType = "INTEGER";
+                }
+                else if (type == DiscriminatorType.STRING)
+                {
+                    discriminatorColumnType = "VARCHAR";
+                }
+                Integer discriminatorColumnLength = (Integer)annotationValues.get("length");
+
+                String discriminatorColumnDdl = null;
+                String tmp = (String)annotationValues.get("columnDefinition");
+                if (!StringUtils.isWhitespace(tmp))
+                {
+                    discriminatorColumnDdl = tmp;
+                }
+
+                ColumnMetaData discolmd = null;
+                if (discriminatorColumnLength != null || discriminatorColumnType != null || discriminatorColumnDdl != null)
+                {
+                    // Add required column details for discriminator
+                    discolmd = new ColumnMetaData();
+                    discolmd.setName(discriminatorColumnName);
+                    if (discriminatorColumnType != null)
                     {
-                        ForeignKeyMetaData fkmd = cmd.newForeignKeyMetadata();
-                        fkmd.setName(fk.name());
-                        fkmd.setFkDefinition(fk.foreignKeyDefinition());
-                        fkmd.addColumn(pkcolMd);
-                        if (fk.value() == ConstraintMode.NO_CONSTRAINT)
-                        {
-                            fkmd.setFkDefinitionApplies(false);
-                        }
+                        discolmd.setJdbcType(discriminatorColumnType);
+                    }
+                    if (discriminatorColumnLength != null)
+                    {
+                        discolmd.setLength(discriminatorColumnLength);
+                    }
+                    dismd.setColumnMetaData(discolmd);
+                    if (discriminatorColumnDdl != null)
+                    {
+                        discolmd.setColumnDdl(discriminatorColumnDdl);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMNS))
+            }
+            else if (annName.equals(JPAAnnotationUtils.DISCRIMINATOR_VALUE))
+            {
+                // Add any InheritanceMetaData with nested DiscriminatorMetaData
+                InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+                if (inhmd == null)
                 {
-                    // Override the PK column names when we have a persistent superclass
-                    PrimaryKeyJoinColumn[] values = (PrimaryKeyJoinColumn[])annotationValues.get("value");
+                    inhmd = cmd.newInheritanceMetadata();
+                }
+                DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+                if (dismd == null)
+                {
+                    dismd = inhmd.newDiscriminatorMetadata();
+                }
 
-                    PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
-
-                    ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
-                    ForeignKeyMetaData fkmd = null;
-                    if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
+                // Using value-map strategy, with the specified value
+                dismd.setValue((String)annotationValues.get("value"));
+                dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
+                dismd.setIndexed("true");
+            }
+            else if (annName.equals(JPAAnnotationUtils.EMBEDDABLE))
+            {
+                cmd.setEmbeddedOnly(true);
+                cmd.setIdentityType(IdentityType.NONDURABLE);
+            }
+            else if (annName.equals(JPAAnnotationUtils.CACHEABLE))
+            {
+                Boolean cacheableVal = (Boolean)annotationValues.get("value");
+                cmd.setCacheable(cacheableVal != null ? cacheableVal : true);
+            }
+            else if (annName.equals(JPAAnnotationUtils.ENTITY_LISTENERS))
+            {
+                Class[] entityListeners = (Class[])annotationValues.get("value");
+                if (entityListeners != null)
+                {
+                    for (Class entityListener : entityListeners)
                     {
-                        fkmd = cmd.newForeignKeyMetadata();
-                        fkmd.setName(fk.name());
-                        fkmd.setFkDefinition(fk.foreignKeyDefinition());
-                        if (fk.value() == ConstraintMode.NO_CONSTRAINT)
-                        {
-                            fkmd.setFkDefinitionApplies(false);
-                        }
-                    }
-
-                    for (int j=0;j<values.length;j++)
-                    {
-                        ColumnMetaData pkcolMD = new ColumnMetaData();
-                        pkcolMD.setName(values[j].name());
-                        pkcolMD.setTarget(values[j].referencedColumnName());
-                        if (!StringUtils.isWhitespace(values[j].columnDefinition()))
-                        {
-                            pkcolMD.setColumnDdl(values[j].columnDefinition());
-                        }
-                        pkmd.addColumn(pkcolMD);
-
-                        if (fkmd != null)
-                        {
-                            fkmd.addColumn(pkcolMD);
-                        }
+                        // Any EventListener will not have their callback methods registered at this point
+                        EventListenerMetaData elmd = new EventListenerMetaData(entityListener.getName());
+                        cmd.addListener(elmd);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDES))
+            }
+            else if (annName.equals(JPAAnnotationUtils.EXCLUDE_SUPERCLASS_LISTENERS))
+            {
+                cmd.excludeSuperClassListeners();
+            }
+            else if (annName.equals(JPAAnnotationUtils.EXCLUDE_DEFAULT_LISTENERS))
+            {
+                cmd.excludeDefaultListeners();
+            }
+            else if (annName.equals(JPAAnnotationUtils.SEQUENCE_GENERATOR))
+            {
+                processSequenceGeneratorAnnotation(pmd, annotationValues);
+            }
+            else if (annName.equals(JPAAnnotationUtils.TABLE_GENERATOR))
+            {
+                processTableGeneratorAnnotation(pmd, annotationValues);
+            }
+            else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMN))
+            {
+                // Override the PK column name when we have a persistent superclass
+                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+
+                ColumnMetaData pkcolMd = new ColumnMetaData();
+                pkcolMd.setName((String)annotationValues.get("name"));
+                pkcolMd.setTarget((String)annotationValues.get("referencedColumnName"));
+                pkmd.addColumn(pkcolMd);
+
+                ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
+                if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
                 {
-                    AttributeOverride[] overrides = (AttributeOverride[])annotationValues.get("value");
-                    if (overrides != null)
+                    ForeignKeyMetaData fkmd = cmd.newForeignKeyMetadata();
+                    fkmd.setName(fk.name());
+                    fkmd.setFkDefinition(fk.foreignKeyDefinition());
+                    fkmd.addColumn(pkcolMd);
+                    if (fk.value() == ConstraintMode.NO_CONSTRAINT)
                     {
-                        for (int j=0;j<overrides.length;j++)
+                        fkmd.setFkDefinitionApplies(false);
+                    }
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMNS))
+            {
+                // Override the PK column names when we have a persistent superclass
+                PrimaryKeyJoinColumn[] values = (PrimaryKeyJoinColumn[])annotationValues.get("value");
+
+                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+
+                ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
+                ForeignKeyMetaData fkmd = null;
+                if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
+                {
+                    fkmd = cmd.newForeignKeyMetadata();
+                    fkmd.setName(fk.name());
+                    fkmd.setFkDefinition(fk.foreignKeyDefinition());
+                    if (fk.value() == ConstraintMode.NO_CONSTRAINT)
+                    {
+                        fkmd.setFkDefinitionApplies(false);
+                    }
+                }
+
+                for (PrimaryKeyJoinColumn pkJoinCol : values)
+                {
+                    ColumnMetaData pkcolMD = new ColumnMetaData();
+                    pkcolMD.setName(pkJoinCol.name());
+                    pkcolMD.setTarget(pkJoinCol.referencedColumnName());
+                    if (!StringUtils.isWhitespace(pkJoinCol.columnDefinition()))
+                    {
+                        pkcolMD.setColumnDdl(pkJoinCol.columnDefinition());
+                    }
+                    pkmd.addColumn(pkcolMD);
+
+                    if (fkmd != null)
+                    {
+                        fkmd.addColumn(pkcolMD);
+                    }
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDES))
+            {
+                AttributeOverride[] overrides = (AttributeOverride[])annotationValues.get("value");
+                if (overrides != null)
+                {
+                    for (AttributeOverride override : overrides)
+                    {
+                        AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + override.name());
+                        fmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
+                        Column col = override.column();
+                        // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
+                        ColumnMetaData colmd = new ColumnMetaData();
+                        colmd.setName(col.name());
+                        colmd.setLength(col.length());
+                        colmd.setScale(col.scale());
+                        colmd.setAllowsNull(col.nullable());
+                        colmd.setInsertable(col.insertable());
+                        colmd.setUpdateable(col.updatable());
+                        colmd.setUnique(col.unique());
+                        fmd.addColumn(colmd);
+
+                        cmd.addMember(fmd);
+                        fmd.setParent(cmd);
+                    }
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDE))
+            {
+                AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
+                Column col = (Column)annotationValues.get("column");
+                // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
+                ColumnMetaData colmd = new ColumnMetaData();
+                colmd.setName(col.name());
+                colmd.setLength(col.length());
+                colmd.setScale(col.scale());
+                colmd.setAllowsNull(col.nullable());
+                colmd.setInsertable(col.insertable());
+                colmd.setUpdateable(col.updatable());
+                colmd.setUnique(col.unique());
+                fmd.addColumn(colmd);
+
+                cmd.addMember(fmd);
+                fmd.setParent(cmd);
+            }
+            else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDES))
+            {
+                AssociationOverride[] overrides = (AssociationOverride[])annotationValues.get("value");
+                if (overrides != null)
+                {
+                    for (AssociationOverride override : overrides)
+                    {
+                        AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + override.name());
+                        JoinColumn[] cols = override.joinColumns();
+                        for (JoinColumn col : cols)
                         {
-                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
-                            fmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
-                            Column col = overrides[j].column();
-                            // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
                             ColumnMetaData colmd = new ColumnMetaData();
                             colmd.setName(col.name());
-                            colmd.setLength(col.length());
-                            colmd.setScale(col.scale());
+                            colmd.setTarget(col.referencedColumnName());
                             colmd.setAllowsNull(col.nullable());
                             colmd.setInsertable(col.insertable());
                             colmd.setUpdateable(col.updatable());
                             colmd.setUnique(col.unique());
                             fmd.addColumn(colmd);
-
-                            cmd.addMember(fmd);
-                            fmd.setParent(cmd);
                         }
+
+                        cmd.addMember(fmd);
+                        fmd.setParent(cmd);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.ATTRIBUTE_OVERRIDE))
+            }
+            else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDE))
+            {
+                AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
+                JoinColumn[] cols = (JoinColumn[])annotationValues.get("joinColumns");
+                for (JoinColumn col : cols)
                 {
-                    AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
-                    Column col = (Column)annotationValues.get("column");
-                    // TODO Make inferrals about jdbctype, length etc if the field is 1 char etc
                     ColumnMetaData colmd = new ColumnMetaData();
                     colmd.setName(col.name());
-                    colmd.setLength(col.length());
-                    colmd.setScale(col.scale());
+                    colmd.setTarget(col.referencedColumnName());
                     colmd.setAllowsNull(col.nullable());
                     colmd.setInsertable(col.insertable());
                     colmd.setUpdateable(col.updatable());
                     colmd.setUnique(col.unique());
                     fmd.addColumn(colmd);
-
-                    cmd.addMember(fmd);
-                    fmd.setParent(cmd);
                 }
-                else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDES))
-                {
-                    AssociationOverride[] overrides = (AssociationOverride[])annotationValues.get("value");
-                    if (overrides != null)
-                    {
-                        for (int j=0;j<overrides.length;j++)
-                        {
-                            AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + overrides[j].name());
-                            JoinColumn[] cols = overrides[j].joinColumns();
-                            for (int k=0;k<cols.length;k++)
-                            {
-                                ColumnMetaData colmd = new ColumnMetaData();
-                                colmd.setName(cols[k].name());
-                                colmd.setTarget(cols[k].referencedColumnName());
-                                colmd.setAllowsNull(cols[k].nullable());
-                                colmd.setInsertable(cols[k].insertable());
-                                colmd.setUpdateable(cols[k].updatable());
-                                colmd.setUnique(cols[k].unique());
-                                fmd.addColumn(colmd);
-                            }
 
-                            cmd.addMember(fmd);
-                            fmd.setParent(cmd);
-                        }
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.ASSOCIATION_OVERRIDE))
+                cmd.addMember(fmd);
+                fmd.setParent(cmd);
+            }
+            else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPINGS))
+            {
+                SqlResultSetMapping[] mappings = (SqlResultSetMapping[])annotationValues.get("value");
+                for (SqlResultSetMapping mapping : mappings)
                 {
-                    AbstractMemberMetaData fmd = new FieldMetaData(cmd, "#UNKNOWN." + (String)annotationValues.get("name"));
-                    JoinColumn[] cols = (JoinColumn[])annotationValues.get("joinColumns");
-                    for (int k=0;k<cols.length;k++)
-                    {
-                        ColumnMetaData colmd = new ColumnMetaData();
-                        colmd.setName(cols[k].name());
-                        colmd.setTarget(cols[k].referencedColumnName());
-                        colmd.setAllowsNull(cols[k].nullable());
-                        colmd.setInsertable(cols[k].insertable());
-                        colmd.setUpdateable(cols[k].updatable());
-                        colmd.setUnique(cols[k].unique());
-                        fmd.addColumn(colmd);
-                    }
-
-                    cmd.addMember(fmd);
-                    fmd.setParent(cmd);
-                }
-                else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPINGS))
-                {
-                    SqlResultSetMapping[] mappings = (SqlResultSetMapping[])annotationValues.get("value");
-                    for (int j=0;j<mappings.length;j++)
-                    {
-                        QueryResultMetaData qrmd = new QueryResultMetaData(mappings[j].name());
-                        EntityResult[] entityResults = mappings[j].entities();
-                        if (entityResults != null && entityResults.length > 0)
-                        {
-                            for (int k=0;k<entityResults.length;k++)
-                            {
-                                String entityClassName = entityResults[k].entityClass().getName();
-                                qrmd.addPersistentTypeMapping(entityClassName, null, entityResults[k].discriminatorColumn());
-                                FieldResult[] fields = entityResults[k].fields();
-                                if (fields != null)
-                                {
-                                    for (int l=0;l<fields.length;l++)
-                                    {
-                                        qrmd.addMappingForPersistentTypeMapping(entityClassName, fields[l].name(), fields[l].column());
-                                    }
-                                }
-                            }
-                        }
-                        ColumnResult[] colResults = mappings[j].columns();
-                        if (colResults != null && colResults.length > 0)
-                        {
-                            for (int k=0;k<colResults.length;k++)
-                            {
-                                qrmd.addScalarColumn(colResults[k].name());
-                            }
-                        }
-
-                        ConstructorResult[] ctrResults = mappings[j].classes();
-                        if (ctrResults != null && ctrResults.length > 0)
-                        {
-                            for (int k=0;k<ctrResults.length;k++)
-                            {
-                                String ctrClassName = ctrResults[k].targetClass().getName();
-                                List<ConstructorTypeColumn> ctrCols = null;
-                                ColumnResult[] cols = ctrResults[k].columns();
-                                if (cols != null && cols.length > 0)
-                                {
-                                    ctrCols = new ArrayList<ConstructorTypeColumn>();
-                                    for (int l=0;l<cols.length;l++)
-                                    {
-                                        ctrCols.add(new ConstructorTypeColumn(cols[l].name(), cols[l].type()));
-                                    }
-                                }
-                                qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
-                            }
-                        }
-
-                        cmd.addQueryResultMetaData(qrmd);
-                        qrmd.setParent(cmd);
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPING))
-                {
-                    QueryResultMetaData qrmd = new QueryResultMetaData((String)annotationValues.get("name"));
-                    EntityResult[] entityResults = (EntityResult[])annotationValues.get("entities");
+                    QueryResultMetaData qrmd = new QueryResultMetaData(mapping.name());
+                    EntityResult[] entityResults = mapping.entities();
                     if (entityResults != null && entityResults.length > 0)
                     {
-                        for (int j=0;j<entityResults.length;j++)
+                        for (EntityResult entityResult : entityResults)
                         {
-                            String entityClassName = entityResults[j].entityClass().getName();
-                            qrmd.addPersistentTypeMapping(entityClassName, null, entityResults[j].discriminatorColumn());
-                            FieldResult[] fields = entityResults[j].fields();
+                            String entityClassName = entityResult.entityClass().getName();
+                            qrmd.addPersistentTypeMapping(entityClassName, null, entityResult.discriminatorColumn());
+                            FieldResult[] fields = entityResult.fields();
                             if (fields != null)
                             {
-                                for (int k=0;k<fields.length;k++)
+                                for (int l=0;l<fields.length;l++)
                                 {
-                                    qrmd.addMappingForPersistentTypeMapping(entityClassName, fields[k].name(), fields[k].column());
+                                    qrmd.addMappingForPersistentTypeMapping(entityClassName, fields[l].name(), fields[l].column());
                                 }
                             }
                         }
                     }
-                    ColumnResult[] colResults = (ColumnResult[])annotationValues.get("columns");
+                    ColumnResult[] colResults = mapping.columns();
                     if (colResults != null && colResults.length > 0)
                     {
-                        for (int j=0;j<colResults.length;j++)
+                        for (ColumnResult colResult : colResults)
                         {
-                            qrmd.addScalarColumn(colResults[j].name());
+                            qrmd.addScalarColumn(colResult.name());
                         }
                     }
-                    ConstructorResult[] ctrResults = (ConstructorResult[]) annotationValues.get("classes");
+
+                    ConstructorResult[] ctrResults = mapping.classes();
                     if (ctrResults != null && ctrResults.length > 0)
                     {
-                        for (int j=0;j<ctrResults.length;j++)
+                        for (ConstructorResult ctrResult : ctrResults)
                         {
-                            String ctrClassName = ctrResults[j].targetClass().getName();
+                            String ctrClassName = ctrResult.targetClass().getName();
                             List<ConstructorTypeColumn> ctrCols = null;
-                            ColumnResult[] cols = ctrResults[j].columns();
+                            ColumnResult[] cols = ctrResult.columns();
                             if (cols != null && cols.length > 0)
                             {
                                 ctrCols = new ArrayList<ConstructorTypeColumn>();
-                                for (int k=0;k<cols.length;k++)
+                                for (int l=0;l<cols.length;l++)
                                 {
-                                    ctrCols.add(new ConstructorTypeColumn(cols[k].name(), cols[k].type()));
+                                    ctrCols.add(new ConstructorTypeColumn(cols[l].name(), cols[l].type()));
                                 }
                             }
                             qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
@@ -743,106 +705,79 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     cmd.addQueryResultMetaData(qrmd);
                     qrmd.setParent(cmd);
                 }
-                else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
+            }
+            else if (annName.equals(JPAAnnotationUtils.SQL_RESULTSET_MAPPING))
+            {
+                QueryResultMetaData qrmd = new QueryResultMetaData((String)annotationValues.get("name"));
+                EntityResult[] entityResults = (EntityResult[])annotationValues.get("entities");
+                if (entityResults != null && entityResults.length > 0)
                 {
-                    // processed below in newJoinMetaData
-                }
-                else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLE))
-                {
-                    // processed below in newJoinMetaData
-                }
-                else if (annName.equals(JPAAnnotationUtils.NAMED_ENTITY_GRAPHS))
-                {
-                    NamedEntityGraph[] graphs = (NamedEntityGraph[])annotationValues.get("value");
-                    for (int j=0;j<graphs.length;j++)
+                    for (int j=0;j<entityResults.length;j++)
                     {
-                        String graphName = graphs[j].name();
-                        if (StringUtils.isWhitespace(graphName))
+                        String entityClassName = entityResults[j].entityClass().getName();
+                        qrmd.addPersistentTypeMapping(entityClassName, null, entityResults[j].discriminatorColumn());
+                        FieldResult[] fields = entityResults[j].fields();
+                        if (fields != null)
                         {
-                            // Fallback to entity name; TODO What if more than 1 graph?
-                            graphName = entityName;
-                        }
-                        JPAEntityGraph eg = new JPAEntityGraph(mmgr, graphName, cls);
-                        boolean includeAll = graphs[j].includeAllAttributes();
-                        if (includeAll)
-                        {
-                            eg.setIncludeAll();
-                        }
-
-                        // Add nodes for graph
-                        Map<String, String> attributeNameBySubgraphName = new HashMap();
-                        NamedAttributeNode[] nodes = graphs[j].attributeNodes();
-                        if (nodes != null && nodes.length > 0)
-                        {
-                            for (int k=0;k<nodes.length;k++)
+                            for (int k=0;k<fields.length;k++)
                             {
-                                String attributeName = nodes[k].value();
-                                String subgraphName = nodes[k].subgraph();
-                                eg.addAttributeNodes(attributeName);
-                                // TODO Use keySubgraph
-                                if (!StringUtils.isWhitespace(subgraphName))
-                                {
-                                    attributeNameBySubgraphName.put(subgraphName, attributeName);
-                                }
+                                qrmd.addMappingForPersistentTypeMapping(entityClassName, fields[k].name(), fields[k].column());
                             }
                         }
-
-                        // Add subgraphs for graph
-                        NamedSubgraph[] subgraphs = graphs[j].subgraphs();
-                        if (subgraphs != null && subgraphs.length > 0)
-                        {
-                            for (int k=0;k<subgraphs.length;k++)
-                            {
-                                String subgraphName = subgraphs[k].name();
-                                String attributeName = attributeNameBySubgraphName.get(subgraphName);
-                                JPASubgraph subgraph = (JPASubgraph) eg.addSubgraph(attributeName, subgraphs[k].type());
-                                NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
-                                if (subnodes != null && subnodes.length > 0)
-                                {
-                                    for (int l=0;l<subnodes.length;l++)
-                                    {
-                                        subgraph.addAttributeNodes(subnodes[l].value());
-                                    }
-                                }
-                            }
-                        }
-                        NamedSubgraph[] subclassSubgraphs = graphs[j].subclassSubgraphs();
-                        if (subclassSubgraphs != null && subclassSubgraphs.length > 0)
-                        {
-                            if (subgraphs != null)
-                            {
-                                for (int k=0;k<subgraphs.length;k++)
-                                {
-                                    JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subgraphs[k].type());
-                                    NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
-                                    if (subnodes != null && subnodes.length > 0)
-                                    {
-                                        for (int l=0;l<subnodes.length;l++)
-                                        {
-                                            subgraph.addAttributeNodes(subnodes[l].value());
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        ((JPAMetaDataManager)mmgr).registerEntityGraph(eg);
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.NAMED_ENTITY_GRAPH))
+                ColumnResult[] colResults = (ColumnResult[])annotationValues.get("columns");
+                if (colResults != null && colResults.length > 0)
                 {
-                    String graphName = (String)annotationValues.get("name");
+                    for (int j=0;j<colResults.length;j++)
+                    {
+                        qrmd.addScalarColumn(colResults[j].name());
+                    }
+                }
+                ConstructorResult[] ctrResults = (ConstructorResult[]) annotationValues.get("classes");
+                if (ctrResults != null && ctrResults.length > 0)
+                {
+                    for (int j=0;j<ctrResults.length;j++)
+                    {
+                        String ctrClassName = ctrResults[j].targetClass().getName();
+                        List<ConstructorTypeColumn> ctrCols = null;
+                        ColumnResult[] cols = ctrResults[j].columns();
+                        if (cols != null && cols.length > 0)
+                        {
+                            ctrCols = new ArrayList<ConstructorTypeColumn>();
+                            for (int k=0;k<cols.length;k++)
+                            {
+                                ctrCols.add(new ConstructorTypeColumn(cols[k].name(), cols[k].type()));
+                            }
+                        }
+                        qrmd.addConstructorTypeMapping(ctrClassName, ctrCols);
+                    }
+                }
+
+                cmd.addQueryResultMetaData(qrmd);
+                qrmd.setParent(cmd);
+            }
+            else if (annName.equals(JPAAnnotationUtils.NAMED_ENTITY_GRAPHS))
+            {
+                NamedEntityGraph[] graphs = (NamedEntityGraph[])annotationValues.get("value");
+                for (int j=0;j<graphs.length;j++)
+                {
+                    String graphName = graphs[j].name();
                     if (StringUtils.isWhitespace(graphName))
                     {
-                        graphName = entityName;
+                        // Fallback to entity name; TODO What if more than 1 graph?
+                        graphName = cmd.getEntityName();
                     }
                     JPAEntityGraph eg = new JPAEntityGraph(mmgr, graphName, cls);
-                    boolean includeAll = (Boolean) annotationValues.get("includeAllAttributes");
+                    boolean includeAll = graphs[j].includeAllAttributes();
                     if (includeAll)
                     {
                         eg.setIncludeAll();
                     }
+
+                    // Add nodes for graph
                     Map<String, String> attributeNameBySubgraphName = new HashMap();
-                    NamedAttributeNode[] nodes = (NamedAttributeNode[]) annotationValues.get("attributeNodes");
+                    NamedAttributeNode[] nodes = graphs[j].attributeNodes();
                     if (nodes != null && nodes.length > 0)
                     {
                         for (int k=0;k<nodes.length;k++)
@@ -857,7 +792,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                         }
                     }
-                    NamedSubgraph[] subgraphs = (NamedSubgraph[])annotationValues.get("subgraphs");
+
+                    // Add subgraphs for graph
+                    NamedSubgraph[] subgraphs = graphs[j].subgraphs();
                     if (subgraphs != null && subgraphs.length > 0)
                     {
                         for (int k=0;k<subgraphs.length;k++)
@@ -875,228 +812,296 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                         }
                     }
-                    NamedSubgraph[] subclassSubgraphs = (NamedSubgraph[])annotationValues.get("subclassSubgraphs");
+                    NamedSubgraph[] subclassSubgraphs = graphs[j].subclassSubgraphs();
                     if (subclassSubgraphs != null && subclassSubgraphs.length > 0)
                     {
-                        for (int k=0;k<subclassSubgraphs.length;k++)
+                        if (subgraphs != null)
                         {
-                            JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subclassSubgraphs[k].type());
-                            NamedAttributeNode[] subnodes = subclassSubgraphs[k].attributeNodes();
-                            if (subnodes != null && subnodes.length > 0)
+                            for (int k=0;k<subgraphs.length;k++)
                             {
-                                for (int l=0;l<subnodes.length;l++)
+                                JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subgraphs[k].type());
+                                NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
+                                if (subnodes != null && subnodes.length > 0)
                                 {
-                                    subgraph.addAttributeNodes(subnodes[l].value());
+                                    for (int l=0;l<subnodes.length;l++)
+                                    {
+                                        subgraph.addAttributeNodes(subnodes[l].value());
+                                    }
                                 }
                             }
                         }
                     }
                     ((JPAMetaDataManager)mmgr).registerEntityGraph(eg);
                 }
-                if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
+            }
+            else if (annName.equals(JPAAnnotationUtils.NAMED_ENTITY_GRAPH))
+            {
+                String graphName = (String)annotationValues.get("name");
+                if (StringUtils.isWhitespace(graphName))
                 {
-                    SecondaryTable[] secTableAnns = (SecondaryTable[])annotationValues.get("value");
-                    if (secTableAnns != null)
+                    graphName = cmd.getEntityName();
+                }
+                JPAEntityGraph eg = new JPAEntityGraph(mmgr, graphName, cls);
+                boolean includeAll = (Boolean) annotationValues.get("includeAllAttributes");
+                if (includeAll)
+                {
+                    eg.setIncludeAll();
+                }
+                Map<String, String> attributeNameBySubgraphName = new HashMap();
+                NamedAttributeNode[] nodes = (NamedAttributeNode[]) annotationValues.get("attributeNodes");
+                if (nodes != null && nodes.length > 0)
+                {
+                    for (int k=0;k<nodes.length;k++)
                     {
-                        for (int j=0;j<secTableAnns.length;j++)
+                        String attributeName = nodes[k].value();
+                        String subgraphName = nodes[k].subgraph();
+                        eg.addAttributeNodes(attributeName);
+                        // TODO Use keySubgraph
+                        if (!StringUtils.isWhitespace(subgraphName))
                         {
-                            JoinMetaData joinmd = new JoinMetaData();
-                            joinmd.setTable(secTableAnns[j].name());
-                            joinmd.setCatalog(secTableAnns[j].catalog());
-                            joinmd.setSchema(secTableAnns[j].schema());
-                            PrimaryKeyJoinColumn[] pkJoinCols = secTableAnns[j].pkJoinColumns();
-                            if (pkJoinCols != null)
+                            attributeNameBySubgraphName.put(subgraphName, attributeName);
+                        }
+                    }
+                }
+                NamedSubgraph[] subgraphs = (NamedSubgraph[])annotationValues.get("subgraphs");
+                if (subgraphs != null && subgraphs.length > 0)
+                {
+                    for (int k=0;k<subgraphs.length;k++)
+                    {
+                        String subgraphName = subgraphs[k].name();
+                        String attributeName = attributeNameBySubgraphName.get(subgraphName);
+                        JPASubgraph subgraph = (JPASubgraph) eg.addSubgraph(attributeName, subgraphs[k].type());
+                        NamedAttributeNode[] subnodes = subgraphs[k].attributeNodes();
+                        if (subnodes != null && subnodes.length > 0)
+                        {
+                            for (int l=0;l<subnodes.length;l++)
                             {
-                                for (int k = 0; k < pkJoinCols.length; k++)
-                                {
-                                    ColumnMetaData colmd = new ColumnMetaData();
-                                    colmd.setName(pkJoinCols[k].name());
-                                    colmd.setTarget(pkJoinCols[k].referencedColumnName());
-                                    joinmd.addColumn(colmd);
-                                }
-                            }
-                            cmd.addJoin(joinmd);
-
-                            UniqueConstraint[] constrs = secTableAnns[j].uniqueConstraints();
-                            if (constrs != null && constrs.length > 0)
-                            {
-                                for (int k=0;k<constrs.length;k++)
-                                {
-                                    UniqueMetaData unimd = new UniqueMetaData();
-                                    String uniName = constrs[k].name();
-                                    if (!StringUtils.isWhitespace(uniName))
-                                    {
-                                        unimd.setName(uniName);
-                                    }
-                                    for (int l=0;l<constrs[k].columnNames().length;l++)
-                                    {
-                                        unimd.addColumn(constrs[k].columnNames()[l]);
-                                    }
-                                    joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
-                                }
-                            }
-
-                            Index[] indexConstrs = secTableAnns[j].indexes();
-                            if (indexConstrs != null && indexConstrs.length > 0)
-                            {
-                                for (int k=0;k<indexConstrs.length;k++)
-                                {
-                                    IndexMetaData idxmd = new IndexMetaData();
-                                    String idxName = indexConstrs[k].name();
-                                    if (!StringUtils.isWhitespace(idxName))
-                                    {
-                                        idxmd.setName(idxName);
-                                    }
-                                    String colStr = indexConstrs[k].columnList();
-                                    String[] cols = StringUtils.split(colStr, ",");
-                                    if (cols != null)
-                                    {
-                                        // TODO Support ASC|DESC that can be placed after a column name
-                                        for (int l=0;l<cols.length;l++)
-                                        {
-                                            idxmd.addColumn(cols[l]);
-                                        }
-                                    }
-                                    if (indexConstrs[k].unique())
-                                    {
-                                        idxmd.setUnique(true);
-                                    }
-                                    joinmd.setIndexMetaData(idxmd); // JDO only allows one unique
-                                }
+                                subgraph.addAttributeNodes(subnodes[l].value());
                             }
                         }
                     }
                 }
-                else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLE))
+                NamedSubgraph[] subclassSubgraphs = (NamedSubgraph[])annotationValues.get("subclassSubgraphs");
+                if (subclassSubgraphs != null && subclassSubgraphs.length > 0)
                 {
-                    JoinMetaData joinmd = new JoinMetaData();
-                    joinmd.setTable((String)annotationValues.get("name"));
-                    joinmd.setCatalog((String)annotationValues.get("catalog"));
-                    joinmd.setSchema((String)annotationValues.get("schema"));
-                    if (annotationValues.get("pkJoinColumns") != null)
+                    for (int k=0;k<subclassSubgraphs.length;k++)
                     {
-                        PrimaryKeyJoinColumn[] joinCols = (PrimaryKeyJoinColumn[])annotationValues.get("pkJoinColumns");
-                        for (int j = 0; j < joinCols.length; j++)
+                        JPASubgraph subgraph = (JPASubgraph) eg.addSubclassSubgraph(subclassSubgraphs[k].type());
+                        NamedAttributeNode[] subnodes = subclassSubgraphs[k].attributeNodes();
+                        if (subnodes != null && subnodes.length > 0)
                         {
-                            ColumnMetaData colmd = new ColumnMetaData();
-                            colmd.setName(joinCols[j].name());
-                            colmd.setTarget(joinCols[j].referencedColumnName());
-                            joinmd.addColumn(colmd);
+                            for (int l=0;l<subnodes.length;l++)
+                            {
+                                subgraph.addAttributeNodes(subnodes[l].value());
+                            }
                         }
                     }
-                    cmd.addJoin(joinmd);
-                    if (annotationValues.containsKey("foreignKey"))
+                }
+                ((JPAMetaDataManager)mmgr).registerEntityGraph(eg);
+            }
+            else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLES))
+            {
+                SecondaryTable[] secTableAnns = (SecondaryTable[])annotationValues.get("value");
+                if (secTableAnns != null)
+                {
+                    for (int j=0;j<secTableAnns.length;j++)
                     {
-                        ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
-                        if (fk.value() == ConstraintMode.CONSTRAINT)
+                        JoinMetaData joinmd = new JoinMetaData();
+                        joinmd.setTable(secTableAnns[j].name());
+                        joinmd.setCatalog(secTableAnns[j].catalog());
+                        joinmd.setSchema(secTableAnns[j].schema());
+                        PrimaryKeyJoinColumn[] pkJoinCols = secTableAnns[j].pkJoinColumns();
+                        if (pkJoinCols != null)
                         {
-                            ForeignKeyMetaData fkmd = joinmd.newForeignKeyMetaData();
-                            fkmd.setName(fk.name());
-                            fkmd.setFkDefinition(fk.foreignKeyDefinition());
+                            for (int k = 0; k < pkJoinCols.length; k++)
+                            {
+                                ColumnMetaData colmd = new ColumnMetaData();
+                                colmd.setName(pkJoinCols[k].name());
+                                colmd.setTarget(pkJoinCols[k].referencedColumnName());
+                                joinmd.addColumn(colmd);
+                            }
                         }
-                    }
+                        cmd.addJoin(joinmd);
 
-                    UniqueConstraint[] constrs = (UniqueConstraint[])annotationValues.get("uniqueConstraints");
-                    if (constrs != null && constrs.length > 0)
-                    {
-                        for (int j=0;j<constrs.length;j++)
+                        UniqueConstraint[] constrs = secTableAnns[j].uniqueConstraints();
+                        if (constrs != null && constrs.length > 0)
                         {
-                            UniqueMetaData unimd = new UniqueMetaData();
-                            String uniName = constrs[j].name();
-                            if (!StringUtils.isWhitespace(uniName))
+                            for (int k=0;k<constrs.length;k++)
                             {
-                                unimd.setName(uniName);
-                            }
-                            for (int k=0;k<constrs[j].columnNames().length;k++)
-                            {
-                                unimd.addColumn(constrs[j].columnNames()[k]);
-                            }
-                            joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
-                        }
-                    }
-
-                    Index[] indexConstrs = (Index[]) annotationValues.get("indexes");
-                    if (indexConstrs != null && indexConstrs.length > 0)
-                    {
-                        for (int j=0;j<indexConstrs.length;j++)
-                        {
-                            IndexMetaData idxmd = new IndexMetaData();
-                            String idxName = indexConstrs[j].name();
-                            if (!StringUtils.isWhitespace(idxName))
-                            {
-                                idxmd.setName(idxName);
-                            }
-                            String colStr = indexConstrs[j].columnList();
-                            String[] cols = StringUtils.split(colStr, ",");
-                            if (cols != null)
-                            {
-                                // TODO Support ASC|DESC that can be placed after a column name
-                                for (int k=0;k<cols.length;k++)
+                                UniqueMetaData unimd = new UniqueMetaData();
+                                String uniName = constrs[k].name();
+                                if (!StringUtils.isWhitespace(uniName))
                                 {
-                                    idxmd.addColumn(cols[k]);
+                                    unimd.setName(uniName);
                                 }
+                                for (int l=0;l<constrs[k].columnNames().length;l++)
+                                {
+                                    unimd.addColumn(constrs[k].columnNames()[l]);
+                                }
+                                joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
                             }
-                            if (indexConstrs[j].unique())
-                            {
-                                idxmd.setUnique(true);
-                            }
-                            joinmd.setIndexMetaData(idxmd); // JDO only allows one unique
                         }
-                    }
-                }
-                else if (annName.equals(JPAAnnotationUtils.EXTENSION))
-                {
-                    cmd.addExtension((String)annotationValues.get("key"), (String)annotationValues.get("value"));
-                }
-                else if (annName.equals(JPAAnnotationUtils.EXTENSIONS))
-                {
-                    // extension
-                    Extension[] values = (Extension[])annotationValues.get("value");
-                    if (values != null && values.length > 0)
-                    {
-                        for (int j=0;j<values.length;j++)
+
+                        Index[] indexConstrs = secTableAnns[j].indexes();
+                        if (indexConstrs != null && indexConstrs.length > 0)
                         {
-                            cmd.addExtension(values[j].key().toString(), values[j].value().toString());
+                            for (int k=0;k<indexConstrs.length;k++)
+                            {
+                                IndexMetaData idxmd = new IndexMetaData();
+                                String idxName = indexConstrs[k].name();
+                                if (!StringUtils.isWhitespace(idxName))
+                                {
+                                    idxmd.setName(idxName);
+                                }
+                                String colStr = indexConstrs[k].columnList();
+                                String[] cols = StringUtils.split(colStr, ",");
+                                if (cols != null)
+                                {
+                                    // TODO Support ASC|DESC that can be placed after a column name
+                                    for (int l=0;l<cols.length;l++)
+                                    {
+                                        idxmd.addColumn(cols[l]);
+                                    }
+                                }
+                                if (indexConstrs[k].unique())
+                                {
+                                    idxmd.setUnique(true);
+                                }
+                                joinmd.setIndexMetaData(idxmd); // JDO only allows one unique
+                            }
                         }
                     }
-                }
-                else
-                {
-                    NucleusLogger.METADATA.debug(Localiser.msg("044203", cls.getName(), annotations[i].getName()));
                 }
             }
-
-            NucleusLogger.METADATA.debug(Localiser.msg("044200", cls.getName(), "JPA"));
-
-            // Add fallback info for discriminator when not explicitly specified
-            InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
-            if (inhmd != null)
+            else if (annName.equals(JPAAnnotationUtils.SECONDARY_TABLE))
             {
-                DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
-                if (dismd != null)
+                JoinMetaData joinmd = new JoinMetaData();
+                joinmd.setTable((String)annotationValues.get("name"));
+                joinmd.setCatalog((String)annotationValues.get("catalog"));
+                joinmd.setSchema((String)annotationValues.get("schema"));
+                if (annotationValues.get("pkJoinColumns") != null)
                 {
-                    // Discriminator defined, but no value, so must be using class/entity strategy
-                    String discriminatorValue = dismd.getValue();
-                    if (discriminatorValue == null)
+                    PrimaryKeyJoinColumn[] joinCols = (PrimaryKeyJoinColumn[])annotationValues.get("pkJoinColumns");
+                    for (int j = 0; j < joinCols.length; j++)
                     {
-                        if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
-                        {
-                            // Legacy handling, DN <= 5.0.2
-                            if (!Modifier.isAbstract(cls.getModifiers()))
-                            {
-                                // No value and concrete class so use class-name
-                                discriminatorValue = cls.getName();
-                                dismd.setValue(discriminatorValue);
-                            }
-
-                            dismd.setStrategy(DiscriminatorStrategy.CLASS_NAME);
-                        }
-                        else
-                        {
-                            dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME);
-                        }
-                        dismd.setIndexed("true");
+                        ColumnMetaData colmd = new ColumnMetaData();
+                        colmd.setName(joinCols[j].name());
+                        colmd.setTarget(joinCols[j].referencedColumnName());
+                        joinmd.addColumn(colmd);
                     }
+                }
+                cmd.addJoin(joinmd);
+                if (annotationValues.containsKey("foreignKey"))
+                {
+                    ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
+                    if (fk.value() == ConstraintMode.CONSTRAINT)
+                    {
+                        ForeignKeyMetaData fkmd = joinmd.newForeignKeyMetaData();
+                        fkmd.setName(fk.name());
+                        fkmd.setFkDefinition(fk.foreignKeyDefinition());
+                    }
+                }
+
+                UniqueConstraint[] constrs = (UniqueConstraint[])annotationValues.get("uniqueConstraints");
+                if (constrs != null && constrs.length > 0)
+                {
+                    for (int j=0;j<constrs.length;j++)
+                    {
+                        UniqueMetaData unimd = new UniqueMetaData();
+                        String uniName = constrs[j].name();
+                        if (!StringUtils.isWhitespace(uniName))
+                        {
+                            unimd.setName(uniName);
+                        }
+                        for (int k=0;k<constrs[j].columnNames().length;k++)
+                        {
+                            unimd.addColumn(constrs[j].columnNames()[k]);
+                        }
+                        joinmd.setUniqueMetaData(unimd); // JDO only allows one unique
+                    }
+                }
+
+                Index[] indexConstrs = (Index[]) annotationValues.get("indexes");
+                if (indexConstrs != null && indexConstrs.length > 0)
+                {
+                    for (int j=0;j<indexConstrs.length;j++)
+                    {
+                        IndexMetaData idxmd = new IndexMetaData();
+                        String idxName = indexConstrs[j].name();
+                        if (!StringUtils.isWhitespace(idxName))
+                        {
+                            idxmd.setName(idxName);
+                        }
+                        String colStr = indexConstrs[j].columnList();
+                        String[] cols = StringUtils.split(colStr, ",");
+                        if (cols != null)
+                        {
+                            // TODO Support ASC|DESC that can be placed after a column name
+                            for (int k=0;k<cols.length;k++)
+                            {
+                                idxmd.addColumn(cols[k]);
+                            }
+                        }
+                        if (indexConstrs[j].unique())
+                        {
+                            idxmd.setUnique(true);
+                        }
+                        joinmd.setIndexMetaData(idxmd); // JDO only allows one unique
+                    }
+                }
+            }
+            else if (annName.equals(JPAAnnotationUtils.EXTENSION))
+            {
+                cmd.addExtension((String)annotationValues.get("key"), (String)annotationValues.get("value"));
+            }
+            else if (annName.equals(JPAAnnotationUtils.EXTENSIONS))
+            {
+                // extension
+                Extension[] values = (Extension[])annotationValues.get("value");
+                if (values != null && values.length > 0)
+                {
+                    for (int j=0;j<values.length;j++)
+                    {
+                        cmd.addExtension(values[j].key().toString(), values[j].value().toString());
+                    }
+                }
+            }
+            else
+            {
+                NucleusLogger.METADATA.debug(Localiser.msg("044203", cls.getName(), annotation.getName()));
+            }
+        }
+
+        NucleusLogger.METADATA.debug(Localiser.msg("044200", cls.getName(), "JPA"));
+
+        // Add fallback info for discriminator when not explicitly specified
+        InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
+        if (inhmd != null)
+        {
+            DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
+            if (dismd != null)
+            {
+                // Discriminator defined, but no value, so must be using class/entity strategy
+                String discriminatorValue = dismd.getValue();
+                if (discriminatorValue == null)
+                {
+                    if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
+                    {
+                        // Legacy handling, DN <= 5.0.2
+                        if (!Modifier.isAbstract(cls.getModifiers()))
+                        {
+                            // No value and concrete class so use class-name
+                            discriminatorValue = cls.getName();
+                            dismd.setValue(discriminatorValue);
+                        }
+
+                        dismd.setStrategy(DiscriminatorStrategy.CLASS_NAME);
+                    }
+                    else
+                    {
+                        dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME);
+                    }
+                    dismd.setIndexed("true");
                 }
             }
         }
@@ -1111,10 +1116,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected void processNamedQueries(AbstractClassMetaData cmd, AnnotationObject[] annotations)
     {
-        for (int i=0;i<annotations.length;i++)
+        for (AnnotationObject annotation : annotations)
         {
-            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
-            String annName = annotations[i].getName();
+            Map<String, Object> annotationValues = annotation.getNameValueMap();
+            String annName = annotation.getName();
+
             if (annName.equals(JPAAnnotationUtils.NAMED_QUERIES))
             {
                 NamedQuery[] queries = (NamedQuery[])annotationValues.get("value");
@@ -1397,10 +1403,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             ValueMetaData valmd = null;
             boolean oneToMany = false;
             boolean manyToMany = false;
-            for (int i=0;annotations != null && i<annotations.length;i++)
+
+            for (AnnotationObject annotation : annotations)
             {
-                String annName = annotations[i].getName();
-                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
+                String annName = annotation.getName();
+                Map<String, Object> annotationValues = annotation.getNameValueMap();
+
                 if (annName.equals(JPAAnnotationUtils.JOIN_COLUMNS))
                 {
                     // 1-1 FK columns, or 1-N FK columns, or N-1 FK columns
@@ -1920,8 +1928,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (mmd.getOrderMetaData() != null)
                     {
-                        throw new NucleusException("@OrderBy found yet field=" + cmd.getFullClassName() + "." + member.getName() +
-                            " already has ordering information!");
+                        throw new NucleusException("@OrderBy found yet field=" + cmd.getFullClassName() + "." + member.getName() + " already has ordering information!");
                     }
 
                     String orderBy = (String)annotationValues.get("value");
@@ -1937,8 +1944,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 {
                     if (mmd.getOrderMetaData() != null)
                     {
-                        throw new NucleusException("@OrderColumn found yet field=" + cmd.getFullClassName() + "." + member.getName() +
-                            " already has ordering information!");
+                        throw new NucleusException("@OrderColumn found yet field=" + cmd.getFullClassName() + "." + member.getName() +" already has ordering information!");
                     }
 
                     String columnName = (String)annotationValues.get("name");
@@ -2501,9 +2507,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         if (annotations != null && annotations.length > 0)
         {
             EventListenerMetaData elmd = cmd.getListenerForClass(cmd.getFullClassName());
-            for (int i=0; i<annotations.length; i++)
+            for (Annotation annotation : annotations)
             {
-                String annotationTypeName = annotations[i].annotationType().getName();
+                String annotationTypeName = annotation.annotationType().getName();
                 if (annotationTypeName.equals(PrePersist.class.getName()) ||
                     annotationTypeName.equals(PostPersist.class.getName()) ||
                     annotationTypeName.equals(PreRemove.class.getName()) ||
@@ -2533,23 +2539,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     private AbstractMemberMetaData newMetaDataForMember(AbstractClassMetaData cmd, Member field, AnnotationObject[] annotations)
     {
         // Create the member meta-data
-        AbstractMemberMetaData mmd;
-        if (field.isProperty())
-        {
-            mmd = new PropertyMetaData(cmd, field.getName());
-        }
-        else
-        {
-            mmd = new FieldMetaData(cmd, field.getName());
-        }
+        AbstractMemberMetaData mmd = (field.isProperty()) ? new PropertyMetaData(cmd, field.getName()) : new FieldMetaData(cmd, field.getName());
 
         FieldPersistenceModifier modifier = null;
         Class targetEntity = null;
 
-        for (int i=0;annotations != null && i<annotations.length;i++)
+        for (AnnotationObject annotation : annotations)
         {
-            String annName = annotations[i].getName();
-            Map<String, Object> annotationValues = annotations[i].getNameValueMap();
+            String annName = annotation.getName();
+            Map<String, Object> annotationValues = annotation.getNameValueMap();
+
             if (annName.equals(JPAAnnotationUtils.EMBEDDED))
             {
                 mmd.setEmbedded(true);
@@ -2613,19 +2612,11 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 // 1-1 relation
                 modifier = FieldPersistenceModifier.PERSISTENT;
                 mmd.setMappedBy((String)annotationValues.get("mappedBy"));
-
-                setCascadesOnMember(mmd, (CascadeType[])annotationValues.get("cascade"));
-
-                targetEntity = (Class)annotationValues.get("targetEntity");
-
-                FetchType fetch = (FetchType)annotationValues.get("fetch");
-                mmd.setDefaultFetchGroup(fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
-
-                boolean optional = (Boolean)annotationValues.get("optional");
-                String nullValue = optional ? "none" : "exception";
-                mmd.setNullValue(NullValue.getNullValue(nullValue));
-
+                mmd.setRelationTypeString("OneToOne");
                 mmd.setCascadeRemoveOrphans((Boolean)annotationValues.get("orphanRemoval"));
+                setCascadesOnMember(mmd, (CascadeType[])annotationValues.get("cascade"));
+                mmd.setDefaultFetchGroup(annotationValues.get("fetch") == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
+                mmd.setNullValue(NullValue.getNullValue((Boolean)annotationValues.get("optional") ? "none" : "exception"));
 
                 if (StringUtils.isWhitespace(mmd.getMappedBy()))
                 {
@@ -2633,58 +2624,42 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     mmd.setUnique(true);
                 }
 
-                mmd.setRelationTypeString("OneToOne");
+                targetEntity = (Class)annotationValues.get("targetEntity");
             }
             else if (annName.equals(JPAAnnotationUtils.ONE_TO_MANY))
             {
                 // 1-N relation
                 modifier = FieldPersistenceModifier.PERSISTENT;
                 mmd.setMappedBy((String)annotationValues.get("mappedBy"));
-
+                mmd.setRelationTypeString("OneToMany");
+                mmd.setCascadeRemoveOrphans((Boolean)annotationValues.get("orphanRemoval"));
                 setCascadesOnMember(mmd, (CascadeType[])annotationValues.get("cascade"));
+                mmd.setDefaultFetchGroup(annotationValues.get("fetch") == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
 
                 targetEntity = (Class)annotationValues.get("targetEntity");
-
-                FetchType fetch = (FetchType)annotationValues.get("fetch");
-                mmd.setDefaultFetchGroup(fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
-
-                mmd.setCascadeRemoveOrphans((Boolean)annotationValues.get("orphanRemoval"));
-
-                mmd.setRelationTypeString("OneToMany");
             }
             else if (annName.equals(JPAAnnotationUtils.MANY_TO_MANY))
             {
                 // M-N relation
                 modifier = FieldPersistenceModifier.PERSISTENT;
                 mmd.setMappedBy((String)annotationValues.get("mappedBy"));
-
+                mmd.setRelationTypeString("ManyToMany");
                 setCascadesOnMember(mmd, (CascadeType[])annotationValues.get("cascade"));
+                mmd.setDefaultFetchGroup(annotationValues.get("fetch") == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
 
                 targetEntity = (Class)annotationValues.get("targetEntity");
-
-                FetchType fetch = (FetchType)annotationValues.get("fetch");
-                mmd.setDefaultFetchGroup(fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
-
-                mmd.setRelationTypeString("ManyToMany");
             }
             else if (annName.equals(JPAAnnotationUtils.MANY_TO_ONE))
             {
                 // N-1 relation
                 modifier = FieldPersistenceModifier.PERSISTENT;
                 mmd.setMappedBy((String)annotationValues.get("mappedBy"));
-
+                mmd.setRelationTypeString("ManyToOne");
                 setCascadesOnMember(mmd, (CascadeType[])annotationValues.get("cascade"));
+                mmd.setDefaultFetchGroup(annotationValues.get("fetch") == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
+                mmd.setNullValue(NullValue.getNullValue((Boolean)annotationValues.get("optional") ? "none" : "exception"));
 
                 targetEntity = (Class)annotationValues.get("targetEntity");
-
-                FetchType fetch = (FetchType)annotationValues.get("fetch");
-                mmd.setDefaultFetchGroup(fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
-
-                boolean optional = (Boolean)annotationValues.get("optional");
-                String nullValue = optional ? "none" : "exception";
-                mmd.setNullValue(NullValue.getNullValue(nullValue));
-
-                mmd.setRelationTypeString("ManyToOne");
             }
             else if (annName.equals(JPAAnnotationUtils.MAPS_ID))
             {
@@ -2694,7 +2669,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             {
                 // 1-N NonPC relation
                 modifier = FieldPersistenceModifier.PERSISTENT;
-                targetEntity = (Class)annotationValues.get("targetClass");
+                setCascadesOnMember(mmd, new CascadeType[]{CascadeType.ALL});
+                mmd.setDefaultFetchGroup(annotationValues.get("fetch") == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
 
                 if (mmd.getJoinMetaData() == null)
                 {
@@ -2702,10 +2678,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     mmd.setJoinMetaData(joinmd);
                 }
 
-                FetchType fetch = (FetchType)annotationValues.get("fetch");
-                mmd.setDefaultFetchGroup(fetch == FetchType.LAZY ? Boolean.FALSE : Boolean.TRUE);
-
-                setCascadesOnMember(mmd, new CascadeType[]{CascadeType.ALL});
+                targetEntity = (Class)annotationValues.get("targetClass");
             }
             else if (annName.equals(JPAAnnotationUtils.GENERATED_VALUE))
             {
@@ -2736,9 +2709,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 Extension[] values = (Extension[])annotationValues.get("value");
                 if (values != null && values.length > 0)
                 {
-                    for (int j=0;j<values.length;j++)
+                    for (Extension ext : values)
                     {
-                        mmd.addExtension(values[j].key().toString(), values[j].value().toString());
+                        mmd.addExtension(ext.key().toString(), ext.value().toString());
                     }
                 }
             }
@@ -3340,27 +3313,26 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
     /**
      * Check if a class is persistable, by looking at its annotations.
      * @param annotations Annotations for the class
-     * @return true if the class has Entity annotation 
+     * @return The annotation marking this class as an entity (or null if none present)
      */
-    protected boolean isClassPersistable(AnnotationObject[] annotations)
+    protected AnnotationObject isClassPersistable(AnnotationObject[] annotations)
     {
-        for (int i = 0; i < annotations.length; i++)
+        for (AnnotationObject annotation : annotations)
         {
-            String annClassName = annotations[i].getName();
-            if (annClassName.equals(JPAAnnotationUtils.ENTITY))
+            if (JPAAnnotationUtils.ENTITY.equals(annotation.getName()))
             {
-                return true;
+                return annotation;
             }
-            else if (annClassName.equals(JPAAnnotationUtils.EMBEDDABLE))
+            else if (JPAAnnotationUtils.EMBEDDABLE.equals(annotation.getName()))
             {
-                return true;
+                return annotation;
             }
-            else if (annClassName.equals(JPAAnnotationUtils.MAPPED_SUPERCLASS))
+            else if (JPAAnnotationUtils.MAPPED_SUPERCLASS.equals(annotation.getName()))
             {
-                return true;
+                return annotation;
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -3370,10 +3342,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected boolean isClassPersistenceAware(AnnotationObject[] annotations)
     {
-        for (int i = 0; i < annotations.length; i++)
+        for (AnnotationObject annotation : annotations)
         {
-            String annName = annotations[i].getName();
-            if (annName.equals(JPAAnnotationUtils.PERSISTENCE_AWARE))
+            if (JPAAnnotationUtils.PERSISTENCE_AWARE.equals(annotation.getName()))
             {
                 return true;
             }
@@ -3388,9 +3359,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected boolean doesClassHaveNamedQueries(AnnotationObject[] annotations)
     {
-        for (int i = 0; i < annotations.length; i++)
+        for (AnnotationObject annotation : annotations)
         {
-            String annClassName = annotations[i].getName();
+            String annClassName = annotation.getName();
             if (annClassName.equals(JPAAnnotationUtils.NAMED_QUERIES) ||
                 annClassName.equals(JPAAnnotationUtils.NAMED_QUERY) || 
                 annClassName.equals(JPAAnnotationUtils.NAMED_NATIVE_QUERIES) ||
@@ -3412,12 +3383,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     protected boolean doesClassHaveConverter(Class cls, AnnotationObject[] annotations)
     {
-        for (int i = 0; i < annotations.length; i++)
+        for (AnnotationObject annotation : annotations)
         {
-            String annClassName = annotations[i].getName();
+            String annClassName = annotation.getName();
             if (annClassName.equals(JPAAnnotationUtils.CONVERTER))
             {
-                Map<String, Object> annotationValues = annotations[i].getNameValueMap();
+                Map<String, Object> annotationValues = annotation.getNameValueMap();
+
                 boolean autoApply = (Boolean) annotationValues.get("autoApply");
                 TypeManager typeMgr = mmgr.getNucleusContext().getTypeManager();
                 if (typeMgr.getTypeConverterForName(cls.getName()) == null)
