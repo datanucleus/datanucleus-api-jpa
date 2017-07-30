@@ -138,12 +138,10 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     {
         if (cmd.getListeners() != null)
         {
-            List classListeners = cmd.getListeners();
+            List<EventListenerMetaData> classListeners = cmd.getListeners();
 
-            for (int k=0; k<classListeners.size(); k++)
+            for (EventListenerMetaData elmd : classListeners)
             {
-                EventListenerMetaData elmd = (EventListenerMetaData) classListeners.get(k);
-
                 // Load up all listener methods of the listener
                 // If the metadata had defined some methods then the annotated method definition will be ignored
                 populateListenerMethodsForEventListener(elmd, clr);
@@ -156,7 +154,6 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param fileURLString URL of the metadata file
      * @param filemd The File MetaData
      */
-    @SuppressWarnings("unchecked")
     public void registerFile(String fileURLString, FileMetaData filemd, ClassLoaderResolver clr)
     {
         if (fileURLString == null)
@@ -180,12 +177,10 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
 
         if (filemd.getListeners() != null)
         {
-            List fileListeners = filemd.getListeners();
+            List<EventListenerMetaData> fileListeners = filemd.getListeners();
             eventListeners.addAll(fileListeners);
-            for (int i=0; i<fileListeners.size(); i++)
+            for (EventListenerMetaData elmd : fileListeners)
             {
-                EventListenerMetaData elmd = (EventListenerMetaData) fileListeners.get(i);
-
                 // Load up all listener methods of the listener
                 // If the metadata had defined some methods then the annotated method definition will be ignored
                 populateListenerMethodsForEventListener(elmd, clr);
@@ -193,8 +188,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         }
 
         // Register the classes and interfaces for later use
-        if (filemd.getType() == MetadataFileType.JPA_MAPPING_FILE ||
-            filemd.getType() == MetadataFileType.ANNOTATIONS)
+        if (filemd.getType() == MetadataFileType.JPA_MAPPING_FILE || filemd.getType() == MetadataFileType.ANNOTATIONS)
         {
             for (int i = 0; i < filemd.getNoOfPackages(); i++)
             {
@@ -271,22 +265,22 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         Method[] methods = cls.getDeclaredMethods();
         if (methods != null)
         {
-            for (int i=0;i<methods.length;i++)
+            for (Method method : methods)
             {
-                Annotation[] methodAnnots = methods[i].getAnnotations();
+                Annotation[] methodAnnots = method.getAnnotations();
                 if (methodAnnots != null)
                 {
-                    for (int j=0;j<methodAnnots.length;j++)
+                    for (Annotation methodAnnot : methodAnnots)
                     {
-                        if (methodAnnots[j].annotationType() == PrePersist.class ||
-                            methodAnnots[j].annotationType() == PostPersist.class ||
-                            methodAnnots[j].annotationType() == PreRemove.class ||
-                            methodAnnots[j].annotationType() == PostRemove.class ||
-                            methodAnnots[j].annotationType() == PreUpdate.class ||
-                            methodAnnots[j].annotationType() == PostUpdate.class ||
-                            methodAnnots[j].annotationType() == PostLoad.class)
+                        if (methodAnnot.annotationType() == PrePersist.class ||
+                            methodAnnot.annotationType() == PostPersist.class ||
+                            methodAnnot.annotationType() == PreRemove.class ||
+                            methodAnnot.annotationType() == PostRemove.class ||
+                            methodAnnot.annotationType() == PreUpdate.class ||
+                            methodAnnot.annotationType() == PostUpdate.class ||
+                            methodAnnot.annotationType() == PostLoad.class)
                         {
-                            elmd.addCallback(methodAnnots[j].annotationType().getName(), methods[i].getDeclaringClass().getName(), methods[i].getName());
+                            elmd.addCallback(methodAnnot.annotationType().getName(), method.getDeclaringClass().getName(), method.getName());
                         }
                     }
                 }
