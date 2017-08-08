@@ -475,6 +475,7 @@
     <xsd:attribute name="precision" type="xsd:int"/>
     <xsd:attribute name="scale" type="xsd:int"/>
     <xsd:attribute name="jdbc-type" type="xsd:string"/> <!-- DN EXTENSION -->
+    <xsd:attribute name="sql-type" type="xsd:string"/> <!-- DN EXTENSION -->
     <xsd:attribute name="position" type="xsd:int"/> <!-- DN EXTENSION -->
   </xsd:complexType>
 

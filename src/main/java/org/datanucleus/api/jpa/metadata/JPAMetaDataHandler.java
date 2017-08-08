@@ -1865,6 +1865,11 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     colmd.setJdbcType(jdbcType);
                 }
+                String sqlType = getAttr(attrs, "sql-type"); // DN extension
+                if (sqlType != null)
+                {
+                    colmd.setSqlType(sqlType);
+                }
                 String position = getAttr(attrs, "position"); // DN extension
                 if (position != null)
                 {
