@@ -277,37 +277,46 @@ public class JPAAdapter implements ApiAdapter
         return false;
     }
 
-    /**
-     * Returns the default cascade-persist setting. JPA defaults to not persisting by reachability.
-     * @return The default cascade-persist (false)
+    /* (non-Javadoc)
+     * @see org.datanucleus.api.ApiAdapter#getDefaultCascadePersistForField()
      */
+    @Override
     public boolean getDefaultCascadePersistForField()
     {
         return false;
     }
 
-    /**
-     * Returns the default cascade-update setting. JPA defaults to not updating by reachability.
-     * @return The default cascade-update (false)
+    /* (non-Javadoc)
+     * @see org.datanucleus.api.ApiAdapter#getDefaultCascadeUpdateForField()
      */
+    @Override
     public boolean getDefaultCascadeUpdateForField()
     {
         return false;
     }
 
-    /**
-     * Returns the default cascade-delete setting. JPA defaults to not deleting by reachability.
-     * @return The default cascade-delete (false)
+    /* (non-Javadoc)
+     * @see org.datanucleus.api.ApiAdapter#getDefaultCascadeDeleteForField()
      */
+    @Override
     public boolean getDefaultCascadeDeleteForField()
     {
         return false;
     }
 
-    /**
-     * Returns the default cascade-refresh setting.
-     * @return The default cascade-refresh (false)
+    /* (non-Javadoc)
+     * @see org.datanucleus.api.ApiAdapter#getDefaultCascadeDetachForField()
      */
+    @Override
+    public boolean getDefaultCascadeDetachForField()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.datanucleus.api.ApiAdapter#getDefaultCascadeRefreshForField()
+     */
+    @Override
     public boolean getDefaultCascadeRefreshForField()
     {
         return false;
