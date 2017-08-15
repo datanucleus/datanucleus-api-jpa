@@ -25,7 +25,11 @@ import java.util.Map;
 import javax.persistence.AttributeNode;
 import javax.persistence.Subgraph;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.MapAttribute;
 
+import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.metadata.AbstractClassMetaData;
+import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.MetaDataManager;
 
 /**
@@ -46,6 +50,10 @@ public abstract class AbstractJPAGraph<T>
     {
         this.mmgr = mmgr;
         this.classType = clsType;
+        if (clsType == null)
+        {
+            throw new IllegalArgumentException("Unable to create JPA EntityGraph component with no defined class");
+        }
     }
 
     public Class<T> getClassType()
@@ -112,20 +120,8 @@ public abstract class AbstractJPAGraph<T>
             throw new IllegalStateException("This Graph is not mutable");
         }
 
-        if (attributeNodeMap == null)
-        {
-            attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
-        }
-        JPAAttributeNode node = attributeNodeMap.get(attribute.getName());
-        if (node == null)
-        {
-            node = new JPAAttributeNode<T>(mmgr, this, attribute.getName());
-            attributeNodeMap.put(node.getAttributeName(), node);
-        }
-
-        JPASubgraph<X> subgraph = new JPASubgraph<X>(mmgr, attribute.getJavaType());
-        node.addSubgraph(subgraph);
-        return subgraph;
+        Class<? extends X> type = attribute.getJavaType();
+        return (Subgraph<X>) addSubgraph(attribute, type);
     }
 
     public <X> Subgraph<? extends X> addSubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
@@ -158,20 +154,25 @@ public abstract class AbstractJPAGraph<T>
             throw new IllegalStateException("This Graph is not mutable");
         }
 
-        if (attributeNodeMap == null)
+        // Extract the type from the member
+        ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
+        AbstractClassMetaData cmd = mmgr.getMetaDataForClass(classType, clr);
+        AbstractMemberMetaData mmd = cmd.getMetaDataForMember(attributeName);
+        Class type = mmd.getType();
+        if (mmd.hasCollection())
         {
-            attributeNodeMap = new HashMap<String, JPAAttributeNode<?>>();
+            type = clr.classForName(mmd.getCollection().getElementType());
         }
-        JPAAttributeNode node = attributeNodeMap.get(attributeName);
-        if (node == null)
+        else if (mmd.hasArray())
         {
-            node = new JPAAttributeNode<T>(mmgr, this, attributeName);
-            attributeNodeMap.put(node.getAttributeName(), node);
+            type = clr.classForName(mmd.getArray().getElementType());
+        }
+        else if (mmd.hasMap())
+        {
+            type = clr.classForName(mmd.getMap().getValueType());
         }
 
-        JPASubgraph<X> subgraph = new JPASubgraph<X>(mmgr, null); // TODO Get the type, from where?
-        node.addSubgraph(subgraph);
-        return subgraph;
+        return addSubgraph(attributeName, type);
     }
 
     public <X> Subgraph<X> addSubgraph(String attributeName, Class<X> type)
@@ -203,9 +204,15 @@ public abstract class AbstractJPAGraph<T>
         {
             throw new IllegalStateException("This Graph is not mutable");
         }
+        if (!(attribute instanceof MapAttribute))
+        {
+            throw new IllegalStateException("Cannot add key subgraph for attribute that is not a map");
+        }
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet implemented");
+        MapAttribute mapAttr = (MapAttribute) attribute;
+        Class type = mapAttr.getKeyJavaType();
+        
+        return addKeySubgraph(attribute, type);
     }
 
     public <X> Subgraph<? extends X> addKeySubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
@@ -226,8 +233,13 @@ public abstract class AbstractJPAGraph<T>
             throw new IllegalStateException("This Graph is not mutable");
         }
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Extract the type from the member
+        ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
+        AbstractClassMetaData cmd = mmgr.getMetaDataForClass(classType, clr);
+        AbstractMemberMetaData mmd = cmd.getMetaDataForMember(attributeName);
+        Class type = clr.classForName(mmd.getMap().getKeyType());
+
+        return addKeySubgraph(attributeName, type);
     }
 
     public <X> Subgraph<X> addKeySubgraph(String attributeName, Class<X> type)
