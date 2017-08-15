@@ -24,7 +24,7 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 
 ## JPA 2.2 Status
 
-There is a JPA 2.2 Maintenance Release planned. The activity on this is virtually non-existent, and its scope is very weak.
+There is a JPA 2.2 Maintenance Release in progress. The changes for this are very small.
 DataNucleus has gone ahead and worked on all of the issues that will affect a JPA provider
 
 [jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
