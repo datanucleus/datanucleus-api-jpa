@@ -3377,26 +3377,28 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (annClassName.equals(JPAAnnotationUtils.CONVERTER))
             {
                 Map<String, Object> annotationValues = annotation.getNameValueMap();
-
                 boolean autoApply = (Boolean) annotationValues.get("autoApply");
+
                 TypeManager typeMgr = mmgr.getNucleusContext().getTypeManager();
-                if (typeMgr.getTypeConverterForName(cls.getName()) == null)
+                Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(cls, null);
+                Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(cls, attrType, null);
+                if (attrType != null)
                 {
-                    // Not yet cached an instance of this converter so create one
-                    AttributeConverter entityConv = 
-                        (AttributeConverter) ClassUtils.newInstance(cls, null, null);
-
-                    // Extract field and datastore types for this converter
-                    Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
-                    Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
-
                     // Register the TypeConverter under the name of the AttributeConverter class
-                    if (attrType != null)
+                    TypeConverter typeConv = typeMgr.getTypeConverterForName(cls.getName());
+                    if (typeConv == null)
                     {
-                        TypeConverter conv = new JPATypeConverter(entityConv);
-                        typeMgr.registerConverter(cls.getName(), conv, attrType, dbType, autoApply, attrType.getName());
+                        // Not yet cached an instance of this converter so create one
+                        typeConv = new JPATypeConverter(JPATypeConverterUtils.createAttributeConverterInstance(mmgr.getNucleusContext(), cls));
+                        typeMgr.registerConverter(cls.getName(), typeConv, attrType, dbType, autoApply, attrType.getName());
+                    }
+                    else
+                    {
+                        // Update the "autoApply" in case we simply registered the converter for a member
+                        typeMgr.registerConverter(cls.getName(), typeConv, attrType, dbType, autoApply, attrType.getName());
                     }
                 }
+
                 return true;
             }
         }

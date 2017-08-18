@@ -1169,24 +1169,26 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     String converterClassName = getAttr(attrs, "class");
                     Boolean autoApply = Boolean.valueOf(getAttr(attrs, "auto-apply"));
+
                     TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
-                    if (typeMgr.getTypeConverterForName(converterClassName) == null)
+                    Class entityConvCls = mgr.getNucleusContext().getClassLoaderResolver(null).classForName(converterClassName);
+                    Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConvCls, null);
+                    Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConvCls, attrType, null);
+
+                    if (attrType != null)
                     {
-                        // Not yet cached an instance of this converter so create one
-                        // TODO Support injectable AttributeConverters
-                        ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
-                        Class entityConvCls = clr.classForName(converterClassName);
-                        AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls);
-
-                        // Extract field and datastore types for this converter
-                        Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
-                        Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConv.getClass(), attrType, null);
-
-                        if (attrType != null)
+                        // Register the TypeConverter under the name of the AttributeConverter class
+                        TypeConverter typeConv = typeMgr.getTypeConverterForName(converterClassName);
+                        if (typeConv == null)
                         {
-                            // Register the TypeConverter under the name of the AttributeConverter class
-                            TypeConverter conv = new JPATypeConverter(entityConv);
-                            typeMgr.registerConverter(converterClassName, conv, attrType, dbType, autoApply, attrType.getName());
+                            // Not yet cached an instance of this converter so create one
+                            typeConv = new JPATypeConverter(JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls));
+                            typeMgr.registerConverter(converterClassName, typeConv, attrType, dbType, autoApply, attrType.getName());
+                        }
+                        else
+                        {
+                            // Update the "autoApply" in case we simply registered this converter for a member
+                            typeMgr.registerConverter(converterClassName, typeConv, attrType, dbType, autoApply, attrType.getName());
                         }
                     }
                 }
