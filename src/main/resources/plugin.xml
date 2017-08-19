@@ -81,44 +81,6 @@ Contributors:
         <annotations annotation-class="javax.persistence.Converter" reader="org.datanucleus.api.jpa.metadata.JPAAnnotationReader"/>
     </extension>
 
-    <!-- CALLBACK HANDLER -->
-    <extension point="org.datanucleus.callbackhandler">
-        <callback-handler class-name="org.datanucleus.api.jpa.JPACallbackHandler" name="JPA"/>
-    </extension>
-
-    <!-- METADATA HANDLERS -->
-    <extension point="org.datanucleus.metadata_handler">
-        <handler class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler" name="JPA" entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
-    </extension>
-
-    <!-- METADATA MANAGER -->
-    <extension point="org.datanucleus.metadata_manager">
-       <metadata-manager class="org.datanucleus.api.jpa.metadata.JPAMetaDataManager" name="JPA"/>
-    </extension>
-
-    <!-- PERSISTENCE API -->
-    <extension point="org.datanucleus.api_adapter">
-        <api-adapter name="JPA" class-name="org.datanucleus.api.jpa.JPAAdapter"/>
-    </extension>
-
-    <!-- ENTITY RESOLVER -->
-    <extension point="org.datanucleus.metadata_entityresolver">
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
-        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
-        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_2.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
-    </extension>
-
     <!-- EXTENSION CLASS ANNOTATIONS -->
     <extension point="org.datanucleus.class_annotation_handler">
         <class-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ReadOnly" handler="org.datanucleus.api.jpa.annotations.ReadOnlyHandler"/>
@@ -143,5 +105,44 @@ Contributors:
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.CreateUser" handler="org.datanucleus.api.jpa.annotations.CreateUserHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.UpdateUser" handler="org.datanucleus.api.jpa.annotations.UpdateUserHandler"/>
         <member-annotation-handler annotation-class="org.datanucleus.api.jpa.annotations.ComparatorClass" handler="org.datanucleus.api.jpa.annotations.ComparatorClassHandler"/>
+    </extension>
+
+    <!-- PERSISTENCE API -->
+    <extension point="org.datanucleus.api_adapter">
+        <api-adapter name="JPA" class-name="org.datanucleus.api.jpa.JPAAdapter"/>
+    </extension>
+
+    <!-- CALLBACK HANDLER -->
+    <extension point="org.datanucleus.callbackhandler">
+        <callback-handler class-name="org.datanucleus.api.jpa.JPACallbackHandler" name="JPA"/>
+    </extension>
+
+    <!-- METADATA MANAGER -->
+    <extension point="org.datanucleus.metadata_manager">
+       <metadata-manager class="org.datanucleus.api.jpa.metadata.JPAMetaDataManager" name="JPA"/>
+    </extension>
+
+    <!-- METADATA HANDLER -->
+    <extension point="org.datanucleus.metadata_handler">
+        <handler class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler" name="JPA" entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
+    </extension>
+
+    <!-- METADATA ENTITY RESOLVERS -->
+    <extension point="org.datanucleus.metadata_entityresolver">
+        <!-- JPA ORM XML -->
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_0.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_1.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_2.xsd" type="SYSTEM"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
+        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
     </extension>
 </plugin>

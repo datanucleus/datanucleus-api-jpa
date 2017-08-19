@@ -55,6 +55,9 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
 {
     private static final long serialVersionUID = 3591790314245592821L;
 
+    /** Parser for XML MetaData. */
+    protected MetaDataParser metaDataParser = null;
+
     /** EventListeners. Use a list to preserve ordering. */
     protected List eventListeners = new ArrayList();
 

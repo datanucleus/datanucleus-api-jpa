@@ -767,7 +767,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     {
                         ctrTypeColumns = new ArrayList<ConstructorTypeColumn>();
                     }
-                    ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
+                    ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
                     String colClsName = getAttr(attrs, "class");
                     Class ctrColCls = colClsName!=null ? clr.classForName(colClsName) : null;
                     ctrTypeColumns.add(new ConstructorTypeColumn(getAttr(attrs, "name"), ctrColCls));
@@ -1141,14 +1141,14 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                             }
                         }
 
-                        TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
+                        TypeManager typeMgr = mmgr.getNucleusContext().getTypeManager();
                         if (typeMgr.getTypeConverterForName(converterClassName) == null)
                         {
                             // Not yet cached an instance of this converter so create one
                             // TODO Support injectable AttributeConverters
-                            ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
+                            ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
                             Class entityConvCls = clr.classForName(converterClassName);
-                            AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls);
+                            AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mmgr.getNucleusContext(), entityConvCls);
 
                             // Extract attribute and datastore types for this converter
                             Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConv.getClass(), null);
@@ -1170,8 +1170,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     String converterClassName = getAttr(attrs, "class");
                     Boolean autoApply = Boolean.valueOf(getAttr(attrs, "auto-apply"));
 
-                    TypeManager typeMgr = mgr.getNucleusContext().getTypeManager();
-                    Class entityConvCls = mgr.getNucleusContext().getClassLoaderResolver(null).classForName(converterClassName);
+                    TypeManager typeMgr = mmgr.getNucleusContext().getTypeManager();
+                    Class entityConvCls = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(converterClassName);
                     Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConvCls, null);
                     Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConvCls, attrType, null);
 
@@ -1182,7 +1182,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                         if (typeConv == null)
                         {
                             // Not yet cached an instance of this converter so create one
-                            typeConv = new JPATypeConverter(JPATypeConverterUtils.createAttributeConverterInstance(mgr.getNucleusContext(), entityConvCls));
+                            typeConv = new JPATypeConverter(JPATypeConverterUtils.createAttributeConverterInstance(mmgr.getNucleusContext(), entityConvCls));
                             typeMgr.registerConverter(converterClassName, typeConv, attrType, dbType, autoApply, attrType.getName());
                         }
                         else
@@ -1722,7 +1722,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 if (dismd == null)
                 {
                     // User hasn't specified discriminator value so use "provider-specific function" (JPA 9.1.3.1)
-                    if (mgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
+                    if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
                     {
                         // Legacy handling, DN <= 5.0.2
                         dismd = inhmd.newDiscriminatorMetadata();
@@ -2123,8 +2123,8 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 if (md instanceof AbstractClassMetaData)
                 {
                     AbstractClassMetaData cmd = (AbstractClassMetaData)md;
-                    ClassLoaderResolver clr = mgr.getNucleusContext().getClassLoaderResolver(null);
-                    JPAEntityGraph entityGraph = new JPAEntityGraph(mgr, getAttr(attrs, "name"), clr.classForName(cmd.getFullClassName()));
+                    ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
+                    JPAEntityGraph entityGraph = new JPAEntityGraph(mmgr, getAttr(attrs, "name"), clr.classForName(cmd.getFullClassName()));
                     GraphHolder graphHolder = new GraphHolder();
                     graphHolder.graph = entityGraph;
                     graphHolderStack.push(graphHolder);
@@ -2171,7 +2171,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 Class cls = null;
                 if (!StringUtils.isWhitespace(subgraphClassName))
                 {
-                    cls = mgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
+                    cls = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
                 }
                 JPASubgraph subgraph = (cls == null ? 
                         (JPASubgraph) parentGraph.addSubgraph(attributeName) : 
@@ -2185,7 +2185,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 GraphHolder parentGraphHolder = graphHolderStack.peek();
                 JPAEntityGraph parentGraph = (JPAEntityGraph) parentGraphHolder.graph;
                 String subgraphClassName = getAttr(attrs, "class");
-                Class subclass = mgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
+                Class subclass = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
                 JPASubgraph subgraph = (JPASubgraph) parentGraph.addSubclassSubgraph(subclass);
                 GraphHolder graphHolder = new GraphHolder();
                 graphHolder.graph = subgraph;
@@ -2811,7 +2811,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 // Register the EntityGraph
                 GraphHolder graphHolder = graphHolderStack.pop();
                 JPAEntityGraph entityGraph = (JPAEntityGraph) graphHolder.graph;
-                ((JPAMetaDataManager)mgr).registerEntityGraph(entityGraph);
+                ((JPAMetaDataManager)mmgr).registerEntityGraph(entityGraph);
                 graphHolderStack.clear();
             }
         }
