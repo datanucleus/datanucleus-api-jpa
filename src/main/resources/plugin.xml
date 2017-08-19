@@ -114,17 +114,17 @@ Contributors:
 
     <!-- CALLBACK HANDLER -->
     <extension point="org.datanucleus.callbackhandler">
-        <callback-handler class-name="org.datanucleus.api.jpa.JPACallbackHandler" name="JPA"/>
+        <callback-handler name="JPA" class-name="org.datanucleus.api.jpa.JPACallbackHandler"/>
     </extension>
 
     <!-- METADATA MANAGER -->
     <extension point="org.datanucleus.metadata_manager">
-       <metadata-manager class="org.datanucleus.api.jpa.metadata.JPAMetaDataManager" name="JPA"/>
+       <metadata-manager name="JPA" class="org.datanucleus.api.jpa.metadata.JPAMetaDataManager"/>
     </extension>
 
     <!-- METADATA HANDLER -->
     <extension point="org.datanucleus.metadata_handler">
-        <handler class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler" name="JPA" entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
+        <handler name="JPA" class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler"/>
     </extension>
 
     <!-- METADATA ENTITY RESOLVERS -->
