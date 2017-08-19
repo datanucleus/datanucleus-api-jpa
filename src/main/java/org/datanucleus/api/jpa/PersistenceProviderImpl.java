@@ -354,14 +354,14 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
      * @param unitName Name of the persistence unit
      * @param overridingProps properties for schema generation; these may also include provider-specific properties
      * @throws PersistenceException if insufficient or inconsistent configuration information is provided or if schema generation otherwise fails.
-     * @since JPA2.1
      */
     public boolean generateSchema(String unitName, Map overridingProps)
     {
         // Find all "META-INF/persistence.xml" files in the current thread loader CLASSPATH and parse them
         PluginManager pluginMgr = PluginManager.createPluginManager(overridingProps, this.getClass().getClassLoader());
         String persistenceFileName = null;
-        boolean validate = false;
+        boolean validate = true;
+        boolean namespaceAware = true;
         if (overridingProps != null)
         {
             if (overridingProps.containsKey(PropertyNames.PROPERTY_PERSISTENCE_XML_FILENAME))
@@ -372,10 +372,13 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             {
                 validate = Boolean.getBoolean((String)overridingProps.get(PropertyNames.PROPERTY_METADATA_XML_VALIDATE));
             }
+            if (overridingProps.containsKey(PropertyNames.PROPERTY_METADATA_XML_NAMESPACE_AWARE))
+            {
+                namespaceAware = Boolean.getBoolean((String)overridingProps.get(PropertyNames.PROPERTY_METADATA_XML_NAMESPACE_AWARE));
+            }
         }
 
-        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, 
-            validate, new ClassLoaderResolverImpl());
+        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, validate, namespaceAware, new ClassLoaderResolverImpl());
         if (files == null)
         {
             // No "persistence.xml" files found

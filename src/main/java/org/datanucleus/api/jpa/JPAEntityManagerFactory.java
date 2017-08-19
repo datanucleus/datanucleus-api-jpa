@@ -1300,7 +1300,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         // Find all "META-INF/persistence.xml" files in the current thread loader CLASSPATH and parse them
         String persistenceFileName = null;
-        boolean validate = false;
+        boolean validate = true;
+        boolean namespaceAware = true;
         if (overridingProps != null)
         {
             if (overridingProps.containsKey(PropertyNames.PROPERTY_PERSISTENCE_XML_FILENAME))
@@ -1311,9 +1312,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             {
                 validate = Boolean.getBoolean((String)overridingProps.get(PropertyNames.PROPERTY_METADATA_XML_VALIDATE));
             }
+            if (overridingProps.containsKey(PropertyNames.PROPERTY_METADATA_XML_NAMESPACE_AWARE))
+            {
+                namespaceAware = Boolean.getBoolean((String)overridingProps.get(PropertyNames.PROPERTY_METADATA_XML_NAMESPACE_AWARE));
+            }
         }
 
-        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, validate, new ClassLoaderResolverImpl());
+        PersistenceFileMetaData[] files = MetaDataUtils.parsePersistenceFiles(pluginMgr, persistenceFileName, validate, namespaceAware, new ClassLoaderResolverImpl());
         if (files == null)
         {
             // No "persistence.xml" files found
