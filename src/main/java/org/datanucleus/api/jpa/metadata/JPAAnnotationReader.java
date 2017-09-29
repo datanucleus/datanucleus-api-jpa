@@ -1099,7 +1099,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     }
                     else
                     {
-                        dismd.setStrategy(DiscriminatorStrategy.ENTITY_NAME);
+                        dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP_ENTITY_NAME);
                     }
                     dismd.setIndexed("true");
                 }

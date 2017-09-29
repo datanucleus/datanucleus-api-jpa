@@ -224,9 +224,16 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
                             {
                                 classMetaDataByDiscriminatorName.put(cmd.getFullClassName(), cmd);
                             }
-                            else if (dismd.getStrategy() == DiscriminatorStrategy.ENTITY_NAME)
+                            else if (dismd.getStrategy() == DiscriminatorStrategy.VALUE_MAP_ENTITY_NAME)
                             {
-                                classMetaDataByDiscriminatorName.put(cmd.getEntityName(), cmd);
+                                if (dismd.getValue() != null)
+                                {
+                                    classMetaDataByDiscriminatorName.put(dismd.getValue(), cmd);
+                                }
+                                else
+                                {
+                                    classMetaDataByDiscriminatorName.put(cmd.getEntityName(), cmd);
+                                }
                             }
                             else if (dismd.getStrategy() == DiscriminatorStrategy.VALUE_MAP && dismd.getValue() != null)
                             {
