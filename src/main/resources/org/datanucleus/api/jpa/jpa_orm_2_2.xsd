@@ -124,7 +124,7 @@
         <xsd:element name="embeddable" type="orm:embeddable" minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="converter" type="orm:converter" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
-      <xsd:attribute name="version" type="orm:versionType" fixed="2.1" use="required"/>
+      <xsd:attribute name="version" type="orm:versionType" fixed="2.2" use="required"/>
     </xsd:complexType>
   </xsd:element>
 
