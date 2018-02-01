@@ -1415,6 +1415,32 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     mapmd.setKeyType(clsName);
                 }
             }
+            else if (localName.equals("map-key-convert"))
+            {
+                MetaData md = getStack();
+                if (md instanceof AbstractMemberMetaData)
+                {
+                    AbstractMemberMetaData mmd = (AbstractMemberMetaData)md;
+
+                    KeyMetaData keymd = mmd.getKeyMetaData();
+                    if (keymd == null)
+                    {
+                        keymd = new KeyMetaData();
+                        mmd.setKeyMetaData(keymd);
+                    }
+
+                    String converterClassName = getAttr(attrs, "converter");
+                    Boolean disableConversion = Boolean.valueOf(getAttr(attrs, "disable-conversion"));
+                    if (disableConversion)
+                    {
+                        mmd.setTypeConverterDisabled();
+                    }
+                    else if (!StringUtils.isWhitespace(converterClassName))
+                    {
+                        keymd.addExtension(MetaData.EXTENSION_MEMBER_TYPE_CONVERTER_NAME, converterClassName);
+                    }
+                }
+            }
             else if (localName.equals("index"))
             {
                 String idxName = getAttr(attrs, "name");
