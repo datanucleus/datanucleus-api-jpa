@@ -168,8 +168,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Long> count(Expression<?> expr)
     {
+        // TODO Check that this expression is valid?
         ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
+
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
         args.add(((ExpressionImpl)expr).getQueryExpression());
         select.queryExpr = new InvokeExpression(null, "count", args);
         return select;
@@ -180,10 +182,11 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Long> countDistinct(Expression<?> expr)
     {
+        // TODO Check that this expression is valid?
         ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
-        DyadicExpression dyExpr =
-            new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List args = new ArrayList();
+
+        DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
         args.add(dyExpr);
         select.queryExpr = new InvokeExpression(null, "count", args);
         return select;
