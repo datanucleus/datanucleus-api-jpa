@@ -226,14 +226,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
         }
         else
         {
-            if (propertyAccess)
-            {
-                mmd = new PropertyMetaData(acmd, getAttr(attrs,"name"));
-            }
-            else
-            {
-                mmd = new FieldMetaData(acmd, getAttr(attrs,"name"));
-            }
+            mmd = propertyAccess ? new PropertyMetaData(acmd, getAttr(attrs,"name")) : new FieldMetaData(acmd, getAttr(attrs,"name"));
             mmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
             mmd.setDefaultFetchGroup(dfg);
             mmd.setMappedBy(getAttr(attrs,"mapped-by"));
@@ -279,14 +272,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
         else
         {
             // Create new property/field
-            if (propertyAccess)
-            {
-                mmd = new PropertyMetaData(acmd, getAttr(attrs, "name"));
-            }
-            else
-            {
-                mmd = new FieldMetaData(acmd, getAttr(attrs, "name"));
-            }
+            mmd = propertyAccess ? new PropertyMetaData(acmd, getAttr(attrs, "name")) : new FieldMetaData(acmd, getAttr(attrs, "name"));
             mmd.setPersistenceModifier(FieldPersistenceModifier.PERSISTENT);
             mmd.setPrimaryKey(true);
             if (defaultCascadePersist)
@@ -307,15 +293,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      */
     protected AbstractMemberMetaData newTransientFieldObject(MetaData md, String name)
     {
-        AbstractMemberMetaData mmd = null;
-        if (propertyAccess)
-        {
-            mmd = new PropertyMetaData(md, name);
-        }
-        else
-        {
-            mmd = new FieldMetaData(md, name);
-        }
+        AbstractMemberMetaData mmd = propertyAccess ? new PropertyMetaData(md, name) : new FieldMetaData(md, name);
         mmd.setNotPersistent();
         if (defaultCascadePersist)
         {
@@ -333,15 +311,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      */
     protected AbstractMemberMetaData newEmbeddedFieldObject(MetaData md, String name)
     {
-        AbstractMemberMetaData mmd = null;
-        if (propertyAccess)
-        {
-            mmd = new PropertyMetaData(md, name);
-        }
-        else
-        {
-            mmd = new FieldMetaData(md, name);
-        }
+        AbstractMemberMetaData mmd = propertyAccess ? new PropertyMetaData(md, name) : new FieldMetaData(md, name);
         mmd.setEmbedded(true);
         if (defaultCascadePersist)
         {
@@ -359,15 +329,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      */
     protected AbstractMemberMetaData newOverriddenFieldObject(MetaData md, Attributes attrs)
     {
-        AbstractMemberMetaData mmd = null;
-        if (propertyAccess)
-        {
-            mmd = new PropertyMetaData(md, "#UNKNOWN." + getAttr(attrs, "name"));
-        }
-        else
-        {
-            mmd = new FieldMetaData(md, "#UNKNOWN." + getAttr(attrs, "name"));
-        }
+        AbstractMemberMetaData mmd = propertyAccess ? new PropertyMetaData(md, "#UNKNOWN." + getAttr(attrs, "name")) : new FieldMetaData(md, "#UNKNOWN." + getAttr(attrs, "name"));
         String colName = getAttr(attrs, "column");
         if (colName != null)
         {
@@ -390,8 +352,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      */
     protected AbstractMemberMetaData newOverriddenEmbeddedFieldObject(EmbeddedMetaData embmd, Attributes attrs)
     {
-        String memberName = getAttr(attrs, "name");
-        return newOverriddenEmbeddedFieldObject(embmd, memberName, getAttr(attrs, "column"));
+        return newOverriddenEmbeddedFieldObject(embmd, getAttr(attrs, "name"), getAttr(attrs, "column"));
     }
 
     /** Temporary variable for when processing an xxx-override so we remember the field it actually refers to */
@@ -404,8 +365,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      * @param columnName Column name to override it with
      * @return The FieldMetaData/PropertyMetaData
      */
-    protected AbstractMemberMetaData newOverriddenEmbeddedFieldObject(EmbeddedMetaData embmd, String memberName,
-            String columnName)
+    protected AbstractMemberMetaData newOverriddenEmbeddedFieldObject(EmbeddedMetaData embmd, String memberName, String columnName)
     {
         if (memberName.indexOf('.') > 0)
         {
@@ -413,15 +373,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             String baseMemberName = memberName.substring(0, position);
             String nestedMemberName = memberName.substring(position+1);
 
-            AbstractMemberMetaData mmd = null;
-            if (propertyAccess)
-            {
-                mmd = new PropertyMetaData(embmd, baseMemberName);
-            }
-            else
-            {
-                mmd = new FieldMetaData(embmd, baseMemberName);
-            }
+            AbstractMemberMetaData mmd = propertyAccess ? new PropertyMetaData(embmd, baseMemberName) : new FieldMetaData(embmd, baseMemberName);
 
             EmbeddedMetaData nestedEmbmd = new EmbeddedMetaData();
             nestedEmbmd.setParent(mmd);
@@ -433,15 +385,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
             return mmd;
         }
 
-        AbstractMemberMetaData mmd = null;
-        if (propertyAccess)
-        {
-            mmd = new PropertyMetaData(embmd, memberName);
-        }
-        else
-        {
-            mmd = new FieldMetaData(embmd, memberName);
-        }
+        AbstractMemberMetaData mmd = propertyAccess ? new PropertyMetaData(embmd, memberName) : new FieldMetaData(embmd, memberName);
         mmd.setParent(embmd);
 
         if (columnName != null)
@@ -741,16 +685,14 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 // Add an entity (persistent class) mapping
                 QueryResultMetaData qrmd = (QueryResultMetaData)getStack();
                 queryResultEntityName = getAttr(attrs, "entity-class"); // Save this for any field-result that arrives
-                qrmd.addPersistentTypeMapping(queryResultEntityName,
-                    null, // No field-column mappings info at this point
+                qrmd.addPersistentTypeMapping(queryResultEntityName, null, // No field-column mappings info at this point
                     getAttr(attrs, "discriminator-column"));
             }
             else if (localName.equals("field-result"))
             {
                 // Add a field-column mapping for the entity (persistent class)
                 QueryResultMetaData qrmd = (QueryResultMetaData)getStack();
-                qrmd.addMappingForPersistentTypeMapping(queryResultEntityName,
-                    getAttr(attrs, "name"), getAttr(attrs, "column"));
+                qrmd.addMappingForPersistentTypeMapping(queryResultEntityName, getAttr(attrs, "name"), getAttr(attrs, "column"));
             }
             else if (localName.equals("column-result"))
             {
@@ -2185,12 +2127,10 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 GraphHolder parentGraphHolder = graphHolderStack.peek();
                 AbstractJPAGraph parentGraph = parentGraphHolder.graph;
                 String subgraphName = getAttr(attrs, "name");
-                String attributeName = (parentGraphHolder.attributeNameBySubgroupName != null ? 
-                        parentGraphHolder.attributeNameBySubgroupName.get(subgraphName) : null);
+                String attributeName = (parentGraphHolder.attributeNameBySubgroupName != null ? parentGraphHolder.attributeNameBySubgroupName.get(subgraphName) : null);
                 if (attributeName == null)
                 {
-                    throw new RuntimeException("subgraph specified with name=" + subgraphName + 
-                        " but no attribute was marked as having that subgroup name");
+                    throw new RuntimeException("subgraph specified with name=" + subgraphName + " but no attribute was marked as having that subgroup name");
                 }
 
                 String subgraphClassName = getAttr(attrs, "class");
@@ -2199,9 +2139,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                 {
                     cls = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
                 }
-                JPASubgraph subgraph = (cls == null ? 
-                        (JPASubgraph) parentGraph.addSubgraph(attributeName) : 
-                        (JPASubgraph)parentGraph.addSubgraph(attributeName, cls));
+                JPASubgraph subgraph = (cls == null ? (JPASubgraph) parentGraph.addSubgraph(attributeName) : (JPASubgraph)parentGraph.addSubgraph(attributeName, cls));
                 GraphHolder graphHolder = new GraphHolder();
                 graphHolder.graph = subgraph;
                 graphHolderStack.push(graphHolder);
