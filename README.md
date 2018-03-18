@@ -22,22 +22,9 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 
 
 
-## JPA 2.2 Status
-
-There is a JPA 2.2 Maintenance Release in progress. The changes for this are very small.
-DataNucleus has gone ahead and worked on all of the issues that will affect a JPA provider
-
-[jpa-spec-43](https://github.com/javaee/jpa-spec/issues/43) : Support meta-annotations. Provided in javax.persistence-2.2.jar  
-[jpa-spec-63](https://github.com/javaee/jpa-spec/issues/63) : Support java.time. Implemented fully as far as we can see  
-[jpa-spec-89](https://github.com/javaee/jpa-spec/issues/89) : Add Query.getResultStream()  
-[jpa-spec-109](https://github.com/javaee/jpa-spec/issues/109) : Allow AttributeConverters to be CDI injectable  
-[jpa-spec-115](https://github.com/javaee/jpa-spec/issues/115) : Add @Repeatable to annotations. Provided in javax.persistence-2.2.jar  
-
-
-
 ## JPA Next Status
 
-The JPA "expert group" is seemingly dead, only providing minimal things in v2.2 (above), and with no plan beyond that.
+The JPA "expert group" is seemingly dead, only providing very minimal things in v2.2 (with Oracle dictating to people this is all you will get), with no plan beyond that.
 They do, however, provide an issue tracker for people to raise issues of what they would like to see in the "next" release of JPA (if/when it ever happens). 
 DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues. 
 All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until Oracle can be bothered ?
