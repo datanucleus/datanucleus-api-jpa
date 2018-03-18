@@ -1,11 +1,11 @@
 # datanucleus-api-jpa
 
 Support for DataNucleus persistence using the JPA API (JSR0220, JSR0317, JSR0338).  
-JPA "persistence provider" is _org.datanucleus.api.jpa.PersistenceProviderImpl_.  
-JPA EntityManagerFactory is implemented by _org.datanucleus.api.jpa.JPAEntityManagerFactory_.  
-JPA EntityManager is implemented by _org.datanucleus.api.jpa.JPAEntityManager_.  
-JPA Query is implemented by _org.datanucleus.api.jpa.JPAQuery_.  
-JPA EntityTransaction is implemented by _org.datanucleus.api.jpa.JPAEntityTransaction_.  
+JPA "persistence provider" is [org.datanucleus.api.jpa.PersistenceProviderImpl](https://github.com/datanucleus/datanucleus-api-jpa/blob/master/src/main/java/org/datanucleus/api/jpa/PersistenceProviderImpl.java).  
+JPA EntityManagerFactory is implemented by [org.datanucleus.api.jpa.JPAEntityManagerFactory](https://github.com/datanucleus/datanucleus-api-jpa/blob/master/src/main/java/org/datanucleus/api/jpa/JPAEntityManagerFactory.java).  
+JPA EntityManager is implemented by [org.datanucleus.api.jpa.JPAEntityManager](https://github.com/datanucleus/datanucleus-api-jpa/blob/master/src/main/java/org/datanucleus/api/jpa/JPAEntityManager.java).  
+JPA Query is implemented by [org.datanucleus.api.jpa.JPAQuery](https://github.com/datanucleus/datanucleus-api-jpa/blob/master/src/main/java/org/datanucleus/api/jpa/JPAQuery.java).  
+JPA EntityTransaction is implemented by [org.datanucleus.api.jpa.JPAEntityTransaction](https://github.com/datanucleus/datanucleus-api-jpa/blob/master/src/main/java/org/datanucleus/api/jpa/JPAEntityTransaction.java).  
 
 This is built using Maven, by executing `mvn clean install` which installs the built jar in your local Maven repository.
 
