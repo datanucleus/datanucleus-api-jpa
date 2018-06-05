@@ -66,7 +66,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
     /* (non-Javadoc)
      * @see javax.persistence.criteria.Path#get(javax.persistence.metamodel.MapAttribute)
      */
-    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<X, K, V> attr)
+    public <K, V, M extends Map<K, V>> Expression<M> get(MapAttribute<? super X, K, V> attr)
     {
         return new PathImpl<X,M>(cb, this, (MapAttributeImpl<? super X,K,V>)attr, (Class<M>)attr.getJavaType());
     }
@@ -74,7 +74,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
     /* (non-Javadoc)
      * @see javax.persistence.criteria.Path#get(javax.persistence.metamodel.PluralAttribute)
      */
-    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<X, C, E> attr)
+    public <E, C extends Collection<E>> Expression<C> get(PluralAttribute<? super X, C, E> attr)
     {
         return new PathImpl<X,C>(cb, this, (PluralAttributeImpl<? super X, C, E>)attr, attr.getJavaType());
     }
