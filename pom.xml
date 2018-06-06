@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>[${dn.javax.persistence.version}, 2.2.99)</version>
+            <version>${dn.javax.persistence.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
