@@ -46,8 +46,9 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-102](https://github.com/javaee/jpa-spec/issues/102) : JPQL : DATE/TIME functions. Done, with Criteria changes provided in javax.persistence-2.2.jar  
 [jpa-spec-103](https://github.com/javaee/jpa-spec/issues/103) : JPQL : Allow use of parameter in more than just WHERE/HAVING. Done  
 [jpa-spec-105](https://github.com/javaee/jpa-spec/issues/105) : Allow AttributeConverter to multiple columns. Done but using vendor extension  
-[jpa-spec-107](https://github.com/javaee/jpa-spec/issues/107) : JPQL : support subqueries in SELECT. Done   
+[jpa-spec-107](https://github.com/javaee/jpa-spec/issues/107) : JPQL : support subqueries in SELECT. Done  
 [jpa-spec-108](https://github.com/javaee/jpa-spec/issues/108) : Path.get(PluralAttribute<X, C, E>) lower bound missing on X. Provided in javax.persistence-2.2.1.jar  
+[jpa-spec-111](https://github.com/javaee/jpa-spec/issues/111) : Allow side-effect free check whether a named query is available. DN throws IllegalArgumentException and doesn't kill the current transaction.  
 [jpa-spec-112](https://github.com/javaee/jpa-spec/issues/112) : EntityGraph generic type incorrect. Provided in javax.persistence-2.2.jar  
 [jpa-spec-113](https://github.com/javaee/jpa-spec/issues/113) : Allow @GeneratedValue on non-PK fields. Provided since JPA 1  
 [jpa-spec-128](https://github.com/javaee/jpa-spec/issues/128) : JPQL : Support JOIN on 2 root candidates. Done  
