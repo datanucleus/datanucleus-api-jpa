@@ -215,10 +215,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         }
 
         // Exclude unlisted classes
-        if (unitInfo.excludeUnlistedClasses())
-        {
-            unitMetaData.setExcludeUnlistedClasses();
-        }
+        unitMetaData.setExcludeUnlistedClasses(unitInfo.excludeUnlistedClasses());
 
         // Provider
         unitMetaData.setProvider(unitInfo.getPersistenceProviderClassName());

@@ -336,10 +336,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
         }
 
         // Exclude unlisted classes
-        if (unitInfo.excludeUnlistedClasses())
-        {
-            pumd.setExcludeUnlistedClasses();
-        }
+        pumd.setExcludeUnlistedClasses(unitInfo.excludeUnlistedClasses());
 
         // Provider
         pumd.setProvider(unitInfo.getPersistenceProviderClassName());
