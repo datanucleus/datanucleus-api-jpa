@@ -130,22 +130,14 @@ Contributors:
     <!-- METADATA ENTITY RESOLVERS -->
     <extension point="org.datanucleus.metadata_entityresolver">
         <!-- JPA ORM XML -->
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_1_0.xsd"/>
-
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_0.xsd" type="SYSTEM"/> <!-- DN variant -->
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_0.xsd"/>
-
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_1.xsd" type="SYSTEM"/> <!-- DN variant -->
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_1.xsd"/>
-
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd" identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" type="SYSTEM"/>
-        <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd" identity="http://www.datanucleus.org/xsd/jpa/orm_2_2.xsd" type="SYSTEM"/> <!-- DN variant -->
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_1_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://java.sun.com/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_1.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
+        <entityresolver identity="http://www.datanucleus.org/xsd/jpa/orm_2_2.xsd" type="SYSTEM" url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/> <!-- DN variant -->
         <entityresolver url="/org/datanucleus/api/jpa/jpa_orm_2_2.xsd"/>
     </extension>
 </plugin>
