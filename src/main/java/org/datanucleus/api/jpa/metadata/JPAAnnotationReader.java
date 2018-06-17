@@ -3397,6 +3397,10 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         // Update the "autoApply" in case we simply registered the converter for a member
                         typeMgr.registerConverter(cls.getName(), typeConv, attrType, dbType, autoApply, attrType.getName());
                     }
+                    if (NucleusLogger.METADATA.isDebugEnabled())
+                    {
+                        NucleusLogger.METADATA.debug("Registering AttributeConverter for java=" + attrType.getName() + " db=" + dbType.getName() + " autoApply=" + autoApply);
+                    }
                 }
 
                 return true;
