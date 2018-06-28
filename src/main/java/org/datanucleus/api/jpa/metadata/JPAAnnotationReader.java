@@ -2839,8 +2839,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
      * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
      * @param parent The parent MetaData object
-     * @param field The field/property
-     * @param annotations Annotations on this field/property
+     * @param fieldType The field/property type
+     * @param annotationValues Annotations on this field/property
      * @return MetaData for the column
      */
     private ColumnMetaData newColumnMetaDataForAnnotation(MetaData parent, Class fieldType, Map<String, Object> annotationValues)
