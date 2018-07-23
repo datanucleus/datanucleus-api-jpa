@@ -59,17 +59,13 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
         {
             return false;
         }
-        else if (mmd.getType().isPrimitive() || mmd.getNullValue() == NullValue.EXCEPTION)
+        else if (!mmd.getType().isPrimitive() && mmd.getNullValue() != NullValue.EXCEPTION)
         {
-            return false;
-        }
-        else if (mmd.getColumnMetaData() != null && mmd.getColumnMetaData().length > 0 && !mmd.getColumnMetaData()[0].isAllowsNull())
-        {
-            return false;
+            return true;
         }
         else
         {
-            return true;
+            return false;
         }
     }
 
