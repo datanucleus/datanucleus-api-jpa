@@ -55,17 +55,13 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
      */
     public boolean isOptional() // Really wants to know if it is nullable
     {
-        if (mmd.isPrimaryKey())
+        if (mmd.isPrimaryKey() || mmd.getType().isPrimitive())
         {
             return false;
         }
-        else if (mmd.getType().isPrimitive() || mmd.getNullValue() == NullValue.EXCEPTION)
+        else if (mmd.getNullValue() != NullValue.EXCEPTION)
         {
-            return false;
-        }
-        else if (mmd.getColumnMetaData() != null && mmd.getColumnMetaData().length > 0 && !mmd.getColumnMetaData()[0].isAllowsNull())
-        {
-            return false;
+            return true;
         }
         else
         {
