@@ -942,48 +942,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         return select;
     }
 
-    public Expression<Integer> year(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getYear", null);
-        return select;
-    }
-
-    public Expression<Integer> month(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMonth", null);
-        return select;
-    }
-
-    public Expression<Integer> day(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getDay", null);
-        return select;
-    }
-
-    public Expression<Integer> hour(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getHour", null);
-        return select;
-    }
-
-    public Expression<Integer> minute(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMinute", null);
-        return select;
-    }
-
-    public Expression<Integer> second(Expression<? extends java.util.Date> expr)
-    {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
-        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getSecond", null);
-        return select;
-    }
-
     /* (non-Javadoc)
      * @see javax.persistence.criteria.CriteriaBuilder#function(java.lang.String, java.lang.Class, javax.persistence.criteria.Expression<?>[])
      */
@@ -1803,5 +1761,132 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type)
     {
         return new TreatRootImpl(this, (RootImpl) root, type);
+    }
+
+    // ---------------------- DN EXTENSIONS -----------------------
+
+    public Expression<Integer> year(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getYear", null);
+        return select;
+    }
+
+    public Expression<Integer> month(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMonth", null);
+        return select;
+    }
+
+    public Expression<Integer> day(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getDay", null);
+        return select;
+    }
+
+    public Expression<Integer> hour(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getHour", null);
+        return select;
+    }
+
+    public Expression<Integer> minute(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMinute", null);
+        return select;
+    }
+
+    public Expression<Integer> second(Expression<? extends java.util.Date> expr)
+    {
+        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getSecond", null);
+        return select;
+    }
+
+    public Expression<Number> round(Expression<Number> expr, Integer digits)
+    {
+        ExpressionImpl<Number> roundedExpr = new ExpressionImpl(this, expr.getJavaType());
+        List<org.datanucleus.query.expression.Expression> args = null;
+        if (digits != null)
+        {
+            args = new ArrayList(1);
+            args.add(new Literal(digits));
+        }
+        roundedExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "round", args);
+        return roundedExpr;
+    }
+
+    public Expression<Number> cos(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> cosExpr = new ExpressionImpl(this, Number.class);
+        cosExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "cos", null);
+        return cosExpr;
+    }
+
+    public Expression<Number> sin(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> sinExpr = new ExpressionImpl(this, Number.class);
+        sinExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "sin", null);
+        return sinExpr;
+    }
+
+    public Expression<Number> tan(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> tanExpr = new ExpressionImpl(this, Number.class);
+        tanExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "tan", null);
+        return tanExpr;
+    }
+
+    public Expression<Number> acos(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> acosExpr = new ExpressionImpl(this, Number.class);
+        acosExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "acos", null);
+        return acosExpr;
+    }
+
+    public Expression<Number> asin(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> asinExpr = new ExpressionImpl(this, Number.class);
+        asinExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "asin", null);
+        return asinExpr;
+    }
+
+    public Expression<Number> atan(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> atanExpr = new ExpressionImpl(this, Number.class);
+        atanExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "atan", null);
+        return atanExpr;
+    }
+
+    public Expression<Number> log(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> logExpr = new ExpressionImpl(this, Number.class);
+        logExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "log", null);
+        return logExpr;
+    }
+
+    public Expression<Number> exp(Expression<Number> expr)
+    {
+        ExpressionImpl<Number> expExpr = new ExpressionImpl(this, Number.class);
+        expExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "exp", null);
+        return expExpr;
+    }
+
+    public Expression<Integer> ceil(Expression<Number> expr)
+    {
+        ExpressionImpl<Integer> ceilExpr = new ExpressionImpl(this, Integer.class);
+        ceilExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "ceil", null);
+        return ceilExpr;
+    }
+
+    public Expression<Integer> floor(Expression<Number> expr)
+    {
+        ExpressionImpl<Integer> floorExpr = new ExpressionImpl(this, Integer.class);
+        floorExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "floor", null);
+        return floorExpr;
     }
 }

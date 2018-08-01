@@ -58,4 +58,7 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-151](https://github.com/javaee/jpa-spec/issues/151) : GenerationType.UUID. Provided in javax.persistence-2.2.jar. Supported since DN 2.x  
 [jpa-spec-152](https://github.com/javaee/jpa-spec/issues/152) : Native support for UUID class. Supported since DN 2.x  
 [jpa-spec-163](https://github.com/javaee/jpa-spec/issues/163) : Support for java.time.Instant. Supported since DN 4.x  
+[jpa-spec-167](https://github.com/javaee/jpa-spec/issues/167) : preUpdate is fired and always has been.  
+[jpa-spec-169](https://github.com/javaee/jpa-spec/issues/169) : root.get() does not add a join, and neither should it.  
+[jpa-spec-171](https://github.com/javaee/jpa-spec/issues/171) : round() is included in javax.persistence-2.2.jar. Supported from DN 5.2.x.  
 
