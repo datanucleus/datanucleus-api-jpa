@@ -2533,6 +2533,13 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
                     ((FileMetaData)md).setCatalog(currentString);
                 }
             }
+            else if (localName.equals("delimited-identifiers"))
+            {
+                if (md instanceof FileMetaData)
+                {
+                    // TODO Support this
+                }
+            }
             else if (localName.equals("access"))
             {
                 if (md instanceof FileMetaData)
