@@ -148,7 +148,7 @@ public class JPAQueryTuple implements Tuple
         int i = 0;
         for (JPAQueryTupleElement te : elements)
         {
-            values[i] = te.getValue();
+            values[i++] = te.getValue();
         }
         return values;
     }
