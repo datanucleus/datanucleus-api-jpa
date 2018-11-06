@@ -17,8 +17,8 @@
     </description>
 
     <properties>
-        <dn.javax.persistence.version>2.2.1</dn.javax.persistence.version>
-        <dn.core.version>5.2.0-m1</dn.core.version>
+        <dn.javax.persistence.version>2.2.2</dn.javax.persistence.version>
+        <dn.core.version>5.2.0-m2</dn.core.version>
     </properties>
 
     <scm>
