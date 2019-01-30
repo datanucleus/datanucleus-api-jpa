@@ -61,4 +61,5 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-167](https://github.com/eclipse-ee4j/jpa-api/issues/167) : preUpdate is fired and always has been.  
 [jpa-spec-169](https://github.com/eclipse-ee4j/jpa-api/issues/169) : root.get() does not add a join, and neither should it.  
 [jpa-spec-171](https://github.com/eclipse-ee4j/jpa-api/issues/171) : round() is included in javax.persistence-2.2.jar. Supported from DN 5.2.x.  
+[jpa-spec-207](https://github.com/eclipse-ee4j/jpa-api/issues/207) : Allow @Convert usage on id attributes. Supported since DN 4.x.  
 
