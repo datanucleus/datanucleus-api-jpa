@@ -477,14 +477,20 @@ public class JPAQuery<X> implements TypedQuery<X>
      * Get the names of the hints that are supported for query objects.
      * These hints correspond to hints that may be passed to the methods of the Query interface 
      * that take hints as arguments or used with the NamedQuery and NamedNativeQuery annotations.
-     * These include all standard query hints as well as vendor-specific hints supported by the 
-     * provider. These hints may or may not currently be in effect.
+     * These include all standard query hints as well as vendor-specific hints supported by the provider. 
+     * These hints may or may not currently be in effect.
      * @return hints
      */
     public Set<String> getSupportedHints()
     {
         assertIsOpen();
-        return query.getSupportedExtensions();
+        Set<String> supportedExtensions = query.getSupportedExtensions();
+        supportedExtensions.add(QUERY_HINT_FETCH_SIZE);
+        supportedExtensions.add(QUERY_HINT_IGNORE_CACHE);
+        supportedExtensions.add(QUERY_HINT_TIMEOUT);
+        supportedExtensions.add(JPAEntityGraph.FETCHGRAPH_PROPERTY);
+        supportedExtensions.add(JPAEntityGraph.LOADGRAPH_PROPERTY);
+        return supportedExtensions;
     }
 
     /**
