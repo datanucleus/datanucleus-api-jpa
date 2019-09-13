@@ -22,8 +22,10 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceException;
 
 import org.datanucleus.ClassLoaderResolver;
-import org.datanucleus.NucleusContext;
+import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.cache.Level2Cache;
+import org.datanucleus.identity.IdentityUtils;
+import org.datanucleus.identity.SingleFieldId;
 import org.datanucleus.metadata.AbstractClassMetaData;
 
 /**
@@ -32,7 +34,7 @@ import org.datanucleus.metadata.AbstractClassMetaData;
  */
 public class JPADataStoreCache implements Cache
 {
-    NucleusContext nucleusCtx;
+    PersistenceNucleusContext nucleusCtx;
 
     /** Underlying Level 2 cache. */
     Level2Cache cache = null;
@@ -40,9 +42,9 @@ public class JPADataStoreCache implements Cache
     /**
      * Constructor.
      * @param nucleusCtx Context
-     * @param cache Level 2 Cache
+     * @param cache Level 2 Cache TODO Remove this arg and just use nucleusCtx.getLevel2Cache()
      */
-    public JPADataStoreCache(NucleusContext nucleusCtx, Level2Cache cache)
+    public JPADataStoreCache(PersistenceNucleusContext nucleusCtx, Level2Cache cache)
     {
         this.nucleusCtx = nucleusCtx;
         this.cache = cache;
@@ -70,6 +72,14 @@ public class JPADataStoreCache implements Cache
         if (acmd == null)
         {
             throw new EntityNotFoundException();
+        }
+
+        if (acmd.usesSingleFieldIdentityClass() && !(pk instanceof SingleFieldId))
+        {
+            // Convert to the single-field identity type Class, since the "pk" will be of the raw type and the L2 cache is keyed by single-field id
+            Class singleFieldIdType = IdentityUtils.getSingleFieldIdentityTypeForKeyType(pk.getClass());
+            SingleFieldId sfId = nucleusCtx.getIdentityManager().getSingleFieldId(singleFieldIdType, cls, pk);
+            return cache.containsOid(sfId);
         }
 
         return cache.containsOid(pk);
@@ -106,15 +116,23 @@ public class JPADataStoreCache implements Cache
             throw new EntityNotFoundException();
         }
 
-        cache.evict(pk);
+        if (acmd.usesSingleFieldIdentityClass() && !(pk instanceof SingleFieldId))
+        {
+            // Convert to the single-field identity type, since the "pk" will be of the raw type and the L2 cache is keyed by single-field id
+            Class singleFieldIdType = IdentityUtils.getSingleFieldIdentityTypeForKeyType(pk.getClass());
+            SingleFieldId sfId = nucleusCtx.getIdentityManager().getSingleFieldId(singleFieldIdType, cls, pk);
+            cache.evict(sfId);
+        }
+        else
+        {
+            cache.evict(pk);
+        }
     }
 
     /**
      * Return an object of the specified type to allow access to the provider-specific API.
-     * If the provider's Cache implementation does not support the specified class, the
-     * PersistenceException is thrown.
-     * @param cls the class of the object to be returned. This is normally either the underlying 
-     * Cache implementation class or an interface that it implements.
+     * If the provider's Cache implementation does not support the specified class, the PersistenceException is thrown.
+     * @param cls the class of the object to be returned. This is normally either the underlying Cache implementation class or an interface that it implements.
      * @return an instance of the specified class
      * @throws PersistenceException if the provider does not support the call.
      */
