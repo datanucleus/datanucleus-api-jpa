@@ -2959,7 +2959,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             else
             {
-                length = (typePrecision != null ? typePrecision : null);
+                length = (typePrecision != null ? typePrecision : typeLength);
             }
             scale = typeScale;
         }
@@ -2986,6 +2986,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         colmd.setUnique(unique);
         if (columnDdl != null)
         {
+            // TODO Extract length etc out of DDL?
             colmd.setColumnDdl(columnDdl);
         }
         if (parent instanceof AbstractMemberMetaData)
@@ -3197,7 +3198,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             else
             {
-                length = (typePrecision != null ? typePrecision : null);
+                length = (typePrecision != null ? typePrecision : typeLength);
             }
             scale = typeScale;
         }
@@ -3224,6 +3225,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         colmd.setUnique(unique);
         if (columnDdl != null)
         {
+            // TODO Extract length etc out of DDL?
             colmd.setColumnDdl(columnDdl);
         }
 
