@@ -2864,7 +2864,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         String columnDdl = null;
 
         columnName = (String)annotationValues.get("name");
-        typeLength = "" + annotationValues.get("length");
+
+        // Take values of length, precision, scale when not set to JPA annotation default
+        if (annotationValues.get("length") != null)
+        {
+            int lengthValue = ((Integer)annotationValues.get("length")).intValue();
+            if (lengthValue != 255)
+            {
+                typeLength = "" + lengthValue;
+            }
+        }
         if (annotationValues.get("precision") != null)
         {
             int precisionValue = ((Integer)annotationValues.get("precision")).intValue();
@@ -2955,23 +2964,21 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         else
         {
             // TODO Arguably we also should allow specification of length when using a converter to a String
-            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
-                fieldType == StringBuilder.class || fieldType == StringBuffer.class)
+            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
                 length = typeLength;
             }
-            else if (fieldType == Float.class || fieldType == float.class ||
-                    fieldType == Double.class || fieldType == double.class ||
-                    fieldType == BigDecimal.class)
+            else if (fieldType == Float.class || fieldType == float.class || fieldType == Double.class || fieldType == double.class || fieldType == BigDecimal.class)
             {
                 // Floating point types use precision/scale
-                length = (typePrecision != null ? typePrecision : null);
+                length = typePrecision;
             }
             else
             {
                 // Other types. Note that some may not want a length
-                length = (typePrecision != null ? typePrecision : null);
+                length = (typePrecision != null ? typePrecision : typeLength);
             }
+
             scale = typeScale;
         }
 
@@ -3094,7 +3101,16 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             if (annName.equals(JPAAnnotationUtils.COLUMN))
             {
                 columnName = (String)annotationValues.get("name");
-                typeLength = "" + annotationValues.get("length");
+
+                // Take values of length, precision, scale when not set to JPA annotation default
+                if (annotationValues.get("length") != null)
+                {
+                    int lengthValue = ((Integer)annotationValues.get("length")).intValue();
+                    if (lengthValue != 255)
+                    {
+                        typeLength = "" + lengthValue;
+                    }
+                }
                 if (annotationValues.get("precision") != null)
                 {
                     int precisionValue = ((Integer)annotationValues.get("precision")).intValue();
@@ -3204,23 +3220,21 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         else
         {
             // TODO Arguably we also should allow specification of length when using a converter to a String
-            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
-                fieldType == StringBuilder.class || fieldType == StringBuffer.class)
+            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
                 length = typeLength;
             }
-            else if (fieldType == Float.class || fieldType == float.class ||
-                    fieldType == Double.class || fieldType == double.class ||
-                    fieldType == BigDecimal.class)
+            else if (fieldType == Float.class || fieldType == float.class || fieldType == Double.class || fieldType == double.class || fieldType == BigDecimal.class)
             {
-                // Floating point types use precision/scale
-                length = (typePrecision != null ? typePrecision : null);
+                // Floating point types use precision
+                length = typePrecision;
             }
             else
             {
                 // Other types. Note that some may not want a length
-                length = (typePrecision != null ? typePrecision : null);
+                length = (typePrecision != null ? typePrecision : typeLength);
             }
+
             scale = typeScale;
         }
 
