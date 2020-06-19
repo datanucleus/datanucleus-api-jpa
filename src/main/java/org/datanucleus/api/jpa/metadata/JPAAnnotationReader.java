@@ -21,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -2953,9 +2954,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else
         {
-            if (String.class.isAssignableFrom(fieldType) || fieldType == Character.class || fieldType == char.class)
+            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
+                fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
                 length = typeLength;
+            }
+            else if (fieldType == Float.class || fieldType == float.class ||
+                    fieldType == Double.class || fieldType == double.class ||
+                    fieldType == BigDecimal.class)
+            {
+                // Floating point types use precision/scale
+                length = (typePrecision != null ? typePrecision : null);
             }
             else
             {
@@ -3192,9 +3201,17 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else
         {
-            if (String.class.isAssignableFrom(fieldType) || fieldType == Character.class || fieldType == char.class)
+            if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
+                fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
                 length = typeLength;
+            }
+            else if (fieldType == Float.class || fieldType == float.class ||
+                    fieldType == Double.class || fieldType == double.class ||
+                    fieldType == BigDecimal.class)
+            {
+                // Floating point types use precision/scale
+                length = (typePrecision != null ? typePrecision : null);
             }
             else
             {
