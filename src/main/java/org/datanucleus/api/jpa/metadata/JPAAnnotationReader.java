@@ -2837,8 +2837,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
     /**
      * Method to create a new ColumnMetaData.
-     * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
-     * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
+     * TODO the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
+     * otherwise it can cause a different behaviour based on the loading order of the annotations !!!!
      * @param parent The parent MetaData object
      * @param fieldType The field/property type
      * @param annotationValues Annotations on this field/property
@@ -2954,6 +2954,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else
         {
+            // TODO Arguably we also should allow specification of length when using a converter to a String
             if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
                 fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
@@ -3028,8 +3029,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
 
     /**
      * Method to create a new ColumnMetaData for a member.
-     * TODO !!!! the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
-     * otherwise it can cause a different behavior based on the loading order of the annotations !!!!
+     * TODO the fieldType logic, like setting a length based on the type, should be done only after loading all metadata, 
+     * otherwise it can cause a different behaviour based on the loading order of the annotations !!!!
      * @param mmd The member MetaData
      * @param member The field/property
      * @param annotations Annotations on this field/property
@@ -3202,6 +3203,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else
         {
+            // TODO Arguably we also should allow specification of length when using a converter to a String
             if (fieldType == String.class || fieldType == Character.class || fieldType == char.class || 
                 fieldType == StringBuilder.class || fieldType == StringBuffer.class)
             {
