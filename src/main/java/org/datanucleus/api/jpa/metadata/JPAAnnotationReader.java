@@ -2968,7 +2968,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             else
             {
-                length = (typePrecision != null ? typePrecision : typeLength);
+                // Other types. Note that some may not want a length
+                length = (typePrecision != null ? typePrecision : null);
             }
             scale = typeScale;
         }
@@ -3215,7 +3216,8 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             }
             else
             {
-                length = (typePrecision != null ? typePrecision : typeLength);
+                // Other types. Note that some may not want a length
+                length = (typePrecision != null ? typePrecision : null);
             }
             scale = typeScale;
         }
