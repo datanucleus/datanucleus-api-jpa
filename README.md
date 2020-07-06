@@ -40,6 +40,7 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-74](https://github.com/eclipse-ee4j/jpa-api/issues/74) : Method of obtaining @Version value. Available via NucleusJPAHelper  
 [jpa-spec-76](https://github.com/eclipse-ee4j/jpa-api/issues/76) : Allow specification of null handling in ORDER BY. Provided in javax.persistence-2.2.jar for Criteria and also in JPQL string-based  
 [jpa-spec-77](https://github.com/eclipse-ee4j/jpa-api/issues/77) : EMF should implement AutoCloseable. Done  
+[jpa-spec-81](https://github.com/eclipse-ee4j/jpa-api/issues/81) : @Version Support for Temporal Types. Done  
 [jpa-spec-85](https://github.com/eclipse-ee4j/jpa-api/issues/85) : Metamodel methods to get entity by name. Provided in javax.persistence-2.2.jar  
 [jpa-spec-86](https://github.com/eclipse-ee4j/jpa-api/issues/86) : Allow multiple level inheritance strategy. Not explicitly done but we do this for JDO so likely mostly there  
 [jpa-spec-100](https://github.com/eclipse-ee4j/jpa-api/issues/100) : Allow an empty collection_valued_input_parameter in an "IN" expression. Already works like this  
