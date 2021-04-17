@@ -64,22 +64,8 @@ public class JPAPropertyValidator implements PropertyValidator
                 }
             }
         }
-        else if (name.equals(JPAPropertyNames.PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_CREATE_SRC))
-        {
-            NucleusLogger.METADATA.warn(name + " is currently ignored. Execute the scripts yourself!");
-            if (value instanceof String)
-            {
-                String strVal = (String)value;
-                if (strVal.equalsIgnoreCase("metadata") ||
-                    strVal.equalsIgnoreCase("script") ||
-                    strVal.equalsIgnoreCase("metadata-then-script") ||
-                    strVal.equalsIgnoreCase("script-then-metadata"))
-                {
-                    return true;
-                }
-            }
-        }
-        else if (name.equals(JPAPropertyNames.PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_DROP_SRC))
+        else if (name.equals(JPAPropertyNames.PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_CREATE_SRC) ||
+                name.equals(JPAPropertyNames.PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_DROP_SRC))
         {
             NucleusLogger.METADATA.warn(name + " is currently ignored. Execute the scripts yourself!");
             if (value instanceof String)
