@@ -972,7 +972,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (datastoreCache == null && nucleusCtx.hasLevel2Cache())
         {
             // Initialise the L2 cache (if used)
-            datastoreCache = new JPADataStoreCache(nucleusCtx, nucleusCtx.getLevel2Cache());
+            datastoreCache = new JPADataStoreCache(nucleusCtx);
         }
         return datastoreCache;
     }

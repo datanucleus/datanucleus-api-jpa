@@ -42,12 +42,11 @@ public class JPADataStoreCache implements Cache
     /**
      * Constructor.
      * @param nucleusCtx Context
-     * @param cache Level 2 Cache TODO Remove this arg and just use nucleusCtx.getLevel2Cache()
      */
-    public JPADataStoreCache(PersistenceNucleusContext nucleusCtx, Level2Cache cache)
+    public JPADataStoreCache(PersistenceNucleusContext nucleusCtx)
     {
         this.nucleusCtx = nucleusCtx;
-        this.cache = cache;
+        this.cache = nucleusCtx.getLevel2Cache();
     }
 
     /**
