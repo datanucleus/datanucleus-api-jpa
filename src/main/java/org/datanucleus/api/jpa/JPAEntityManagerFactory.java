@@ -92,7 +92,7 @@ import org.datanucleus.util.Localiser;
  * EntityManagerFactory implementation.
  * Caches the "persistence-unit" MetaData information when encountered, in JavaSE mode.
  */
-public class JPAEntityManagerFactory implements EntityManagerFactory, PersistenceUnitUtil, JPAEntityGraphRegistrationListener, Serializable, AutoCloseable
+public class JPAEntityManagerFactory implements EntityManagerFactory, PersistenceUnitUtil, JPAEntityGraphRegistrationListener, Serializable
 {
     static
     {
