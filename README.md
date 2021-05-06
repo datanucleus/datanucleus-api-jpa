@@ -63,4 +63,5 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 [jpa-spec-171](https://github.com/eclipse-ee4j/jpa-api/issues/171) : round() is included in javax.persistence-2.2.jar. Supported from DN 5.2.x.  
 [jpa-spec-207](https://github.com/eclipse-ee4j/jpa-api/issues/207) : Allow @Convert usage on id attributes. Supported since DN 4.x.  
 [jpa-spec-237](https://github.com/eclipse-ee4j/jpa-api/issues/237) : Auto-Quote database identifiers to avoid use of SQL keywords. Supported since DN 1.x.  
+[jpa-spec-316](https://github.com/eclipse-ee4j/jpa-api/issues/316) : math functions in queries. Supported since a long time ago.  
 
