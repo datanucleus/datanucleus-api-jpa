@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.datanucleus</groupId>
         <artifactId>datanucleus-maven-parent</artifactId>
-        <version>5.0.0</version>
+        <version>6.0.0-m1</version>
     </parent>
 
     <artifactId>datanucleus-api-jpa</artifactId>
-    <version>5.2.7-SNAPSHOT</version>
+    <version>6.0.0-m1-SNAPSHOT</version>
 
     <name>DataNucleus JPA API plugin</name>
     <description>
@@ -17,8 +17,8 @@
     </description>
 
     <properties>
-        <dn.javax.persistence.version>2.2.2</dn.javax.persistence.version>
-        <dn.core.version>5.2.0-release</dn.core.version>
+        <dn.javax.persistence.version>2.2.3</dn.javax.persistence.version>
+        <dn.core.version>5.9</dn.core.version>
     </properties>
 
     <scm>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>org.datanucleus</groupId>
             <artifactId>datanucleus-core</artifactId>
-            <version>[${dn.core.version}, 5.9)</version>
+            <version>[${dn.core.version}, 6.9)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -59,7 +59,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
                 <configuration>
                     <compilerArgument> -proc:none</compilerArgument>
                 </configuration>

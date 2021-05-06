@@ -282,6 +282,14 @@ public class JPACallbackHandler implements CallbackHandler
         {
             JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
         }
+        catch (NoSuchMethodException e)
+        {
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
+        }
+        catch (InvocationTargetException e)
+        {
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
+        }
     }
 
     /**
@@ -427,7 +435,7 @@ public class JPACallbackHandler implements CallbackHandler
             });
     }
 
-    protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException
+    protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
     {
         if (nucleusCtx.getCDIHandler() != null)
         {
@@ -442,6 +450,6 @@ public class JPACallbackHandler implements CallbackHandler
         }
 
         // Return stateless listener
-        return listenerCls.newInstance();
+        return listenerCls.getDeclaredConstructor().newInstance();
     }
 }
