@@ -2226,9 +2226,9 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     boolean elementCollection = false;
                     for (AnnotationObject annotation : annotations)
                     {
-                        String annName = annotation.getName();
-                        if (annName.equals(JPAAnnotationUtils.ELEMENT_COLLECTION))
+                        if (annotation.getName().equals(JPAAnnotationUtils.ELEMENT_COLLECTION) && mmd.getTypeConverterName() == null)
                         {
+                            // Not being converted, so treat as column info for the element (of collection) or value (of map)
                             elementCollection = true;
                             break;
                         }
