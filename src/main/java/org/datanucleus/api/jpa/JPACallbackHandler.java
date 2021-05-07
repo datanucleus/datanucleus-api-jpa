@@ -316,6 +316,7 @@ public class JPACallbackHandler implements CallbackHandler
         AccessController.doPrivileged(
             new PrivilegedAction<Object>()
             {
+                @SuppressWarnings("deprecation")
                 public Object run()
                 {
                     try
@@ -377,6 +378,7 @@ public class JPACallbackHandler implements CallbackHandler
         AccessController.doPrivileged(
             new PrivilegedAction<Object>()
             {
+                @SuppressWarnings("deprecation")
                 public Object run()
                 {
                     try
