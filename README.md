@@ -30,6 +30,7 @@ All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until
 
 [jpa-spec-25](https://github.com/eclipse-ee4j/jpa-api/issues/25) : access the JPQL string query and native query from a JPA Query object. Done  
 [jpa-spec-30](https://github.com/eclipse-ee4j/jpa-api/issues/30) : case sensitive JPQL queries. _Not implemented but would simply need JDOQL semantics copying_  
+[jpa-spec-32](https://github.com/eclipse-ee4j/jpa-api/issues/32) : Support for javax.cache. Provided since very early javax.cache releases!  
 [jpa-spec-35](https://github.com/eclipse-ee4j/jpa-api/issues/35) : support for more types. DataNucleus has provided way more types since JPA1 days!  
 [jpa-spec-41](https://github.com/eclipse-ee4j/jpa-api/issues/41) : targetClass attribute for @Embedded. Provided in javax.persistence-2.2.jar  
 [jpa-spec-42](https://github.com/eclipse-ee4j/jpa-api/issues/42) : allow null embedded objects. Provided by extension  
