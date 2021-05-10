@@ -20,7 +20,7 @@ package org.datanucleus.api.jpa.criteria;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 
-import org.datanucleus.query.expression.OrderExpression;
+import org.datanucleus.store.query.expression.OrderExpression;
 
 /**
  * Implementation of JPA Criteria "Order".
@@ -87,7 +87,7 @@ public class OrderImpl implements Order
      * Method to return the underlying DataNucleus query expression that this equates to.
      * @return The order Expression
      */
-    public org.datanucleus.query.expression.OrderExpression getQueryExpression()
+    public org.datanucleus.store.query.expression.OrderExpression getQueryExpression()
     {
         OrderExpression orderExpr = null;
         if (nullPrecedence == null)

@@ -35,8 +35,8 @@ import javax.persistence.metamodel.Type.PersistenceType;
 import org.datanucleus.api.jpa.metamodel.AttributeImpl;
 import org.datanucleus.api.jpa.metamodel.MapAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.PluralAttributeImpl;
-import org.datanucleus.query.expression.ClassExpression;
-import org.datanucleus.query.expression.PrimaryExpression;
+import org.datanucleus.store.query.expression.ClassExpression;
+import org.datanucleus.store.query.expression.PrimaryExpression;
 
 /**
  * Implementation of JPA Criteria "Path".
@@ -139,7 +139,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
      * Accessor for the underlying DataNucleus expression for this path. Creates it if not yet existing.
      * @return The DataNucleus query expression
      */
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         // TODO Don't cache the query expression?
         if (queryExpr == null)
@@ -147,7 +147,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
             List tuples = new ArrayList();
             if (parent != null)
             {
-                org.datanucleus.query.expression.Expression parentExpr = parent.getQueryExpression();
+                org.datanucleus.store.query.expression.Expression parentExpr = parent.getQueryExpression();
                 if (parentExpr instanceof ClassExpression)
                 {
                     tuples.add(((ClassExpression)parentExpr).getAlias());
@@ -209,7 +209,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
      */
     public String toString()
     {
-        org.datanucleus.query.expression.Expression queryExpr = getQueryExpression();
+        org.datanucleus.store.query.expression.Expression queryExpr = getQueryExpression();
         if (queryExpr.getLeft() != null)
         {
             return parent.toString() + "." + ((PrimaryExpression)queryExpr).getId();

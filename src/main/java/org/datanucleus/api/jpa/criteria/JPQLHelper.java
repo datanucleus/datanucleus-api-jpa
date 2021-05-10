@@ -24,16 +24,16 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.datanucleus.exceptions.NucleusUserException;
-import org.datanucleus.query.expression.CaseExpression;
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Expression;
-import org.datanucleus.query.expression.InvokeExpression;
-import org.datanucleus.query.expression.Literal;
-import org.datanucleus.query.expression.ParameterExpression;
-import org.datanucleus.query.expression.PrimaryExpression;
-import org.datanucleus.query.expression.SubqueryExpression;
-import org.datanucleus.query.expression.VariableExpression;
-import org.datanucleus.query.expression.CaseExpression.ExpressionPair;
+import org.datanucleus.store.query.expression.CaseExpression;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Expression;
+import org.datanucleus.store.query.expression.InvokeExpression;
+import org.datanucleus.store.query.expression.Literal;
+import org.datanucleus.store.query.expression.ParameterExpression;
+import org.datanucleus.store.query.expression.PrimaryExpression;
+import org.datanucleus.store.query.expression.SubqueryExpression;
+import org.datanucleus.store.query.expression.VariableExpression;
+import org.datanucleus.store.query.expression.CaseExpression.ExpressionPair;
 
 /**
  * Helper class that assists in generating JPQL from "org.datanucleus.query.expression" expressions.

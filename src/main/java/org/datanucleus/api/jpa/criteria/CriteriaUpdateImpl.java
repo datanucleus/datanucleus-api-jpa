@@ -35,14 +35,14 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.query.compiler.JPQLSymbolResolver;
-import org.datanucleus.query.compiler.PropertySymbol;
-import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.query.compiler.SymbolTable;
-import org.datanucleus.query.expression.ClassExpression;
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Literal;
 import org.datanucleus.store.query.Query;
+import org.datanucleus.store.query.compiler.JPQLSymbolResolver;
+import org.datanucleus.store.query.compiler.PropertySymbol;
+import org.datanucleus.store.query.compiler.QueryCompilation;
+import org.datanucleus.store.query.compiler.SymbolTable;
+import org.datanucleus.store.query.expression.ClassExpression;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Literal;
 
 /**
  * Implementation of a Criteria Update query.
@@ -245,15 +245,15 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
                 symtbl.setParentSymbolTable(parentSymtbl);
             }
 
-            org.datanucleus.query.expression.Expression[] updateExprs = new org.datanucleus.query.expression.Expression[sets.size()];
+            org.datanucleus.store.query.expression.Expression[] updateExprs = new org.datanucleus.store.query.expression.Expression[sets.size()];
             Iterator<Map.Entry> updateEntryIter = sets.entrySet().iterator();
             int i = 0;
             while (updateEntryIter.hasNext())
             {
                 Map.Entry entry = updateEntryIter.next();
-                org.datanucleus.query.expression.Expression keyQueryExpr = ((ExpressionImpl) entry.getKey()).getQueryExpression();
+                org.datanucleus.store.query.expression.Expression keyQueryExpr = ((ExpressionImpl) entry.getKey()).getQueryExpression();
                 Object val = entry.getValue();
-                org.datanucleus.query.expression.Expression valQueryExpr = null;
+                org.datanucleus.store.query.expression.Expression valQueryExpr = null;
                 if (val instanceof ExpressionImpl)
                 {
                     valQueryExpr = ((ExpressionImpl)val).getQueryExpression();
@@ -263,10 +263,10 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
                 {
                     valQueryExpr = new Literal(val);
                 }
-                updateExprs[i++] = new DyadicExpression(keyQueryExpr, org.datanucleus.query.expression.Expression.OP_EQ, valQueryExpr);
+                updateExprs[i++] = new DyadicExpression(keyQueryExpr, org.datanucleus.store.query.expression.Expression.OP_EQ, valQueryExpr);
             }
 
-            org.datanucleus.query.expression.Expression[] fromExprs = new org.datanucleus.query.expression.Expression[1];
+            org.datanucleus.store.query.expression.Expression[] fromExprs = new org.datanucleus.store.query.expression.Expression[1];
             Set<Join<T, ?>> frmJoins = from.getJoins();
             if (frmJoins != null && !frmJoins.isEmpty())
             {
@@ -285,7 +285,7 @@ public class CriteriaUpdateImpl<T> implements CriteriaUpdate<T>, Serializable
             clsExpr.bind(symtbl);
             fromExprs[0] = clsExpr;
 
-            org.datanucleus.query.expression.Expression filterExpr = null;
+            org.datanucleus.store.query.expression.Expression filterExpr = null;
             if (filter != null)
             {
                 filterExpr = filter.getQueryExpression();

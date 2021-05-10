@@ -76,11 +76,11 @@ import org.datanucleus.metadata.QueryResultMetaData;
 import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
 import org.datanucleus.metadata.TransactionType;
-import org.datanucleus.query.compiler.QueryCompilation;
 import org.datanucleus.state.LockMode;
 import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
+import org.datanucleus.store.query.compiler.QueryCompilation;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
 

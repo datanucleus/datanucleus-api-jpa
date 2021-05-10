@@ -35,7 +35,7 @@ import javax.persistence.criteria.SetJoin;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.EntityType;
 
-import org.datanucleus.query.expression.VariableExpression;
+import org.datanucleus.store.query.expression.VariableExpression;
 
 /**
  * Implementation of JPA2 Criteria "Subquery".

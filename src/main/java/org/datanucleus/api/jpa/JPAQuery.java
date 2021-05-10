@@ -40,16 +40,16 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
 import org.datanucleus.exceptions.NucleusException;
-import org.datanucleus.query.QueryUtils;
-import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.query.compiler.Symbol;
-import org.datanucleus.query.compiler.SymbolTable;
 import org.datanucleus.store.query.AbstractJavaQuery;
 import org.datanucleus.store.query.Query;
 import org.datanucleus.store.query.QueryInvalidParametersException;
 import org.datanucleus.store.query.NoQueryResultsException;
 import org.datanucleus.store.query.QueryNotUniqueException;
+import org.datanucleus.store.query.QueryUtils;
 import org.datanucleus.store.query.Query.QueryType;
+import org.datanucleus.store.query.compiler.QueryCompilation;
+import org.datanucleus.store.query.compiler.Symbol;
+import org.datanucleus.store.query.compiler.SymbolTable;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
 

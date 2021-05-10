@@ -63,9 +63,9 @@ public class ParameterExpressionImpl<T> extends ExpressionImpl<T> implements Par
      * Accessor for the underlying DataNucleus expression for this path.
      * @return The DataNucleus query expression
      */
-    public org.datanucleus.query.expression.ParameterExpression getQueryExpression()
+    public org.datanucleus.store.query.expression.ParameterExpression getQueryExpression()
     {
-        org.datanucleus.query.expression.ParameterExpression paramExpr = new org.datanucleus.query.expression.ParameterExpression(name, position);
+        org.datanucleus.store.query.expression.ParameterExpression paramExpr = new org.datanucleus.store.query.expression.ParameterExpression(name, position);
         if (getJavaType() != null)
         {
             paramExpr.setType(getJavaType());

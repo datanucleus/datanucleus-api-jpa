@@ -25,8 +25,8 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Selection;
 
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Literal;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Literal;
 
 /**
  * Implementation of JPA2 Criteria "Expression".
@@ -40,7 +40,7 @@ public class ExpressionImpl<T> implements Expression<T>, Serializable
     private String alias;
 
     /** The underlying (generic) query expression. */
-    org.datanucleus.query.expression.Expression queryExpr;
+    org.datanucleus.store.query.expression.Expression queryExpr;
 
     public ExpressionImpl(CriteriaBuilderImpl cb, Class<T> cls)
     {
@@ -97,8 +97,8 @@ public class ExpressionImpl<T> implements Expression<T>, Serializable
     {
         PredicateImpl pred = new PredicateImpl(cb);
         Literal lit = new Literal(null);
-        org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(getQueryExpression(), org.datanucleus.query.expression.Expression.OP_NOTEQ, lit);
+        org.datanucleus.store.query.expression.Expression queryExpr =
+            new DyadicExpression(getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_NOTEQ, lit);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -110,8 +110,8 @@ public class ExpressionImpl<T> implements Expression<T>, Serializable
     {
         PredicateImpl pred = new PredicateImpl(cb);
         Literal lit = new Literal(null);
-        org.datanucleus.query.expression.Expression queryExpr =
-            new DyadicExpression(this.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, lit);
+        org.datanucleus.store.query.expression.Expression queryExpr =
+            new DyadicExpression(this.getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_EQ, lit);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -161,7 +161,7 @@ public class ExpressionImpl<T> implements Expression<T>, Serializable
      * Accessor for the underlying (generic) query expression.
      * @return The query expression
      */
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         return queryExpr;
     }

@@ -31,12 +31,12 @@ import javax.persistence.metamodel.EntityType;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.query.compiler.JPQLSymbolResolver;
-import org.datanucleus.query.compiler.PropertySymbol;
-import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.query.compiler.SymbolTable;
-import org.datanucleus.query.expression.ClassExpression;
 import org.datanucleus.store.query.Query;
+import org.datanucleus.store.query.compiler.JPQLSymbolResolver;
+import org.datanucleus.store.query.compiler.PropertySymbol;
+import org.datanucleus.store.query.compiler.QueryCompilation;
+import org.datanucleus.store.query.compiler.SymbolTable;
+import org.datanucleus.store.query.expression.ClassExpression;
 
 /**
  * Implementation of a Criteria Delete query.
@@ -195,7 +195,7 @@ public class CriteriaDeleteImpl<T> implements CriteriaDelete<T>, Serializable
                 symtbl.setParentSymbolTable(parentSymtbl);
             }
 
-            org.datanucleus.query.expression.Expression[] fromExprs = new org.datanucleus.query.expression.Expression[1];
+            org.datanucleus.store.query.expression.Expression[] fromExprs = new org.datanucleus.store.query.expression.Expression[1];
             Set<Join<T, ?>> frmJoins = from.getJoins();
             if (frmJoins != null && !frmJoins.isEmpty())
             {
@@ -214,7 +214,7 @@ public class CriteriaDeleteImpl<T> implements CriteriaDelete<T>, Serializable
             clsExpr.bind(symtbl);
             fromExprs[0] = clsExpr;
 
-            org.datanucleus.query.expression.Expression filterExpr = null;
+            org.datanucleus.store.query.expression.Expression filterExpr = null;
             if (filter != null)
             {
                 filterExpr = filter.getQueryExpression();

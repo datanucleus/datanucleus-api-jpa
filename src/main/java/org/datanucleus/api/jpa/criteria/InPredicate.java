@@ -24,10 +24,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
+
+import org.datanucleus.store.query.expression.DyadicExpression;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
-
-import org.datanucleus.query.expression.DyadicExpression;
 
 /**
  * Representation of an IN expression, obtained from "QueryBuilder.in".
@@ -145,7 +146,7 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
      * @see org.datanucleus.api.jpa.criteria.ExpressionImpl#getQueryExpression()
      */
     @Override
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         if (queryExpr == null)
         {
@@ -160,13 +161,13 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
             {
                 // Single value, could be value of same type, or a Collection so treat as "IN"
                 Expression valueExpr = values.get(0);
-                dyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_IN, ((ExpressionImpl)valueExpr).getQueryExpression());
+                dyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_IN, ((ExpressionImpl)valueExpr).getQueryExpression());
             }
             else
             {
                 for (Expression valExpr : values)
                 {
-                    DyadicExpression valDyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_EQ, 
+                    DyadicExpression valDyExpr = new DyadicExpression(expr.getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_EQ, 
                         ((ExpressionImpl)valExpr).getQueryExpression());
                     if (dyExpr == null)
                     {
@@ -174,13 +175,13 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
                     }
                     else
                     {
-                        dyExpr = new DyadicExpression(dyExpr, org.datanucleus.query.expression.Expression.OP_OR, valDyExpr);
+                        dyExpr = new DyadicExpression(dyExpr, org.datanucleus.store.query.expression.Expression.OP_OR, valDyExpr);
                     }
                 }
             }
             if (negated)
             {
-                dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT, dyExpr);
+                dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_NOT, dyExpr);
             }
             queryExpr = dyExpr;
         }

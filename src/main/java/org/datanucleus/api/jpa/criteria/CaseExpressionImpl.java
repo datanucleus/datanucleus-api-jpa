@@ -18,10 +18,11 @@ Contributors:
 package org.datanucleus.api.jpa.criteria;
 
 import javax.persistence.criteria.CriteriaBuilder.Case;
-import javax.persistence.criteria.Expression;
 
-import org.datanucleus.query.expression.CaseExpression;
-import org.datanucleus.query.expression.Literal;
+import org.datanucleus.store.query.expression.CaseExpression;
+import org.datanucleus.store.query.expression.Literal;
+
+import javax.persistence.criteria.Expression;
 
 /**
  * Implementation of JPA Case expression.
@@ -43,7 +44,7 @@ public class CaseExpressionImpl<R> extends ExpressionImpl<R> implements Case<R>
     @Override
     public Case<R> when(Expression<Boolean> condition, R result)
     {
-        org.datanucleus.query.expression.Expression condQueryExpr = ((ExpressionImpl)condition).getQueryExpression();
+        org.datanucleus.store.query.expression.Expression condQueryExpr = ((ExpressionImpl)condition).getQueryExpression();
         ((CaseExpression)queryExpr).addCondition(condQueryExpr, new Literal(result));
         return this;
     }
@@ -54,8 +55,8 @@ public class CaseExpressionImpl<R> extends ExpressionImpl<R> implements Case<R>
     @Override
     public Case<R> when(Expression<Boolean> condition, Expression<? extends R> result)
     {
-        org.datanucleus.query.expression.Expression condQueryExpr = ((ExpressionImpl)condition).getQueryExpression();
-        org.datanucleus.query.expression.Expression resultExpr = ((ExpressionImpl)result).getQueryExpression();
+        org.datanucleus.store.query.expression.Expression condQueryExpr = ((ExpressionImpl)condition).getQueryExpression();
+        org.datanucleus.store.query.expression.Expression resultExpr = ((ExpressionImpl)result).getQueryExpression();
         ((CaseExpression)queryExpr).addCondition(condQueryExpr, resultExpr);
         return this;
     }

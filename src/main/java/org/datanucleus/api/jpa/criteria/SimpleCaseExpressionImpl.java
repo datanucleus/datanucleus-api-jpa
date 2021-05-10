@@ -18,11 +18,12 @@ Contributors:
 package org.datanucleus.api.jpa.criteria;
 
 import javax.persistence.criteria.CriteriaBuilder.SimpleCase;
-import javax.persistence.criteria.Expression;
 
-import org.datanucleus.query.expression.CaseExpression;
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Literal;
+import org.datanucleus.store.query.expression.CaseExpression;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Literal;
+
+import javax.persistence.criteria.Expression;
 
 /**
  * Implementation of JPA SimpleCase expression.
@@ -57,9 +58,9 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public SimpleCase<C, R> when(C condition, R result)
     {
-        org.datanucleus.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
-        org.datanucleus.query.expression.Expression whenEqQueryExpr = (org.datanucleus.query.expression.Expression)condition;
-        org.datanucleus.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.query.expression.Expression.OP_EQ, whenEqQueryExpr);
+        org.datanucleus.store.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
+        org.datanucleus.store.query.expression.Expression whenEqQueryExpr = (org.datanucleus.store.query.expression.Expression)condition;
+        org.datanucleus.store.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.store.query.expression.Expression.OP_EQ, whenEqQueryExpr);
         ((CaseExpression)queryExpr).addCondition(condQueryExpr, new Literal(result));
         return this;
     }
@@ -70,9 +71,9 @@ public class SimpleCaseExpressionImpl<C, R> extends ExpressionImpl<R> implements
     @Override
     public SimpleCase<C, R> when(C condition, Expression<? extends R> result)
     {
-        org.datanucleus.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
-        org.datanucleus.query.expression.Expression whenEqQueryExpr = (org.datanucleus.query.expression.Expression)condition;
-        org.datanucleus.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.query.expression.Expression.OP_EQ, whenEqQueryExpr);
+        org.datanucleus.store.query.expression.Expression whenBaseQueryExpr = caseWhenBaseExpr.getQueryExpression();
+        org.datanucleus.store.query.expression.Expression whenEqQueryExpr = (org.datanucleus.store.query.expression.Expression)condition;
+        org.datanucleus.store.query.expression.Expression condQueryExpr = new DyadicExpression(whenBaseQueryExpr, org.datanucleus.store.query.expression.Expression.OP_EQ, whenEqQueryExpr);
         ((CaseExpression)queryExpr).addCondition(condQueryExpr, new Literal(result));
         return this;
     }

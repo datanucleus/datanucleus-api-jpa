@@ -51,10 +51,10 @@ import org.datanucleus.api.jpa.metamodel.ListAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.MapAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.SetAttributeImpl;
 import org.datanucleus.api.jpa.metamodel.SingularAttributeImpl;
-import org.datanucleus.query.expression.ClassExpression;
-import org.datanucleus.query.expression.Expression;
-import org.datanucleus.query.expression.JoinExpression;
-import org.datanucleus.query.expression.PrimaryExpression;
+import org.datanucleus.store.query.expression.ClassExpression;
+import org.datanucleus.store.query.expression.Expression;
+import org.datanucleus.store.query.expression.JoinExpression;
+import org.datanucleus.store.query.expression.PrimaryExpression;
 import org.datanucleus.util.StringUtils;
 
 /**
@@ -537,7 +537,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
      * @param from Whether this is for the from clause
      * @return The DataNucleus query expression
      */
-    public org.datanucleus.query.expression.Expression getQueryExpression(boolean from)
+    public org.datanucleus.store.query.expression.Expression getQueryExpression(boolean from)
     {
         if (from)
         {
@@ -592,14 +592,14 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 
     private static Expression processQueryExpressionForFromJoin(Join join, Expression currentExpr, String alias)
     {
-        org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
+        org.datanucleus.store.query.expression.JoinExpression.JoinType jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_INNER;
         if (join.getJoinType() == JoinType.LEFT)
         {
-            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
+            jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
         }
         else if (join.getJoinType() == JoinType.RIGHT)
         {
-            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
+            jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
         }
 
         Attribute attr = join.getAttribute();
@@ -640,14 +640,14 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 
     private static Expression processQueryExpressionForFromFetchJoin(Fetch fetch, Expression currentExpr, String alias)
     {
-        org.datanucleus.query.expression.JoinExpression.JoinType jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_INNER;
+        org.datanucleus.store.query.expression.JoinExpression.JoinType jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_INNER;
         if (fetch.getJoinType() == JoinType.LEFT)
         {
-            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
+            jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_LEFT_OUTER;
         }
         else if (fetch.getJoinType() == JoinType.RIGHT)
         {
-            jt = org.datanucleus.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
+            jt = org.datanucleus.store.query.expression.JoinExpression.JoinType.JOIN_RIGHT_OUTER;
         }
 
         Attribute attr = fetch.getAttribute();
@@ -673,7 +673,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
      * Accessor for the underlying DataNucleus expression for this path.
      * @return The DataNucleus query expression
      */
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         return getQueryExpression(false);
     }

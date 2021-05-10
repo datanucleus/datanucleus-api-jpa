@@ -38,20 +38,20 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.query.compiler.JPQLSymbolResolver;
-import org.datanucleus.query.compiler.PropertySymbol;
-import org.datanucleus.query.compiler.QueryCompilation;
-import org.datanucleus.query.compiler.SymbolTable;
-import org.datanucleus.query.expression.ClassExpression;
-import org.datanucleus.query.expression.CreatorExpression;
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.InvokeExpression;
-import org.datanucleus.query.expression.Literal;
-import org.datanucleus.query.expression.OrderExpression;
-import org.datanucleus.query.expression.PrimaryExpression;
-import org.datanucleus.query.expression.SubqueryExpression;
-import org.datanucleus.query.expression.VariableExpression;
 import org.datanucleus.store.query.Query;
+import org.datanucleus.store.query.compiler.JPQLSymbolResolver;
+import org.datanucleus.store.query.compiler.PropertySymbol;
+import org.datanucleus.store.query.compiler.QueryCompilation;
+import org.datanucleus.store.query.compiler.SymbolTable;
+import org.datanucleus.store.query.expression.ClassExpression;
+import org.datanucleus.store.query.expression.CreatorExpression;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.InvokeExpression;
+import org.datanucleus.store.query.expression.Literal;
+import org.datanucleus.store.query.expression.OrderExpression;
+import org.datanucleus.store.query.expression.PrimaryExpression;
+import org.datanucleus.store.query.expression.SubqueryExpression;
+import org.datanucleus.store.query.expression.VariableExpression;
 
 /**
  * Implementation of JPA2 Criteria "Query".
@@ -464,13 +464,13 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             return params;
         }
 
-        List<org.datanucleus.query.expression.ParameterExpression> paramExprs = new ArrayList();
+        List<org.datanucleus.store.query.expression.ParameterExpression> paramExprs = new ArrayList();
         if (result != null)
         {
             Iterator<Selection<?>> iter = result.iterator();
             while (iter.hasNext())
             {
-                org.datanucleus.query.expression.Expression expr = ((ExpressionImpl)iter.next()).getQueryExpression();
+                org.datanucleus.store.query.expression.Expression expr = ((ExpressionImpl)iter.next()).getQueryExpression();
                 getParametersForQueryExpression(expr, paramExprs);
             }
         }
@@ -483,7 +483,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             Iterator<Expression<?>> iter = grouping.iterator();
             while (iter.hasNext())
             {
-                org.datanucleus.query.expression.Expression expr = ((ExpressionImpl)iter.next()).getQueryExpression();
+                org.datanucleus.store.query.expression.Expression expr = ((ExpressionImpl)iter.next()).getQueryExpression();
                 getParametersForQueryExpression(expr, paramExprs);
             }
         }
@@ -499,10 +499,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         else
         {
             params = new HashSet<ParameterExpression<?>>();
-            Iterator<org.datanucleus.query.expression.ParameterExpression> iter = paramExprs.iterator();
+            Iterator<org.datanucleus.store.query.expression.ParameterExpression> iter = paramExprs.iterator();
             while (iter.hasNext())
             {
-                org.datanucleus.query.expression.ParameterExpression paramExpr = iter.next();
+                org.datanucleus.store.query.expression.ParameterExpression paramExpr = iter.next();
                 ParameterExpressionImpl param = new ParameterExpressionImpl(cb, paramExpr.getType(), paramExpr.getId());
                 params.add(param);
             }
@@ -552,16 +552,16 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 symtbl.setParentSymbolTable(parentSymtbl);
             }
 
-            org.datanucleus.query.expression.Expression[] resultExprs = null;
+            org.datanucleus.store.query.expression.Expression[] resultExprs = null;
             if (result != null && !result.isEmpty())
             {
-                resultExprs = new org.datanucleus.query.expression.Expression[result.size()];
+                resultExprs = new org.datanucleus.store.query.expression.Expression[result.size()];
                 Iterator iter = result.iterator();
                 int i=0;
                 while (iter.hasNext())
                 {
                     ExpressionImpl result = (ExpressionImpl)iter.next();
-                    org.datanucleus.query.expression.Expression resultExpr = result.getQueryExpression();
+                    org.datanucleus.store.query.expression.Expression resultExpr = result.getQueryExpression();
                     resultExpr.bind(symtbl);
                     resultExprs[i++] = resultExpr;
                 }
@@ -569,7 +569,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             else
             {
                 // No result selected so select the candidate
-                resultExprs = new org.datanucleus.query.expression.Expression[1];
+                resultExprs = new org.datanucleus.store.query.expression.Expression[1];
                 RootImpl root = from.get(0);
                 resultExprs[0] = root.getQueryExpression();
                 resultExprs[0].bind(symtbl);
@@ -585,7 +585,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 }
             }
 
-            org.datanucleus.query.expression.Expression[] fromExprs = new org.datanucleus.query.expression.Expression[from.size()];
+            org.datanucleus.store.query.expression.Expression[] fromExprs = new org.datanucleus.store.query.expression.Expression[from.size()];
             Iterator iter = from.iterator();
             int i=0;
             while (iter.hasNext())
@@ -598,7 +598,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 fromExprs[i++] = clsExpr;
             }
 
-            org.datanucleus.query.expression.Expression filterExpr = null;
+            org.datanucleus.store.query.expression.Expression filterExpr = null;
             if (filter != null)
             {
                 filterExpr = filter.getQueryExpression();
@@ -608,32 +608,32 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 }
             }
 
-            org.datanucleus.query.expression.Expression[] groupingExprs = null;
+            org.datanucleus.store.query.expression.Expression[] groupingExprs = null;
             if (grouping != null && !grouping.isEmpty())
             {
-                groupingExprs = new org.datanucleus.query.expression.Expression[grouping.size()];
+                groupingExprs = new org.datanucleus.store.query.expression.Expression[grouping.size()];
                 Iterator grpIter = grouping.iterator();
                 i=0;
                 while (grpIter.hasNext())
                 {
                     ExpressionImpl grp = (ExpressionImpl)grpIter.next();
-                    org.datanucleus.query.expression.Expression groupingExpr = grp.getQueryExpression();
+                    org.datanucleus.store.query.expression.Expression groupingExpr = grp.getQueryExpression();
                     groupingExpr.bind(symtbl);
                     groupingExprs[i++] = groupingExpr;
                 }
             }
 
-            org.datanucleus.query.expression.Expression havingExpr = null;
+            org.datanucleus.store.query.expression.Expression havingExpr = null;
             if (having != null)
             {
                 havingExpr = having.getQueryExpression();
                 havingExpr.bind(symtbl);
             }
 
-            org.datanucleus.query.expression.Expression[] orderExprs = null;
+            org.datanucleus.store.query.expression.Expression[] orderExprs = null;
             if (ordering != null && !ordering.isEmpty())
             {
-                orderExprs = new org.datanucleus.query.expression.Expression[ordering.size()];
+                orderExprs = new org.datanucleus.store.query.expression.Expression[ordering.size()];
                 Iterator<Order> orderIter = ordering.iterator();
                 i=0;
                 while (orderIter.hasNext())
@@ -660,7 +660,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             while (subqueryIter.hasNext())
             {
                 SubqueryImpl sub = subqueryIter.next();
-                org.datanucleus.query.expression.Expression subExpr = sub.getQueryExpression();
+                org.datanucleus.store.query.expression.Expression subExpr = sub.getQueryExpression();
                 if (subExpr instanceof SubqueryExpression)
                 {
                     SubqueryExpression subqueryExpr = (SubqueryExpression) sub.getQueryExpression();
@@ -848,7 +848,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         return jpqlString;
     }
 
-    protected void getParametersForQueryExpression(org.datanucleus.query.expression.Expression expr, List params)
+    protected void getParametersForQueryExpression(org.datanucleus.store.query.expression.Expression expr, List params)
     {
         if (expr == null)
         {
@@ -864,10 +864,10 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         {
             InvokeExpression invokeExpr = (InvokeExpression)expr;
             getParametersForQueryExpression(invokeExpr.getLeft(), params);
-            List<org.datanucleus.query.expression.Expression> args = invokeExpr.getArguments();
+            List<org.datanucleus.store.query.expression.Expression> args = invokeExpr.getArguments();
             if (args != null && !args.isEmpty())
             {
-                Iterator<org.datanucleus.query.expression.Expression> iter = args.iterator();
+                Iterator<org.datanucleus.store.query.expression.Expression> iter = args.iterator();
                 while (iter.hasNext())
                 {
                     getParametersForQueryExpression(iter.next(), params);
@@ -881,17 +881,17 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                 getParametersForQueryExpression(expr.getLeft(), params);
             }
         }
-        else if (expr instanceof org.datanucleus.query.expression.ParameterExpression)
+        else if (expr instanceof org.datanucleus.store.query.expression.ParameterExpression)
         {
             params.add(expr);
         }
         else if (expr instanceof CreatorExpression)
         {
             CreatorExpression createExpr = (CreatorExpression)expr;
-            List<org.datanucleus.query.expression.Expression> args = createExpr.getArguments();
+            List<org.datanucleus.store.query.expression.Expression> args = createExpr.getArguments();
             if (args != null && !args.isEmpty())
             {
-                Iterator<org.datanucleus.query.expression.Expression> iter = args.iterator();
+                Iterator<org.datanucleus.store.query.expression.Expression> iter = args.iterator();
                 while (iter.hasNext())
                 {
                     getParametersForQueryExpression(iter.next(), params);

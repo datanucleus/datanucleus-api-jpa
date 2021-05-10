@@ -19,7 +19,7 @@ package org.datanucleus.api.jpa.criteria;
 
 import javax.persistence.criteria.Expression;
 
-import org.datanucleus.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.DyadicExpression;
 
 /**
  * Representation of a CONCAT of two expressions.
@@ -41,11 +41,11 @@ public class ConcatExpression extends ExpressionImpl<String>
      * @see org.datanucleus.api.jpa.criteria.ExpressionImpl#getQueryExpression()
      */
     @Override
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         if (queryExpr == null)
         {
-            queryExpr = new DyadicExpression(((ExpressionImpl)expr1).getQueryExpression(), org.datanucleus.query.expression.Expression.OP_ADD,
+            queryExpr = new DyadicExpression(((ExpressionImpl)expr1).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_ADD,
                 ((ExpressionImpl)expr2).getQueryExpression());
         }
         return queryExpr;

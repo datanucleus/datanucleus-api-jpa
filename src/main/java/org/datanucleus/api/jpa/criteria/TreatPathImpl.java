@@ -19,9 +19,9 @@ package org.datanucleus.api.jpa.criteria;
 
 import javax.persistence.metamodel.Type;
 
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Expression;
-import org.datanucleus.query.expression.Literal;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Expression;
+import org.datanucleus.store.query.expression.Literal;
 
 /**
  * Treated (cast) form of a Path (in a WHERE clause).
@@ -47,7 +47,7 @@ public class TreatPathImpl extends PathImpl
     {
         if (queryExpr == null)
         {
-            queryExpr = new DyadicExpression(path.getQueryExpression(), org.datanucleus.query.expression.Expression.OP_CAST, new Literal(type.getName()));
+            queryExpr = new DyadicExpression(path.getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_CAST, new Literal(type.getName()));
         }
         return queryExpr;
     }

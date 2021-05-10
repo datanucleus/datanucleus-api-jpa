@@ -25,8 +25,8 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
-import org.datanucleus.query.expression.DyadicExpression;
-import org.datanucleus.query.expression.Expression.DyadicOperator;
+import org.datanucleus.store.query.expression.DyadicExpression;
+import org.datanucleus.store.query.expression.Expression.DyadicOperator;
 
 /**
  * Implementation of JPA2 Criteria "Predicate".
@@ -109,18 +109,18 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
      * Accessor for the underlying DataNucleus query expression for this predicate.
      * @return The DataNucleus query expression
      */
-    public org.datanucleus.query.expression.Expression getQueryExpression()
+    public org.datanucleus.store.query.expression.Expression getQueryExpression()
     {
         if (exprs != null && !exprs.isEmpty())
         {
             // Generate series of nested DyadicExpressions all using the defined operator
             DyadicOperator op = (operator == BooleanOperator.AND ?
-                    org.datanucleus.query.expression.Expression.OP_AND :
-                    org.datanucleus.query.expression.Expression.OP_OR);
+                    org.datanucleus.store.query.expression.Expression.OP_AND :
+                    org.datanucleus.store.query.expression.Expression.OP_OR);
 
             Iterator<Predicate> iter = exprs.iterator();
-            org.datanucleus.query.expression.Expression left = null;
-            org.datanucleus.query.expression.Expression right = null;
+            org.datanucleus.store.query.expression.Expression left = null;
+            org.datanucleus.store.query.expression.Expression right = null;
             while (iter.hasNext())
             {
                 PredicateImpl pred = (PredicateImpl) iter.next();
@@ -138,7 +138,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
 
             if (negated)
             {
-                return new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT, right);
+                return new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_NOT, right);
             }
 
             return right;
@@ -146,7 +146,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
 
         if (negated)
         {
-            return new DyadicExpression(org.datanucleus.query.expression.Expression.OP_NOT, queryExpr);
+            return new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_NOT, queryExpr);
         }
         return queryExpr;
     }
