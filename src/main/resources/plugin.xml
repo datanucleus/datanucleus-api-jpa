@@ -47,15 +47,15 @@ Contributors:
         <persistence-property name="javax.persistence.bean.manager" internal-name="datanucleus.cdi.bean.manager"/>
 
         <persistence-property name="javax.persistence.schema-generation.create-database-schemas" internal-name="datanucleus.generateSchema.create-schemas"/>
-        <persistence-property name="javax.persistence.schema-generation.database.action" internal-name="datanucleus.generateSchema.database.mode"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.action" internal-name="datanucleus.generateSchema.scripts.mode"/>
-        <persistence-property name="javax.persistence.schema-generation.create-source" internal-name="datanucleus.generateSchema.create.order"/>
-        <persistence-property name="javax.persistence.schema-generation.create-script-source" internal-name="datanucleus.generateSchema.scripts.create.source"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.create-target" internal-name="datanucleus.generateSchema.scripts.create.target"/>
-        <persistence-property name="javax.persistence.schema-generation.drop-source" internal-name="datanucleus.generateSchema.drop.order"/>
-        <persistence-property name="javax.persistence.schema-generation.drop-script-source" internal-name="datanucleus.generateSchema.scripts.drop.source"/>
-        <persistence-property name="javax.persistence.schema-generation.scripts.drop-target" internal-name="datanucleus.generateSchema.scripts.drop.target"/>
-        <persistence-property name="javax.persistence.sql-load-script-source" internal-name="datanucleus.generateSchema.scripts.load"/>
+        <persistence-property name="javax.persistence.schema-generation.database.action" internal-name="datanucleus.schema.generateDatabase.mode"/>
+        <persistence-property name="javax.persistence.schema-generation.create-source" internal-name="datanucleus.schema.generateDatabase.create.order"/>
+        <persistence-property name="javax.persistence.schema-generation.drop-source" internal-name="datanucleus.schema.generateDatabase.drop.order"/>
+        <persistence-property name="javax.persistence.schema-generation.create-script-source" internal-name="datanucleus.schema.generateDatabase.createScript"/>
+        <persistence-property name="javax.persistence.schema-generation.drop-script-source" internal-name="datanucleus.schema.generateDatabase.dropScript"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.action" internal-name="datanucleus.schema.generateScripts.mode"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.create-target" internal-name="datanucleus.schema.generateScripts.create"/>
+        <persistence-property name="javax.persistence.schema-generation.scripts.drop-target" internal-name="datanucleus.schema.generateScripts.drop"/>
+        <persistence-property name="javax.persistence.sql-load-script-source" internal-name="datanucleus.schema.loadScript"/>
 
         <!-- DataNucleus JPA own properties -->
         <persistence-property name="datanucleus.jpa.addClassTransformer" value="false" validator="org.datanucleus.properties.BooleanPropertyValidator"/>
