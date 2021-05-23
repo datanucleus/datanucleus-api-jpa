@@ -10,6 +10,10 @@ JPA EntityTransaction is implemented by [org.datanucleus.api.jpa.JPAEntityTransa
 This is built using Maven, by executing `mvn clean install` which installs the built jar in your local Maven repository.
 
 
+Please note that JPA effectively ends at JPA 2.2, and is continued by Jakarta Persistence v3.0. 
+We support that through associated plugins for the [jakarta.persistence API](https://github.com/datanucleus/jakarta.persistence), [DataNucleus support for the API](https://github.com/datanucleus/datanucleus-api-jakarta), as well as associated samples.
+
+
 ## KeyFacts
 
 __License__ : Apache 2 licensed  
@@ -26,7 +30,7 @@ __Support__ : [DataNucleus Support Page](http://www.datanucleus.org/support.html
 The JPA "expert group" is seemingly dead, only providing very minimal things in v2.2 (with Oracle dictating to people this is all you will get), with no plan beyond that.
 They do, however, provide an issue tracker for people to raise issues of what they would like to see in the "next" release of JPA (if/when it ever happens). 
 DataNucleus, not being content to wait for hell to freeze over, has gone ahead and worked on the following issues. 
-All of these are embodied in our "JPA 2.2" offering (DN 5.1+), so why wait until Oracle can be bothered ?
+All of these are embodied in our "JPA 2.2" offering (DN 5.1+).
 
 [jpa-spec-25](https://github.com/eclipse-ee4j/jpa-api/issues/25) : access the JPQL string query and native query from a JPA Query object. Done  
 [jpa-spec-30](https://github.com/eclipse-ee4j/jpa-api/issues/30) : case sensitive JPQL queries. _Not implemented but would simply need JDOQL semantics copying_  
