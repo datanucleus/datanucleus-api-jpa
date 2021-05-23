@@ -114,6 +114,12 @@ public class JPAAdapter implements ApiAdapter
         return new JPAMetaDataHelper().getXMLForMetaData(cmd, prefix, indent);
     }
 
+    @Override
+    public String getDefaultMappingFileLocation() 
+    {
+        return "META-INF/orm.xml";
+    }
+
     // ------------------------------ Object Lifecycle --------------------------------
 
     /**
@@ -369,6 +375,12 @@ public class JPAAdapter implements ApiAdapter
         props.put("datanucleus.rdbms.allowColumnReuse", "true"); // So that JPA usage defaults to how other implementations do it, ignoring safety of this feature
 
         return props;
+    }
+
+    @Override
+    public boolean getDefaultPersistentPropertyWhenNotSpecified()
+    {
+        return true;
     }
 
     /**
