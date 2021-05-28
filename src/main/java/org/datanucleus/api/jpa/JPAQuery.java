@@ -164,7 +164,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
     }
 
@@ -217,7 +217,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
     }
 
@@ -275,7 +275,7 @@ public class JPAQuery<X> implements TypedQuery<X>
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
     }
 

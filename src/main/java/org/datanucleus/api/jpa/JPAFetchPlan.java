@@ -157,7 +157,7 @@ public class JPAFetchPlan implements Serializable
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
         return this;
     }
@@ -202,7 +202,7 @@ public class JPAFetchPlan implements Serializable
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
         return this;
     }
@@ -220,7 +220,7 @@ public class JPAFetchPlan implements Serializable
         }
         catch (NucleusException jpe)
         {
-            throw NucleusJPAHelper.getJPAExceptionForNucleusException(jpe);
+            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
         }
         return this;
     }

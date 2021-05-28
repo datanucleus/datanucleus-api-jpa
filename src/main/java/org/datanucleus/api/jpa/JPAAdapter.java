@@ -411,6 +411,6 @@ public class JPAAdapter implements ApiAdapter
      */
     public RuntimeException getApiExceptionForNucleusException(NucleusException ne)
     {
-        return NucleusJPAHelper.getJPAExceptionForNucleusException(ne);
+        return DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
     }
 }
