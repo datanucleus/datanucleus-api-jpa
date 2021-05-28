@@ -278,4 +278,101 @@ public class DataNucleusHelperJPA
         ObjectProvider op = ec.findObjectProvider(pc);
         return op == null ? null : op.getLoadedFieldNames();
     }
+
+    /**
+     * Accessor for whether the specified member (field/property) of the passed persistable object is loaded.
+     * @param obj The persistable object
+     * @param memberName Name of the field/property
+     * @param em EntityManager (if the object is detached)
+     * @return Whether the member is loaded
+     */
+    public static Boolean isFieldLoaded(Object obj, String memberName, EntityManager em)
+    {
+        if (obj == null || !(obj instanceof Persistable))
+        {
+            return null;
+        }
+
+        Persistable pc = (Persistable)obj;
+        if (pc.dnIsDetached())
+        {
+            // Temporarily attach a StateManager to access the detached field information
+            ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
+            pc.dnReplaceStateManager(op);
+            op.retrieveDetachState(op);
+            int position = op.getClassMetaData().getAbsolutePositionOfMember(memberName);
+            boolean loaded = op.isFieldLoaded(position);
+            pc.dnReplaceStateManager(null);
+
+            return loaded;
+        }
+
+        ExecutionContext ec = (ExecutionContext) pc.dnGetExecutionContext();
+        ObjectProvider op = ec.findObjectProvider(pc);
+        if (op == null)
+        {
+            return null;
+        }
+        int position = op.getClassMetaData().getAbsolutePositionOfMember(memberName);
+        return op.isFieldLoaded(position);
+    }
+
+    /**
+     * Accessor for whether the specified member (field/property) of the passed persistable object is dirty.
+     * @param obj The persistable object
+     * @param memberName Name of the field/property
+     * @param pm PersistenceManager (if the object is detached)
+     * @return Whether the member is dirty
+     */
+    public static Boolean isFieldDirty(Object obj, String memberName, EntityManager em)
+    {
+        if (obj == null || !(obj instanceof Persistable))
+        {
+            return null;
+        }
+        Persistable pc = (Persistable)obj;
+
+        if (pc.dnIsDetached())
+        {
+            // Temporarily attach a StateManager to access the detached field information
+            ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+            ObjectProvider op = ec.getNucleusContext().getObjectProviderFactory().newForDetached(ec, pc, pc.dnGetObjectId(), null);
+            pc.dnReplaceStateManager(op);
+            op.retrieveDetachState(op);
+            int position = op.getClassMetaData().getAbsolutePositionOfMember(memberName);
+            boolean[] dirtyFieldNumbers = op.getDirtyFields();
+            pc.dnReplaceStateManager(null);
+
+            return dirtyFieldNumbers[position];
+        }
+
+        ExecutionContext ec = (ExecutionContext) pc.dnGetExecutionContext();
+        ObjectProvider op = ec.findObjectProvider(pc);
+        if (op == null)
+        {
+            return null;
+        }
+        int position = op.getClassMetaData().getAbsolutePositionOfMember(memberName);
+        boolean[] dirtyFieldNumbers = op.getDirtyFields();
+        return dirtyFieldNumbers[position];
+    }
+
+    /**
+     * Convenience method to mark the specified member (field/property) as dirty, when managed.
+     * Normally, <code>Persistable</code> classes are able to detect changes made to their fields, however if a reference to an array is 
+     * given to a method outside the class, and the array is modified, then the persistent instance is not aware of the change.  
+     * This API allows the application to notify the instance that a change was made to a field.
+     * @param obj The persistable object
+     * @param memberName The member to mark as dirty
+     */
+    public static void makeFieldDirty(Object obj, String memberName)
+    {
+        if (obj == null || !(obj instanceof Persistable))
+        {
+            return;
+        }
+
+        ((Persistable)obj).dnMakeDirty(memberName);
+    }
 }
