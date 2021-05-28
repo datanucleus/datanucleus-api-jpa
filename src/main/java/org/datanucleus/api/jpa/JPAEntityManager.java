@@ -196,7 +196,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+            throw JPAAdapter.getJPAExceptionForNucleusException(ne);
         }
 
         fetchPlan = null;
@@ -519,7 +519,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusObjectNotFoundException ne)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+            throw JPAAdapter.getJPAExceptionForNucleusException(ne);
         }
     }
 
@@ -626,7 +626,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -654,7 +654,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -696,7 +696,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
         return null;
     }
@@ -724,7 +724,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
         return null;
     }
@@ -764,7 +764,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -781,7 +781,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -847,7 +847,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -891,7 +891,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -919,7 +919,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 
@@ -939,7 +939,7 @@ public class JPAEntityManager implements EntityManager
         }
         catch (NucleusException ne)
         {
-            throwException(DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne));
+            throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
         }
     }
 

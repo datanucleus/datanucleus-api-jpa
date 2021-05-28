@@ -24,6 +24,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.OptimisticLockException;
+import javax.persistence.PersistenceException;
+
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ClassNameConstants;
 import org.datanucleus.ExecutionContext;
@@ -32,10 +36,17 @@ import org.datanucleus.api.ApiAdapter;
 import org.datanucleus.api.jpa.metadata.JPAMetaDataHelper;
 import org.datanucleus.api.jpa.state.LifeCycleStateFactory;
 import org.datanucleus.enhancement.Persistable;
+import org.datanucleus.exceptions.NucleusCanRetryException;
+import org.datanucleus.exceptions.NucleusDataStoreException;
 import org.datanucleus.exceptions.NucleusException;
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
+import org.datanucleus.exceptions.NucleusOptimisticException;
+import org.datanucleus.exceptions.NucleusUserException;
+import org.datanucleus.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.MetaDataManager;
 import org.datanucleus.state.LifeCycleState;
+import org.datanucleus.store.query.QueryTimeoutException;
 
 /**
  * Adapter for the JPA API, to allow the DataNucleus core runtime to expose multiple APIs to clients.
@@ -411,6 +422,76 @@ public class JPAAdapter implements ApiAdapter
      */
     public RuntimeException getApiExceptionForNucleusException(NucleusException ne)
     {
-        return DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+        return JPAAdapter.getJPAExceptionForNucleusException(ne);
+    }
+
+    /**
+     * Convenience method to convert a Nucleus exception into a JPA exception.
+     * If the incoming exception has a "failed object" then create the new exception with
+     * a failed object. Otherwise if the incoming exception has nested exceptions then
+     * create this exception with those nested exceptions. Else create this exception with
+     * the incoming exception as its nested exception.
+     * @param ne NucleusException
+     * @return The JPAException
+     */
+    public static PersistenceException getJPAExceptionForNucleusException(NucleusException ne)
+    {
+        if (ne instanceof ReachableObjectNotCascadedException)
+        {
+            // Reachable object not persistent but field doesn't allow cascade-persist
+            throw new IllegalStateException(ne.getMessage(), ne);
+        }
+        else if (ne instanceof QueryTimeoutException)
+        {
+            return new javax.persistence.QueryTimeoutException(ne.getMessage(), ne);
+        }
+        else if (ne instanceof NucleusDataStoreException)
+        {
+            // JPA doesn't have "datastore" exceptions so just give a PersistenceException
+            if (ne.getNestedExceptions() != null)
+            {
+                return new PersistenceException(ne.getMessage(), ne.getCause());
+            }
+            return new PersistenceException(ne.getMessage(), ne);
+        }
+        else if (ne instanceof NucleusCanRetryException)
+        {
+            // JPA doesn't have "retry" exceptions so just give a PersistenceException
+            if (ne.getNestedExceptions() != null)
+            {
+                return new PersistenceException(ne.getMessage(), ne.getCause());
+            }
+            return new PersistenceException(ne.getMessage(), ne);
+        }
+        else if (ne instanceof NucleusObjectNotFoundException)
+        {
+            return new EntityNotFoundException(ne.getMessage());
+        }
+        else if (ne instanceof NucleusUserException)
+        {
+            // JPA doesnt have "user" exceptions so just give a PersistenceException
+            if (ne.getNestedExceptions() != null)
+            {
+                return new PersistenceException(ne.getMessage(), ne.getCause());
+            }
+            return new PersistenceException(ne.getMessage(), ne);
+        }
+        else if (ne instanceof NucleusOptimisticException)
+        {
+            if (ne.getNestedExceptions() != null)
+            {
+                return new OptimisticLockException(ne.getMessage(), ne.getCause());
+            }
+            return new OptimisticLockException(ne.getMessage(), ne);
+        }
+        else
+        {
+            // JPA doesnt have "internal" exceptions so just give a PersistenceException
+            if (ne.getNestedExceptions() != null)
+            {
+                return new PersistenceException(ne.getMessage(), ne.getCause());
+            }
+            return new PersistenceException(ne.getMessage(), ne);
+        }
     }
 }

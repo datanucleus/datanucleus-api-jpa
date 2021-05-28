@@ -20,22 +20,12 @@ package org.datanucleus.api.jpa;
 import java.lang.reflect.Field;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
 
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.enhancement.Persistable;
-import org.datanucleus.exceptions.NucleusCanRetryException;
-import org.datanucleus.exceptions.NucleusDataStoreException;
 import org.datanucleus.exceptions.NucleusException;
-import org.datanucleus.exceptions.NucleusObjectNotFoundException;
-import org.datanucleus.exceptions.NucleusOptimisticException;
-import org.datanucleus.exceptions.NucleusUserException;
-import org.datanucleus.exceptions.ReachableObjectNotCascadedException;
 import org.datanucleus.identity.DatastoreId;
 import org.datanucleus.state.ObjectProvider;
-import org.datanucleus.store.query.QueryTimeoutException;
 import org.datanucleus.util.ClassUtils;
 
 /**
@@ -287,75 +277,5 @@ public class DataNucleusHelperJPA
         ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
         ObjectProvider op = ec.findObjectProvider(pc);
         return op == null ? null : op.getLoadedFieldNames();
-    }
-
-    /**
-     * Convenience method to convert a Nucleus exception into a JPA exception.
-     * If the incoming exception has a "failed object" then create the new exception with
-     * a failed object. Otherwise if the incoming exception has nested exceptions then
-     * create this exception with those nested exceptions. Else create this exception with
-     * the incoming exception as its nested exception.
-     * @param ne NucleusException
-     * @return The JPAException
-     */
-    public static PersistenceException getJPAExceptionForNucleusException(NucleusException ne)
-    {
-        if (ne instanceof ReachableObjectNotCascadedException)
-        {
-            // Reachable object not persistent but field doesn't allow cascade-persist
-            throw new IllegalStateException(ne.getMessage(), ne);
-        }
-        else if (ne instanceof QueryTimeoutException)
-        {
-            return new javax.persistence.QueryTimeoutException(ne.getMessage(), ne);
-        }
-        else if (ne instanceof NucleusDataStoreException)
-        {
-            // JPA doesn't have "datastore" exceptions so just give a PersistenceException
-            if (ne.getNestedExceptions() != null)
-            {
-                return new PersistenceException(ne.getMessage(), ne.getCause());
-            }
-            return new PersistenceException(ne.getMessage(), ne);
-        }
-        else if (ne instanceof NucleusCanRetryException)
-        {
-            // JPA doesn't have "retry" exceptions so just give a PersistenceException
-            if (ne.getNestedExceptions() != null)
-            {
-                return new PersistenceException(ne.getMessage(), ne.getCause());
-            }
-            return new PersistenceException(ne.getMessage(), ne);
-        }
-        else if (ne instanceof NucleusObjectNotFoundException)
-        {
-            return new EntityNotFoundException(ne.getMessage());
-        }
-        else if (ne instanceof NucleusUserException)
-        {
-            // JPA doesnt have "user" exceptions so just give a PersistenceException
-            if (ne.getNestedExceptions() != null)
-            {
-                return new PersistenceException(ne.getMessage(), ne.getCause());
-            }
-            return new PersistenceException(ne.getMessage(), ne);
-        }
-        else if (ne instanceof NucleusOptimisticException)
-        {
-            if (ne.getNestedExceptions() != null)
-            {
-                return new OptimisticLockException(ne.getMessage(), ne.getCause());
-            }
-            return new OptimisticLockException(ne.getMessage(), ne);
-        }
-        else
-        {
-            // JPA doesnt have "internal" exceptions so just give a PersistenceException
-            if (ne.getNestedExceptions() != null)
-            {
-                return new PersistenceException(ne.getMessage(), ne.getCause());
-            }
-            return new PersistenceException(ne.getMessage(), ne);
-        }
     }
 }

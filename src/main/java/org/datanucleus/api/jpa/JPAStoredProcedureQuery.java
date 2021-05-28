@@ -264,7 +264,7 @@ public class JPAStoredProcedureQuery extends JPAQuery implements StoredProcedure
         }
         catch (NucleusException jpe)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
+            throw JPAAdapter.getJPAExceptionForNucleusException(jpe);
         }
     }
 
@@ -302,7 +302,7 @@ public class JPAStoredProcedureQuery extends JPAQuery implements StoredProcedure
         }
         catch (NucleusException jpe)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
+            throw JPAAdapter.getJPAExceptionForNucleusException(jpe);
         }
     }
 
@@ -342,7 +342,7 @@ public class JPAStoredProcedureQuery extends JPAQuery implements StoredProcedure
         }
         catch (NucleusException jpe)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(jpe);
+            throw JPAAdapter.getJPAExceptionForNucleusException(jpe);
         }
     }
 

@@ -71,7 +71,7 @@ public class JPAEntityTransaction implements EntityTransaction
         }
         catch (NucleusException ne)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+            throw JPAAdapter.getJPAExceptionForNucleusException(ne);
         }
     }
 
@@ -104,7 +104,7 @@ public class JPAEntityTransaction implements EntityTransaction
             Throwable pe = null;
             if (cause instanceof NucleusException)
             {
-                pe = DataNucleusHelperJPA.getJPAExceptionForNucleusException((NucleusException)cause);
+                pe = JPAAdapter.getJPAExceptionForNucleusException((NucleusException)cause);
             }
             else
             {
@@ -114,7 +114,7 @@ public class JPAEntityTransaction implements EntityTransaction
         }
         catch (NucleusException ne)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+            throw JPAAdapter.getJPAExceptionForNucleusException(ne);
         }
     }
 
@@ -133,7 +133,7 @@ public class JPAEntityTransaction implements EntityTransaction
         }
         catch (NucleusException ne)
         {
-            throw DataNucleusHelperJPA.getJPAExceptionForNucleusException(ne);
+            throw JPAAdapter.getJPAExceptionForNucleusException(ne);
         }
     }
 
