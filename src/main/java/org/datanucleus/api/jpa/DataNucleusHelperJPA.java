@@ -87,7 +87,7 @@ public class DataNucleusHelperJPA
     {
         if (obj instanceof Persistable)
         {
-            return (JPAEntityManager) ((Persistable)obj).dnGetExecutionContext().getOwner();
+            return (EntityManager) ((Persistable)obj).dnGetExecutionContext().getOwner();
         }
         return null;
     }
@@ -226,8 +226,8 @@ public class DataNucleusHelperJPA
         {
             return null;
         }
-        Persistable pc = (Persistable)obj;
 
+        Persistable pc = (Persistable)obj;
         if (isDetached(pc))
         {
             ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
@@ -242,7 +242,7 @@ public class DataNucleusHelperJPA
             return dirtyFieldNames;
         }
 
-        ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+        ExecutionContext ec = (ExecutionContext) pc.dnGetExecutionContext();
         ObjectProvider op = ec.findObjectProvider(pc);
         return op == null ? null : op.getDirtyFieldNames();
     }
@@ -259,8 +259,8 @@ public class DataNucleusHelperJPA
         {
             return null;
         }
-        Persistable pc = (Persistable)obj;
 
+        Persistable pc = (Persistable)obj;
         if (isDetached(pc))
         {
             // Temporarily attach a StateManager to access the detached field information
@@ -274,7 +274,7 @@ public class DataNucleusHelperJPA
             return loadedFieldNames;
         }
 
-        ExecutionContext ec = ((JPAEntityManager)em).getExecutionContext();
+        ExecutionContext ec = (ExecutionContext) pc.dnGetExecutionContext();
         ObjectProvider op = ec.findObjectProvider(pc);
         return op == null ? null : op.getLoadedFieldNames();
     }
@@ -331,8 +331,8 @@ public class DataNucleusHelperJPA
         {
             return null;
         }
-        Persistable pc = (Persistable)obj;
 
+        Persistable pc = (Persistable)obj;
         if (pc.dnIsDetached())
         {
             // Temporarily attach a StateManager to access the detached field information
