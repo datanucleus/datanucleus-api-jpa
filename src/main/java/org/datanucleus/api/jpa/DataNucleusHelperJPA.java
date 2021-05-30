@@ -322,7 +322,7 @@ public class DataNucleusHelperJPA
      * Accessor for whether the specified member (field/property) of the passed persistable object is dirty.
      * @param obj The persistable object
      * @param memberName Name of the field/property
-     * @param pm PersistenceManager (if the object is detached)
+     * @param em EntityManager (if the object is detached)
      * @return Whether the member is dirty
      */
     public static Boolean isFieldDirty(Object obj, String memberName, EntityManager em)
