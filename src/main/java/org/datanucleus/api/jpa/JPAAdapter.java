@@ -33,7 +33,7 @@ import org.datanucleus.ClassNameConstants;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.PropertyNames;
 import org.datanucleus.api.ApiAdapter;
-import org.datanucleus.api.jpa.metadata.JPAMetaDataHelper;
+import org.datanucleus.api.jpa.metadata.JPAXmlMetaDataHelper;
 import org.datanucleus.api.jpa.state.LifeCycleStateFactory;
 import org.datanucleus.enhancement.Persistable;
 import org.datanucleus.exceptions.NucleusCanRetryException;
@@ -122,7 +122,7 @@ public class JPAAdapter implements ApiAdapter
     @Override
     public String getXMLMetaDataForClass(AbstractClassMetaData cmd, String prefix, String indent)
     {
-        return new JPAMetaDataHelper().getXMLForMetaData(cmd, prefix, indent);
+        return new JPAXmlMetaDataHelper().getXMLForMetaData(cmd, prefix, indent);
     }
 
     @Override

@@ -43,7 +43,7 @@ import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.MetaDataManagerImpl;
 import org.datanucleus.metadata.MetadataFileType;
 import org.datanucleus.metadata.PackageMetaData;
-import org.datanucleus.metadata.xml.MetaDataParser;
+import org.datanucleus.metadata.xml.XmlMetaDataParser;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.NucleusLogger;
 
@@ -56,7 +56,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     private static final long serialVersionUID = 3591790314245592821L;
 
     /** Parser for XML MetaData. */
-    protected MetaDataParser metaDataParser = null;
+    protected XmlMetaDataParser metaDataParser = null;
 
     /** EventListeners. Use a list to preserve ordering. */
     protected List eventListeners = new ArrayList();
@@ -121,13 +121,13 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param fileURL URL of the file
      * @return The FileMetaData for this file
      */
-    protected FileMetaData parseFile(URL fileURL)
+    protected FileMetaData parseXmlFile(URL fileURL)
     {
         if (metaDataParser == null)
         {
-            metaDataParser = new MetaDataParser(this, nucleusContext.getPluginManager(), validateXML, supportXMLNamespaces);
+            metaDataParser = new XmlMetaDataParser(this, nucleusContext.getPluginManager(), validateXML, supportXMLNamespaces);
         }
-        return (FileMetaData)metaDataParser.parseMetaDataURL(fileURL, "jpa");
+        return (FileMetaData)metaDataParser.parseXmlMetaDataURL(fileURL, "jpa");
     }
 
     /**

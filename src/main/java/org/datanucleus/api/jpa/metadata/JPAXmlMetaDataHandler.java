@@ -79,7 +79,7 @@ import org.datanucleus.metadata.UniqueMetaData;
 import org.datanucleus.metadata.ValueMetaData;
 import org.datanucleus.metadata.VersionMetaData;
 import org.datanucleus.metadata.VersionStrategy;
-import org.datanucleus.metadata.xml.AbstractMetaDataHandler;
+import org.datanucleus.metadata.xml.AbstractXmlMetaDataHandler;
 import org.datanucleus.store.types.TypeManager;
 import org.datanucleus.store.types.converters.TypeConverter;
 import org.datanucleus.util.Localiser;
@@ -87,18 +87,17 @@ import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.StringUtils;
 
 /**
- * Parser handler for JPA MetaData.
- * Implements DefaultHandler and handles the extracting of MetaData for JPA
- * from the XML elements/attributes. This class simply constructs the MetaData
- * representation mirroring what is in the MetaData file. It has no knowledge
- * of the class(es) that it represents, simply the information in the MetaData
- * file. The knowledge of the classes is imposed on the representation at a
- * later stage where necessary.
- * <P>Operates the parse process using a Stack. MetaData components are added
- * to the stack as they are encountered and created. They are then popped off
- * the stack when the end element is encountered.</P>
+ * Parser handler for JPA XML MetaData.
+ * Implements DefaultHandler and handles the extracting of MetaData for JPA from the XML elements/attributes. 
+ * This class simply constructs the MetaData representation mirroring what is in the XML MetaData file. 
+ * It has no knowledge of the class(es) that it represents, simply the information in the XML MetaData file. 
+ * The knowledge of the classes is imposed on the representation at a later stage where necessary.
+ * <P>
+ * Operates the parse process using a Stack. XML MetaData components are added to the stack as they are encountered and created. 
+ * They are then popped off the stack when the end element is encountered.
+ * </P>
  */
-public class JPAMetaDataHandler extends AbstractMetaDataHandler
+public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
 {
     /** Default package name for the entity-mappings (if any). */
     String defaultPackageName = null;
@@ -134,7 +133,7 @@ public class JPAMetaDataHandler extends AbstractMetaDataHandler
      * @param filename The name of the file to parse
      * @param resolver Entity Resolver to use (null if not available)
      */
-    public JPAMetaDataHandler(MetaDataManager mgr, String filename, EntityResolver resolver)
+    public JPAXmlMetaDataHandler(MetaDataManager mgr, String filename, EntityResolver resolver)
     {
         super(mgr, filename, resolver);
         metadata = new FileMetaData(filename);

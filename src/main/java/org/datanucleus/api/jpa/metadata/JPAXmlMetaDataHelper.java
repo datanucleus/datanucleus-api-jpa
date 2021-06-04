@@ -32,9 +32,9 @@ import org.datanucleus.util.StringUtils;
  * Helper class that can convert internal metadata into (JPA) orm.xml metadata.
  * TODO Make this complete. Much is lacking currently
  */
-public class JPAMetaDataHelper
+public class JPAXmlMetaDataHelper
 {
-    public JPAMetaDataHelper()
+    public JPAXmlMetaDataHelper()
     {
     }
 
