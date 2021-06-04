@@ -24,9 +24,9 @@ import javax.persistence.PersistenceException;
 import javax.persistence.RollbackException;
 
 import org.datanucleus.ExecutionContext;
-import org.datanucleus.TransactionEventListener;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.transaction.NucleusTransactionException;
+import org.datanucleus.transaction.TransactionEventListener;
 import org.datanucleus.transaction.TransactionUtils;
 import org.datanucleus.util.NucleusLogger;
 import org.datanucleus.util.Localiser;
@@ -38,7 +38,7 @@ import org.datanucleus.util.Localiser;
 public class JPAEntityTransaction implements EntityTransaction
 {
     /** The underlying transaction */
-    org.datanucleus.Transaction tx;
+    org.datanucleus.transaction.Transaction tx;
 
     /**
      * Constructor.
@@ -187,7 +187,7 @@ public class JPAEntityTransaction implements EntityTransaction
         if (option.equalsIgnoreCase("transaction.isolation"))
         {
             int isolationLevel = TransactionUtils.getTransactionIsolationLevelForName(value);
-            tx.setOption(org.datanucleus.Transaction.TRANSACTION_ISOLATION_OPTION, isolationLevel);
+            tx.setOption(org.datanucleus.transaction.Transaction.TRANSACTION_ISOLATION_OPTION, isolationLevel);
             return;
         }
         tx.setOption(option, value);

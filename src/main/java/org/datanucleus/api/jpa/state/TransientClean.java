@@ -17,9 +17,9 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa.state;
 
-import org.datanucleus.Transaction;
 import org.datanucleus.state.LifeCycleState;
 import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.transaction.Transaction;
 
 /**
  * This class represents TransientClean state specific state transitions as 
@@ -116,7 +116,7 @@ class TransientClean extends LifeCycleState
      * @param tx the Transaction been committed.
      * @return new LifeCycle state.
      **/
-    public LifeCycleState transitionCommit(ObjectProvider op, org.datanucleus.Transaction tx)
+    public LifeCycleState transitionCommit(ObjectProvider op, org.datanucleus.transaction.Transaction tx)
     {
         return this;
     }
@@ -126,7 +126,7 @@ class TransientClean extends LifeCycleState
      * @param tx The Transaction
      * @see LifeCycleState#transitionRollback(ObjectProvider op,Transaction tx)
      */
-    public LifeCycleState transitionRollback(ObjectProvider op, org.datanucleus.Transaction tx)
+    public LifeCycleState transitionRollback(ObjectProvider op, org.datanucleus.transaction.Transaction tx)
     {
         return this;
     }

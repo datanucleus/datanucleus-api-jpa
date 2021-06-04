@@ -55,7 +55,6 @@ import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
 import org.datanucleus.FetchPlan;
-import org.datanucleus.JTATransactionImpl;
 import org.datanucleus.Configuration;
 import org.datanucleus.DetachState;
 import org.datanucleus.PersistenceNucleusContext;
@@ -81,6 +80,7 @@ import org.datanucleus.state.ObjectProvider;
 import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
 import org.datanucleus.store.query.compiler.QueryCompilation;
+import org.datanucleus.transaction.jta.JTATransactionImpl;
 import org.datanucleus.util.Localiser;
 import org.datanucleus.util.StringUtils;
 
