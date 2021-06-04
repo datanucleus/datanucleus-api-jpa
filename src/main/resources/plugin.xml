@@ -125,7 +125,7 @@ Contributors:
 
     <!-- METADATA HANDLER -->
     <extension point="org.datanucleus.metadata_handler">
-        <handler name="JPA" class-name="org.datanucleus.api.jpa.metadata.JPAMetaDataHandler"/>
+        <handler name="JPA" class-name="org.datanucleus.api.jpa.metadata.JPAXmlMetaDataHandler"/>
     </extension>
 
     <!-- METADATA ENTITY RESOLVERS -->
