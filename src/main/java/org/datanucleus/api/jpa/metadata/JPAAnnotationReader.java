@@ -1982,6 +1982,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                             }
                             else if (converts.length > 1)
                             {
+                                // TODO Support this. If we have a "key" and "value" then this would come through here
                                 NucleusLogger.METADATA.warn("Dont currently support @Converts annotation for embedded fields");
                             }
                             else if (converts.length == 1)
