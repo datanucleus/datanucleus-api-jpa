@@ -163,6 +163,17 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         return select;
     }
 
+    public <N extends Number> Expression<Double> avgDistinct(Expression<N> expr)
+    {
+        ExpressionImpl<Double> select = new ExpressionImpl(this, expr.getJavaType());
+
+        DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
+        args.add(dyExpr);
+        select.queryExpr = new InvokeExpression(null, "avg", args);
+        return select;
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.criteria.CriteriaBuilder#count(javax.persistence.criteria.Expression)
      */
@@ -204,6 +215,17 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         return select;
     }
 
+    public <N extends Number> Expression<N> maxDistinct(Expression<N> expr)
+    {
+        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
+
+        DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
+        args.add(dyExpr);
+        select.queryExpr = new InvokeExpression(null, "max", args);
+        return select;
+    }
+
     /* (non-Javadoc)
      * @see javax.persistence.criteria.CriteriaBuilder#greatest(javax.persistence.criteria.Expression)
      */
@@ -224,6 +246,17 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
         List args = new ArrayList();
         args.add(((ExpressionImpl)expr).getQueryExpression());
+        select.queryExpr = new InvokeExpression(null, "min", args);
+        return select;
+    }
+
+    public <N extends Number> Expression<N> minDistinct(Expression<N> expr)
+    {
+        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
+
+        DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
+        args.add(dyExpr);
         select.queryExpr = new InvokeExpression(null, "min", args);
         return select;
     }
@@ -260,6 +293,17 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
         List args = new ArrayList();
         args.add(((ExpressionImpl)expr).getQueryExpression());
+        select.queryExpr = new InvokeExpression(null, "sum", args);
+        return select;
+    }
+
+    public <N extends Number> Expression<N> sumDistinct(Expression<N> expr)
+    {
+        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
+
+        DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.query.expression.Expression> args = new ArrayList<>();
+        args.add(dyExpr);
         select.queryExpr = new InvokeExpression(null, "sum", args);
         return select;
     }
