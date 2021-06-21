@@ -393,6 +393,12 @@ public class JPQLHelper
                     throw new NucleusUserException("Attempt to perform AVG without any arguments");
                 }
                 Expression argExpr = args.get(0);
+                if (argExpr instanceof DyadicExpression && ((DyadicExpression)argExpr).getOperator() == Expression.OP_DISTINCT)
+                {
+                    DyadicExpression dyExpr = (DyadicExpression)argExpr;
+                    return "AVG(DISTINCT " + JPQLHelper.getJPQLForExpression(dyExpr.getLeft()) + ")";
+                }
+
                 return "AVG(" + JPQLHelper.getJPQLForExpression(argExpr) + ")";
             }
             else if (method.equalsIgnoreCase("MAX"))
@@ -402,6 +408,12 @@ public class JPQLHelper
                     throw new NucleusUserException("Attempt to perform MAX without any arguments");
                 }
                 Expression argExpr = args.get(0);
+                if (argExpr instanceof DyadicExpression && ((DyadicExpression)argExpr).getOperator() == Expression.OP_DISTINCT)
+                {
+                    DyadicExpression dyExpr = (DyadicExpression)argExpr;
+                    return "MAX(DISTINCT " + JPQLHelper.getJPQLForExpression(dyExpr.getLeft()) + ")";
+                }
+
                 return "MAX(" + JPQLHelper.getJPQLForExpression(argExpr) + ")";
             }
             else if (method.equalsIgnoreCase("MIN"))
@@ -411,6 +423,12 @@ public class JPQLHelper
                     throw new NucleusUserException("Attempt to perform MIN without any arguments");
                 }
                 Expression argExpr = args.get(0);
+                if (argExpr instanceof DyadicExpression && ((DyadicExpression)argExpr).getOperator() == Expression.OP_DISTINCT)
+                {
+                    DyadicExpression dyExpr = (DyadicExpression)argExpr;
+                    return "MIN(DISTINCT " + JPQLHelper.getJPQLForExpression(dyExpr.getLeft()) + ")";
+                }
+
                 return "MIN(" + JPQLHelper.getJPQLForExpression(argExpr) + ")";
             }
             else if (method.equalsIgnoreCase("SQRT"))
@@ -429,6 +447,12 @@ public class JPQLHelper
                     throw new NucleusUserException("Attempt to perform SUM without any arguments");
                 }
                 Expression argExpr = args.get(0);
+                if (argExpr instanceof DyadicExpression && ((DyadicExpression)argExpr).getOperator() == Expression.OP_DISTINCT)
+                {
+                    DyadicExpression dyExpr = (DyadicExpression)argExpr;
+                    return "SUM(DISTINCT " + JPQLHelper.getJPQLForExpression(dyExpr.getLeft()) + ")";
+                }
+
                 return "SUM(" + JPQLHelper.getJPQLForExpression(argExpr) + ")";
             }
             else if (method.equalsIgnoreCase("SQL_function"))
