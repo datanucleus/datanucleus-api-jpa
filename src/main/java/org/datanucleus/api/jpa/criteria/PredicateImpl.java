@@ -25,6 +25,7 @@ import java.util.List;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
+import org.datanucleus.store.query.JPQLQueryHelper;
 import org.datanucleus.store.query.expression.DyadicExpression;
 import org.datanucleus.store.query.expression.Expression.DyadicOperator;
 
@@ -166,7 +167,7 @@ public class PredicateImpl extends ExpressionImpl<Boolean> implements Predicate
         if (exprs == null || exprs.isEmpty())
         {
             // Base expression
-            str.append(JPQLHelper.getJPQLForExpression(queryExpr));
+            str.append(JPQLQueryHelper.getJPQLForExpression(queryExpr));
         }
         else
         {

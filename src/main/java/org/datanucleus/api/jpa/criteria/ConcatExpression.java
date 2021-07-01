@@ -19,6 +19,7 @@ package org.datanucleus.api.jpa.criteria;
 
 import javax.persistence.criteria.Expression;
 
+import org.datanucleus.store.query.JPQLQueryHelper;
 import org.datanucleus.store.query.expression.DyadicExpression;
 
 /**
@@ -59,9 +60,9 @@ public class ConcatExpression extends ExpressionImpl<String>
     {
         StringBuilder str = new StringBuilder();
         str.append("CONCAT(");
-        str.append(JPQLHelper.getJPQLForExpression(((ExpressionImpl)expr1).getQueryExpression()));
+        str.append(JPQLQueryHelper.getJPQLForExpression(((ExpressionImpl)expr1).getQueryExpression()));
         str.append(",");
-        str.append(JPQLHelper.getJPQLForExpression(((ExpressionImpl)expr2).getQueryExpression()));
+        str.append(JPQLQueryHelper.getJPQLForExpression(((ExpressionImpl)expr2).getQueryExpression()));
         str.append(")");
         return str.toString();
     }

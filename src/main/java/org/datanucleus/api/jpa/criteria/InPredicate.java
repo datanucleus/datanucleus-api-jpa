@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder.In;
 
+import org.datanucleus.store.query.JPQLQueryHelper;
 import org.datanucleus.store.query.expression.DyadicExpression;
 
 import javax.persistence.criteria.Expression;
@@ -201,7 +202,7 @@ public class InPredicate<X> extends PredicateImpl implements In<X>
             str.append("!(");
         }
 
-        str.append(JPQLHelper.getJPQLForExpression(expr.getQueryExpression())).append(" IN (");
+        str.append(JPQLQueryHelper.getJPQLForExpression(expr.getQueryExpression())).append(" IN (");
         boolean firstValue = true;
         for (Expression valExpr : values)
         {
