@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.persistence.Column;
 import javax.persistence.GenerationType;
 
 /**
@@ -49,5 +50,10 @@ public @interface DatastoreId
      */
     String column() default "";
 
-    // TODO Allow specification of Column
+    /**
+     * Column definition(s) to use for the datastore identity surrogate.
+     * Only processes a single column, but annotations cant have a default of null.
+     * @return The surrogate column definition(s)
+     */
+    Column[] columns() default {};
 }

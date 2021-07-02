@@ -258,6 +258,20 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 IdentityMetaData idmd = cmd.newIdentityMetadata();
                 idmd.setColumnName((String)annotationValues.get("column"));
 
+                Column[] columns = (Column[]) annotationValues.get("columns");
+                if (columns != null && columns.length > 0)
+                {
+                    ColumnMetaData colmd = new ColumnMetaData();
+                    colmd.setName(columns[0].name());
+                    colmd.setLength(columns[0].length());
+                    colmd.setScale(columns[0].scale());
+                    if (columns[0].unique())
+                    {
+                        colmd.setUnique(true);
+                    }
+                    idmd.setColumnMetaData(colmd);
+                }
+
                 String identityStrategy = JPAAnnotationUtils.getValueGenerationStrategyString((GenerationType) annotationValues.get("generationType"));
                 idmd.setValueStrategy(ValueGenerationStrategy.getIdentityStrategy(identityStrategy));
                 String identityGenerator = (String) annotationValues.get("generator");
