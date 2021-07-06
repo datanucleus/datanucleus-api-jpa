@@ -349,10 +349,31 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         String[] cols = StringUtils.split(colStr, ",");
                         if (cols != null)
                         {
-                            // TODO Support ASC|DESC that can be placed after a column name
+                            StringBuilder colOrderings = new StringBuilder();
+                            boolean orderingSpecified = false;
                             for (int k=0;k<cols.length;k++)
                             {
-                                idxmd.addColumn(cols[k]);
+                                String colName = cols[k].trim();
+                                String colOrder = "ASC";
+                                int spacePos = colName.indexOf(' ');
+                                if (spacePos > 0)
+                                {
+                                    // Assumes we have "colName [ASC|DESC]". In principle we could also have "NULLS [FIRST|LAST]" but not supported
+                                    colOrder = colName.substring(spacePos+1);
+                                    colName = colName.substring(0, spacePos);
+                                    orderingSpecified = true;
+                                }
+
+                                idxmd.addColumn(colName);
+                                if (k != 0)
+                                {
+                                    colOrderings.append(",");
+                                }
+                                colOrderings.append(colOrder);
+                            }
+                            if (orderingSpecified)
+                            {
+                                idxmd.addExtension(MetaData.EXTENSION_INDEX_COLUMN_ORDERING, colOrderings.toString());
                             }
                         }
                         if (indexConstr.unique())
