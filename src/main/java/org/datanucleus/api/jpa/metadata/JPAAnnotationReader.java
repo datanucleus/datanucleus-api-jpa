@@ -49,6 +49,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Index;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedNativeQuery;
@@ -1925,10 +1926,37 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     }
                     else if (annName.equals(JPAAnnotationUtils.MAP_KEY_JOIN_COLUMNS))
                     {
-                        // TODO Support this
-                        NucleusLogger.METADATA.debug("We do not currently support @MapKeyJoinColumns");
+                        MapKeyJoinColumn[] mapKeyJoinCols = (MapKeyJoinColumn[])annotationValues.get("value");
+                        if (mapKeyJoinCols == null || mapKeyJoinCols.length == 0)
+                        {
+                            // Do nothing
+                        }
+                        else
+                        {
+                            if (keymd == null)
+                            {
+                                keymd = new KeyMetaData();
+                                mmd.setKeyMetaData(keymd);
+                            }
+
+                            Class keyType = mmd.getMap() != null && mmd.getMap().getKeyType() != null ? clr.classForName(mmd.getMap().getKeyType()) : Object.class;
+                            for (int i=0;i<mapKeyJoinCols.length;i++)
+                            {
+                                Map<String,Object> columnAnnValues = new HashMap<>();
+                                columnAnnValues.put("name", mapKeyJoinCols[i].name());
+                                columnAnnValues.put("nullable", mapKeyJoinCols[i].nullable());
+                                columnAnnValues.put("unique", mapKeyJoinCols[i].unique());
+                                columnAnnValues.put("insertable", mapKeyJoinCols[i].insertable());
+                                columnAnnValues.put("updatable", mapKeyJoinCols[i].updatable());
+                                columnAnnValues.put("table", mapKeyJoinCols[i].table());
+                                columnAnnValues.put("columnDefinition", mapKeyJoinCols[i].columnDefinition());
+                                columnAnnValues.put("referencedColumnName", mapKeyJoinCols[i].referencedColumnName());
+                                columnAnnValues.put("foreignKey", mapKeyJoinCols[i].foreignKey());
+                                keymd.addColumn(newColumnMetaDataForAnnotation(keymd, keyType, columnAnnValues));
+                            }
+                        }
                     }
-                    else if (annName.equals(JPAAnnotationUtils.MAP_KEY_JOIN_COLUMN))// TODO Also support MapKeyJoinColumns
+                    else if (annName.equals(JPAAnnotationUtils.MAP_KEY_JOIN_COLUMN))
                     {
                         if (keymd == null)
                         {
