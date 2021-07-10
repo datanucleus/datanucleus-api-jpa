@@ -38,7 +38,6 @@ import javax.persistence.PreUpdate;
 import org.datanucleus.BeanValidationHandler;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
-import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
@@ -51,18 +50,14 @@ import org.datanucleus.util.NucleusLogger;
  */
 public class JPACallbackHandler implements CallbackHandler
 {
-    PersistenceNucleusContext nucleusCtx;
+    ExecutionContext ec;
 
     BeanValidationHandler beanValidationHandler;
 
-    public JPACallbackHandler(PersistenceNucleusContext nucleusCtx)
+    public JPACallbackHandler(ExecutionContext ec)
     {
-        this.nucleusCtx = nucleusCtx;
-    }
-
-    public void setBeanValidationHandler(BeanValidationHandler handler)
-    {
-        beanValidationHandler = handler;
+        this.ec = ec;
+        this.beanValidationHandler = ec.getNucleusContext().getBeanValidationHandler(ec);
     }
 
     /**
@@ -71,7 +66,7 @@ public class JPACallbackHandler implements CallbackHandler
      */
     public void prePersist(Object pc)
     {
-        if (nucleusCtx.getApiAdapter().isNew(pc))
+        if (ec.getApiAdapter().isNew(pc))
         {
             invokeCallback(pc, PrePersist.class);
         }
@@ -87,13 +82,13 @@ public class JPACallbackHandler implements CallbackHandler
      */
     public void preStore(Object pc)
     {
-        if (!nucleusCtx.getApiAdapter().isNew(pc))
+        if (!ec.getApiAdapter().isNew(pc))
         {
             invokeCallback(pc, PreUpdate.class);
         }
         if (beanValidationHandler != null)
         {
-            ObjectProvider op = nucleusCtx.getApiAdapter().getExecutionContext(pc).findObjectProvider(pc);
+            ObjectProvider op = ec.findObjectProvider(pc);
             if (!op.getLifecycleState().isNew())
             {
                 // Don't fire this when persisting new since we will have done prePersist
@@ -108,7 +103,7 @@ public class JPACallbackHandler implements CallbackHandler
      */
     public void postStore(Object pc)
     {
-        if (nucleusCtx.getApiAdapter().isNew(pc))
+        if (ec.getApiAdapter().isNew(pc))
         {
             invokeCallback(pc, PostPersist.class);
         }
@@ -180,7 +175,6 @@ public class JPACallbackHandler implements CallbackHandler
      */
     private void invokeCallback(final Object pc, final Class callbackClass)
     {
-        final ExecutionContext ec = nucleusCtx.getApiAdapter().getExecutionContext(pc);
         final ClassLoaderResolver clr = ec.getClassLoaderResolver();
 
         AbstractClassMetaData acmd = ec.getMetaDataManager().getMetaDataForClass(pc.getClass(), clr);
@@ -439,11 +433,11 @@ public class JPACallbackHandler implements CallbackHandler
 
     protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
     {
-        if (nucleusCtx.getCDIHandler() != null)
+        if (ec.getNucleusContext().getCDIHandler() != null)
         {
             try
             {
-                return nucleusCtx.getCDIHandler().createObjectWithInjectedDependencies(listenerCls);
+                return ec.getNucleusContext().getCDIHandler().createObjectWithInjectedDependencies(listenerCls);
             }
             catch (Exception e)
             {

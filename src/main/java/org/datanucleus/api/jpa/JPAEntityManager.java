@@ -50,7 +50,6 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
-import org.datanucleus.BeanValidationHandler;
 import org.datanucleus.ClassConstants;
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.ExecutionContext;
@@ -138,12 +137,6 @@ public class JPAEntityManager implements EntityManager
         {
             // Using ResourceLocal transaction so allocate a transaction
             tx = new JPAEntityTransaction(ec);
-        }
-
-        BeanValidationHandler beanValidator = nucleusCtx.getBeanValidationHandler(ec);
-        if (beanValidator != null)
-        {
-            ec.getCallbackHandler().setBeanValidationHandler(beanValidator);
         }
 
         fetchPlan = new JPAFetchPlan(ec.getFetchPlan());
