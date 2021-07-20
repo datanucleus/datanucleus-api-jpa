@@ -297,7 +297,7 @@ public class JPAEntityManager implements EntityManager
         try
         {
             boolean fetchGraphSpecified = false;
-            if (properties != null) // TODO Should be for just this operation
+            if (properties != null)
             {
                 if (properties.containsKey(JPAEntityGraph.FETCHGRAPH_PROPERTY))
                 {
@@ -554,22 +554,29 @@ public class JPAEntityManager implements EntityManager
             throwException(new PersistenceException("Entity is not contained in this persistence context so cant lock it"));
         }
 
-        if (properties != null) // TODO Should be for just this operation
+        if (properties != null)
         {
             ec.setProperties(properties);
         }
 
-        AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
-        if ((lock == LockModeType.OPTIMISTIC || lock == LockModeType.OPTIMISTIC_FORCE_INCREMENT) && !cmd.isVersioned())
+        try
         {
-            throw new PersistenceException("Object of type " + entity.getClass().getName() + " is not versioned so cannot lock optimistically!");
-        }
+            AbstractClassMetaData cmd = ec.getMetaDataManager().getMetaDataForClass(entity.getClass(), ec.getClassLoaderResolver());
+            if ((lock == LockModeType.OPTIMISTIC || lock == LockModeType.OPTIMISTIC_FORCE_INCREMENT) && !cmd.isVersioned())
+            {
+                throw new PersistenceException("Object of type " + entity.getClass().getName() + " is not versioned so cannot lock optimistically!");
+            }
 
-        if (lock != null && lock != LockModeType.NONE)
+            if (lock != null && lock != LockModeType.NONE)
+            {
+                // For pessimistic modes this will do a "SELECT ... FOR UPDATE" on the object.
+                // For optimistic modes this will just mark the lock type in the ObjectProvider for later handling
+                ec.getLockManager().lock(ec.findObjectProvider(entity), getLockModeForJPALockModeType(lock));
+            }
+        }
+        finally
         {
-            // For pessimistic modes this will do a "SELECT ... FOR UPDATE" on the object.
-            // For optimistic modes this will just mark the lock type in the ObjectProvider for later handling
-            ec.getLockManager().lock(ec.findObjectProvider(entity), getLockModeForJPALockModeType(lock));
+            // TODO Reset properties to previous values
         }
     }
 
@@ -823,11 +830,11 @@ public class JPAEntityManager implements EntityManager
         {
             throwException(new EntityNotFoundException(Localiser.msg("EM.EntityNotInDatastore", StringUtils.toJVMIDString(entity))));
         }
-        if (properties != null) // TODO Should be for just this operation
+
+        if (properties != null)
         {
             ec.setProperties(properties);
         }
-
         try
         {
             if (lock != null && lock != LockModeType.NONE)
@@ -841,6 +848,10 @@ public class JPAEntityManager implements EntityManager
         catch (NucleusException ne)
         {
             throwException(JPAAdapter.getJPAExceptionForNucleusException(ne));
+        }
+        finally
+        {
+            // TODO Reset properties to previous values
         }
     }
 
