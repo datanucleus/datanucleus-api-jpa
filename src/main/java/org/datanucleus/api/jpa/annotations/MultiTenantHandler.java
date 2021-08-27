@@ -21,9 +21,11 @@ import java.util.Map;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.AbstractClassMetaData;
-import org.datanucleus.metadata.MetaData;
+import org.datanucleus.metadata.ColumnMetaData;
+import org.datanucleus.metadata.MultitenancyMetaData;
 import org.datanucleus.metadata.annotations.AnnotationObject;
 import org.datanucleus.metadata.annotations.ClassAnnotationHandler;
+import org.datanucleus.util.StringUtils;
 
 /**
  * Handler for the {@link MultiTenant} annotation when applied to a field/property of a persistable class, or when applied to a class itself.
@@ -36,25 +38,34 @@ public class MultiTenantHandler implements ClassAnnotationHandler
     @Override
     public void processClassAnnotation(AnnotationObject annotation, AbstractClassMetaData cmd, ClassLoaderResolver clr)
     {
-        cmd.addExtension(MetaData.EXTENSION_CLASS_MULTITENANT, "true");
+        MultitenancyMetaData mtmd = cmd.newMultitenancyMetaData();
 
         Map<String, Object> annotationValues = annotation.getNameValueMap();
+
         String columnName = (String)annotationValues.get("column");
-        if (columnName != null && columnName.length() > 0)
-        {
-            cmd.addExtension(MetaData.EXTENSION_CLASS_MULTITENANCY_COLUMN_NAME, columnName);
-        }
-
         Integer colLength = (Integer)annotationValues.get("columnLength");
-        if (colLength != null && colLength > 0)
-        {
-            cmd.addExtension(MetaData.EXTENSION_CLASS_MULTITENANCY_COLUMN_LENGTH, "" + colLength);
-        }
-
         String jdbcType = (String)annotationValues.get("jdbcType");
-        if (jdbcType != null && jdbcType.length() > 0)
+
+        if (colLength != null || !StringUtils.isWhitespace(jdbcType))
         {
-            cmd.addExtension(MetaData.EXTENSION_CLASS_MULTITENANCY_JDBC_TYPE, jdbcType);
+            ColumnMetaData colmd = mtmd.newColumnMetaData();
+            if (!StringUtils.isWhitespace(columnName))
+            {
+                mtmd.setColumnName(columnName);
+                colmd.setName(columnName);
+            }
+            if (colLength != null)
+            {
+                colmd.setLength(colLength);
+            }
+            if (!StringUtils.isWhitespace(jdbcType))
+            {
+                colmd.setJdbcType(jdbcType);
+            }
+        }
+        else if (!StringUtils.isWhitespace(columnName))
+        {
+            mtmd.setColumnName(columnName);
         }
     }
 }
