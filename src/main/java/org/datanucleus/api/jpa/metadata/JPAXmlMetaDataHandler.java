@@ -48,7 +48,7 @@ import org.datanucleus.metadata.FieldMetaData;
 import org.datanucleus.metadata.FieldPersistenceModifier;
 import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.ForeignKeyMetaData;
-import org.datanucleus.metadata.IdentityMetaData;
+import org.datanucleus.metadata.DatastoreIdentityMetaData;
 import org.datanucleus.metadata.ValueGenerationStrategy;
 import org.datanucleus.metadata.IdentityType;
 import org.datanucleus.metadata.IndexMetaData;
@@ -867,7 +867,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
             {
                 // DataNucleus Extension : Datastore Identity
                 ClassMetaData cmd = (ClassMetaData)getStack();
-                IdentityMetaData idmd = cmd.newIdentityMetadata();
+                DatastoreIdentityMetaData idmd = cmd.newDatastoreIdentityMetadata();
                 String dsidColName = getAttr(attrs, "column");
                 if (!StringUtils.isWhitespace(dsidColName))
                 {
@@ -1763,10 +1763,10 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     }
                     fmd.setValueGeneratorName(getAttr(attrs, "generator"));
                 }
-                else if (md instanceof IdentityMetaData)
+                else if (md instanceof DatastoreIdentityMetaData)
                 {
                     // DataNucleus extension
-                    IdentityMetaData idmd = (IdentityMetaData)md;
+                    DatastoreIdentityMetaData idmd = (DatastoreIdentityMetaData)md;
                     String strategy = getAttr(attrs, "strategy");
                     if (strategy != null)
                     {
@@ -1879,9 +1879,9 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     // We don't know if this field is a collection or map so just put this as the column on the member and let it's population sort it out
                     mmd.addColumn(colmd);
                 }
-                else if (md instanceof IdentityMetaData)
+                else if (md instanceof DatastoreIdentityMetaData)
                 {
-                    IdentityMetaData idmd = (IdentityMetaData)md;
+                    DatastoreIdentityMetaData idmd = (DatastoreIdentityMetaData)md;
                     idmd.setColumnMetaData(colmd);
                 }
                 else if (md instanceof VersionMetaData)

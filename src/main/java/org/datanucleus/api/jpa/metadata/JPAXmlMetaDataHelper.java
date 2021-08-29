@@ -92,9 +92,9 @@ public class JPAXmlMetaDataHelper
         if (cmd.getIdentityType() != null && cmd.getIdentityType() == IdentityType.DATASTORE)
         {
             str.append(prefix).append(indent).append("<datastore-id");
-            if (cmd.getIdentityMetaData().getColumnName() != null)
+            if (cmd.getDatastoreIdentityMetaData().getColumnName() != null)
             {
-                str.append(" column=\"").append(cmd.getIdentityMetaData().getColumnName()).append("\"");
+                str.append(" column=\"").append(cmd.getDatastoreIdentityMetaData().getColumnName()).append("\"");
             }
             // TODO Add generated-value
             str.append("/>");
