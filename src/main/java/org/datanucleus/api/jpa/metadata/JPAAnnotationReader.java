@@ -179,7 +179,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         AnnotationObject persistableAnnotation = isClassPersistable(annotations);
         if (persistableAnnotation != null)
         {
-            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd = pmd.newClassMetaData(ClassUtils.getClassNameForClass(cls));
             cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_CAPABLE);
 
             // Set entity name
@@ -197,12 +197,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         }
         else if (isClassPersistenceAware(annotations))
         {
-            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd = pmd.newClassMetaData(ClassUtils.getClassNameForClass(cls));
             cmd.setPersistenceModifier(ClassPersistenceModifier.PERSISTENCE_AWARE);
         }
         else if (doesClassHaveNamedQueries(annotations))
         {
-            cmd = pmd.newClassMetadata(ClassUtils.getClassNameForClass(cls));
+            cmd = pmd.newClassMetaData(ClassUtils.getClassNameForClass(cls));
             cmd.setPersistenceModifier(ClassPersistenceModifier.NON_PERSISTENT);
         }
         else if (doesClassHaveConverter(cls, annotations))
@@ -247,7 +247,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                     if (inhmd == null)
                     {
-                        inhmd = cmd.newInheritanceMetadata();
+                        inhmd = cmd.newInheritanceMetaData();
                     }
                     inhmd.setStrategy(InheritanceStrategy.SUBCLASS_TABLE);
                 }
@@ -256,7 +256,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             {
                 // extension to allow datastore-identity
                 cmd.setIdentityType(IdentityType.DATASTORE);
-                DatastoreIdentityMetaData idmd = cmd.newDatastoreIdentityMetadata();
+                DatastoreIdentityMetaData idmd = cmd.newDatastoreIdentityMetaData();
                 idmd.setColumnName((String)annotationValues.get("column"));
 
                 Column[] columns = (Column[]) annotationValues.get("columns");
@@ -290,7 +290,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             else if (annName.equals(JPAAnnotationUtils.SURROGATE_VERSION))
             {
                 // extension to allow surrogate version
-                VersionMetaData vermd = cmd.newVersionMetadata();
+                VersionMetaData vermd = cmd.newVersionMetaData();
                 vermd.setStrategy(VersionStrategy.VERSION_NUMBER);
                 String colName = (String)annotationValues.get("columnName");
                 if (!StringUtils.isWhitespace(colName))
@@ -397,7 +397,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                 if (inhmd == null)
                 {
-                    inhmd = cmd.newInheritanceMetadata();
+                    inhmd = cmd.newInheritanceMetaData();
                 }
 
                 // Only valid in the root class
@@ -425,12 +425,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                 if (inhmd == null)
                 {
-                    inhmd = cmd.newInheritanceMetadata();
+                    inhmd = cmd.newInheritanceMetaData();
                 }
                 DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
                 if (dismd == null)
                 {
-                    dismd = inhmd.newDiscriminatorMetadata();
+                    dismd = inhmd.newDiscriminatorMetaData();
                 }
 
                 String discriminatorColumnName = (String)annotationValues.get("name");
@@ -486,12 +486,12 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                 if (inhmd == null)
                 {
-                    inhmd = cmd.newInheritanceMetadata();
+                    inhmd = cmd.newInheritanceMetaData();
                 }
                 DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
                 if (dismd == null)
                 {
-                    dismd = inhmd.newDiscriminatorMetadata();
+                    dismd = inhmd.newDiscriminatorMetaData();
                 }
 
                 // Using value-map strategy, with the specified value
@@ -541,7 +541,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             else if (annName.equals(JPAAnnotationUtils.PRIMARY_KEY_JOIN_COLUMN))
             {
                 // Override the PK column name when we have a persistent superclass
-                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetaData();
 
                 ColumnMetaData pkcolMd = new ColumnMetaData();
                 pkcolMd.setName((String)annotationValues.get("name"));
@@ -551,7 +551,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
                 if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
                 {
-                    ForeignKeyMetaData fkmd = cmd.newForeignKeyMetadata();
+                    ForeignKeyMetaData fkmd = cmd.newForeignKeyMetaData();
                     fkmd.setName(fk.name());
                     fkmd.setFkDefinition(fk.foreignKeyDefinition());
                     fkmd.addColumn(pkcolMd);
@@ -566,13 +566,13 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                 // Override the PK column names when we have a persistent superclass
                 PrimaryKeyJoinColumn[] values = (PrimaryKeyJoinColumn[])annotationValues.get("value");
 
-                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetadata();
+                PrimaryKeyMetaData pkmd = cmd.newPrimaryKeyMetaData();
 
                 ForeignKey fk = (ForeignKey) annotationValues.get("foreignKey");
                 ForeignKeyMetaData fkmd = null;
                 if (fk != null && fk.value() != ConstraintMode.PROVIDER_DEFAULT)
                 {
-                    fkmd = cmd.newForeignKeyMetadata();
+                    fkmd = cmd.newForeignKeyMetaData();
                     fkmd.setName(fk.name());
                     fkmd.setFkDefinition(fk.foreignKeyDefinition());
                     if (fk.value() == ConstraintMode.NO_CONSTRAINT)
@@ -2714,7 +2714,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
             else if (annName.equals(JPAAnnotationUtils.VERSION))
             {
                 // Tag this field as the version field
-                VersionMetaData vermd = cmd.newVersionMetadata();
+                VersionMetaData vermd = cmd.newVersionMetaData();
                 vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setFieldName(mmd.getName());
 
                 if (modifier == null)
@@ -3447,7 +3447,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
         {
             allocationSize = Integer.valueOf(50); // JPA default
         }
-        SequenceMetaData seqmd = pmd.newSequenceMetadata(name, null);
+        SequenceMetaData seqmd = pmd.newSequenceMetaData(name, null);
         seqmd.setDatastoreSequence(seqName);
         seqmd.setInitialValue(initialValue.intValue());
         seqmd.setAllocationSize(allocationSize.intValue());
@@ -3471,7 +3471,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
      */
     private void processTableGeneratorAnnotation(PackageMetaData pmd, Map<String, Object> annotationValues)
     {
-        TableGeneratorMetaData tgmd = pmd.newTableGeneratorMetadata((String)annotationValues.get("name"));
+        TableGeneratorMetaData tgmd = pmd.newTableGeneratorMetaData((String)annotationValues.get("name"));
         tgmd.setTableName((String)annotationValues.get("table"));
         tgmd.setCatalogName((String)annotationValues.get("catalog"));
         tgmd.setSchemaName((String)annotationValues.get("schema"));

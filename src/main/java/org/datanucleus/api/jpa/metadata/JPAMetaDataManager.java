@@ -41,7 +41,7 @@ import org.datanucleus.metadata.DiscriminatorStrategy;
 import org.datanucleus.metadata.EventListenerMetaData;
 import org.datanucleus.metadata.FileMetaData;
 import org.datanucleus.metadata.MetaDataManagerImpl;
-import org.datanucleus.metadata.MetadataFileType;
+import org.datanucleus.metadata.MetaDataFileType;
 import org.datanucleus.metadata.PackageMetaData;
 import org.datanucleus.metadata.xml.XmlMetaDataParser;
 import org.datanucleus.util.Localiser;
@@ -190,7 +190,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
         }
 
         // Register the classes and interfaces for later use
-        if (filemd.getType() == MetadataFileType.JPA_MAPPING_FILE || filemd.getType() == MetadataFileType.ANNOTATIONS)
+        if (filemd.getType() == MetaDataFileType.JPA_MAPPING_FILE || filemd.getType() == MetaDataFileType.ANNOTATIONS)
         {
             for (int i = 0; i < filemd.getNoOfPackages(); i++)
             {

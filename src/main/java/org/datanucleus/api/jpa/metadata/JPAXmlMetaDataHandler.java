@@ -61,7 +61,7 @@ import org.datanucleus.metadata.KeyMetaData;
 import org.datanucleus.metadata.MapMetaData;
 import org.datanucleus.metadata.MetaData;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.metadata.MetadataFileType;
+import org.datanucleus.metadata.MetaDataFileType;
 import org.datanucleus.metadata.MultitenancyMetaData;
 import org.datanucleus.metadata.NullValue;
 import org.datanucleus.metadata.OrderMetaData;
@@ -422,7 +422,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
             if (localName.equals("entity-mappings"))
             {
                 FileMetaData filemd = (FileMetaData)getStack();
-                filemd.setType(MetadataFileType.JPA_MAPPING_FILE);
+                filemd.setType(MetaDataFileType.JPA_MAPPING_FILE);
             }
             else if (localName.equals("description"))
             {
@@ -479,7 +479,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     else
                     {
                         // Add a dummy (root) package to hold our sequences since no default package name set
-                        pmd = filemd.newPackageMetadata("");
+                        pmd = filemd.newPackageMetaData("");
                     }
                 }
                 String initValue = getAttr(attrs, "initial-value");
@@ -492,7 +492,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 {
                     allocSize = "50"; // JPA default
                 }
-                SequenceMetaData seqmd = pmd.newSequenceMetadata(getAttr(attrs, "name"), null);
+                SequenceMetaData seqmd = pmd.newSequenceMetaData(getAttr(attrs, "name"), null);
                 String datastoreSeqName = getAttr(attrs, "sequence-name");
                 if (StringUtils.isWhitespace(datastoreSeqName))
                 {
@@ -530,10 +530,10 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     else
                     {
                         // Add a dummy (root) package to hold our sequences since no default package name set
-                        pmd = filemd.newPackageMetadata("");
+                        pmd = filemd.newPackageMetaData("");
                     }
                 }
-                TableGeneratorMetaData tgmd = pmd.newTableGeneratorMetadata(getAttr(attrs, "name"));
+                TableGeneratorMetaData tgmd = pmd.newTableGeneratorMetaData(getAttr(attrs, "name"));
                 tgmd.setTableName(getAttr(attrs, "table"));
                 tgmd.setCatalogName(getAttr(attrs, "catalog"));
                 tgmd.setSchemaName(getAttr(attrs, "schema"));
@@ -550,7 +550,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 if (md instanceof FileMetaData)
                 {
                     FileMetaData filemd = (FileMetaData)md;
-                    QueryMetaData qmd = filemd.newQueryMetadata(getAttr(attrs, "name"));
+                    QueryMetaData qmd = filemd.newQueryMetaData(getAttr(attrs, "name"));
                     qmd.setLanguage(QueryLanguage.JPQL.toString());
                     pushStack(qmd);
                 }
@@ -575,7 +575,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 if (md instanceof FileMetaData)
                 {
                     FileMetaData filemd = (FileMetaData)md;
-                    QueryMetaData qmd = filemd.newQueryMetadata(getAttr(attrs, "name"));
+                    QueryMetaData qmd = filemd.newQueryMetaData(getAttr(attrs, "name"));
                     qmd.setLanguage(QueryLanguage.SQL.toString());
                     qmd.setResultClass(getAttr(attrs, "result-class"));
                     qmd.setResultMetaDataName(getAttr(attrs, "result-set-mapping"));
@@ -669,7 +669,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 if (md instanceof FileMetaData)
                 {
                     FileMetaData filemd = (FileMetaData)md;
-                    QueryResultMetaData qrmd = filemd.newQueryResultMetadata(getAttr(attrs, "name"));
+                    QueryResultMetaData qrmd = filemd.newQueryResultMetaData(getAttr(attrs, "name"));
                     pushStack(qrmd);
                 }
                 else if (md instanceof ClassMetaData)
@@ -740,7 +740,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     if (packageName != null)
                     {
                         // Class fully qualified so add its package
-                        pmd = filemd.newPackageMetadata(packageName);
+                        pmd = filemd.newPackageMetaData(packageName);
                     }
                     else if (defaultPackageName != null)
                     {
@@ -750,7 +750,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     else
                     {
                         // Add root package
-                        pmd = filemd.newPackageMetadata("");
+                        pmd = filemd.newPackageMetaData("");
                     }
                 }
 
@@ -790,7 +790,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     if (packageName != null)
                     {
                         // Class fully qualified so add its package
-                        pmd = filemd.newPackageMetadata(packageName);
+                        pmd = filemd.newPackageMetaData(packageName);
                     }
                     else if (defaultPackageName != null)
                     {
@@ -800,7 +800,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     else
                     {
                         // Add root package
-                        pmd = filemd.newPackageMetadata("");
+                        pmd = filemd.newPackageMetaData("");
                     }
                 }
 
@@ -830,7 +830,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     if (packageName != null)
                     {
                         // Class fully qualified so add its package
-                        pmd = filemd.newPackageMetadata(packageName);
+                        pmd = filemd.newPackageMetaData(packageName);
                     }
                     else if (defaultPackageName != null)
                     {
@@ -840,7 +840,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     else
                     {
                         // Add root package
-                        pmd = filemd.newPackageMetadata("");
+                        pmd = filemd.newPackageMetaData("");
                     }
                 }
 
@@ -867,7 +867,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
             {
                 // DataNucleus Extension : Datastore Identity
                 ClassMetaData cmd = (ClassMetaData)getStack();
-                DatastoreIdentityMetaData idmd = cmd.newDatastoreIdentityMetadata();
+                DatastoreIdentityMetaData idmd = cmd.newDatastoreIdentityMetaData();
                 String dsidColName = getAttr(attrs, "column");
                 if (!StringUtils.isWhitespace(dsidColName))
                 {
@@ -886,7 +886,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
             {
                 // DataNucleus Extension : Surrogate Version
                 ClassMetaData cmd = (ClassMetaData)getStack();
-                VersionMetaData vermd = cmd.newVersionMetadata();
+                VersionMetaData vermd = cmd.newVersionMetaData();
                 String verColName = getAttr(attrs, "column");
                 if (!StringUtils.isWhitespace(verColName))
                 {
@@ -977,12 +977,12 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                     if (inhmd == null)
                     {
-                        inhmd = cmd.newInheritanceMetadata();
+                        inhmd = cmd.newInheritanceMetaData();
                     }
                     JoinMetaData inhJoinmd = inhmd.getJoinMetaData();
                     if (inhJoinmd == null)
                     {
-                        inhJoinmd = inhmd.newJoinMetadata();
+                        inhJoinmd = inhmd.newJoinMetaData();
                     }
                     inhJoinmd.addColumn(colmd);
                 }
@@ -1395,7 +1395,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     AbstractClassMetaData cmd = (AbstractClassMetaData)md;
                     if (!StringUtils.isWhitespace(idxColStr))
                     {
-                        IndexMetaData idxmd = cmd.newIndexMetadata();
+                        IndexMetaData idxmd = cmd.newIndexMetaData();
                         String[] colNames = StringUtils.split(idxColStr, ",");
                         for (int i=0;i<colNames.length;i++)
                         {
@@ -1451,7 +1451,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 if (md instanceof AbstractClassMetaData)
                 {
                     AbstractClassMetaData cmd = (AbstractClassMetaData)md;
-                    ForeignKeyMetaData fkmd = cmd.newForeignKeyMetadata();
+                    ForeignKeyMetaData fkmd = cmd.newForeignKeyMetaData();
                     fkmd.setName(fkName);
                     fkmd.setFkDefinition(fkDefinition);
                     if (fkConstraintMode != null)
@@ -1542,12 +1542,12 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     InheritanceMetaData inhmd = cmd.getInheritanceMetaData();
                     if (inhmd == null)
                     {
-                        inhmd = cmd.newInheritanceMetadata();
+                        inhmd = cmd.newInheritanceMetaData();
                     }
                     JoinMetaData joinmd = inhmd.getJoinMetaData();
                     if (joinmd == null)
                     {
-                        joinmd = inhmd.newJoinMetadata();
+                        joinmd = inhmd.newJoinMetaData();
                     }
                     ForeignKeyMetaData fkmd = joinmd.newForeignKeyMetaData();
                     fkmd.setName(fkName);
@@ -1665,7 +1665,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     AbstractMemberMetaData mmd = newFieldObject(cmd, attrs, "EAGER");
 
                     // Tag this field as the version field
-                    VersionMetaData vermd = cmd.newVersionMetadata();
+                    VersionMetaData vermd = cmd.newVersionMetaData();
                     vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setFieldName(mmd.getName());
 
                     pushStack(mmd);
@@ -1693,14 +1693,14 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     if (mmgr.getNucleusContext().getConfiguration().getBooleanProperty(PropertyNames.PROPERTY_METADATA_USE_DISCRIMINATOR_DEFAULT_CLASS_NAME))
                     {
                         // Legacy handling, DN <= 5.0.2
-                        dismd = inhmd.newDiscriminatorMetadata();
+                        dismd = inhmd.newDiscriminatorMetaData();
                         dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
                         dismd.setValue(cmd.getFullClassName()); // Default to class name as value unless set
                         dismd.setIndexed("true");
                     }
                     else
                     {
-                        dismd = inhmd.newDiscriminatorMetadata();
+                        dismd = inhmd.newDiscriminatorMetaData();
                         dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP_ENTITY_NAME);
                         dismd.setIndexed("true");
                     }
@@ -2585,7 +2585,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 {
                     // Add the default package
                     FileMetaData filemd = (FileMetaData)md;
-                    filemd.newPackageMetadata(currentString);
+                    filemd.newPackageMetaData(currentString);
                     defaultPackageName = currentString;
                 }
             }
@@ -2606,7 +2606,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     DiscriminatorMetaData dismd = inhmd.getDiscriminatorMetaData();
                     if (dismd == null)
                     {
-                        dismd = inhmd.newDiscriminatorMetadata();
+                        dismd = inhmd.newDiscriminatorMetaData();
                     }
                     dismd.setValue(discrimValue);
                     dismd.setStrategy(DiscriminatorStrategy.VALUE_MAP);
