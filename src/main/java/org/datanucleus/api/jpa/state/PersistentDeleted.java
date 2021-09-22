@@ -44,55 +44,55 @@ class PersistentDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionMakeNontransactional(ObjectProvider op)
+    public LifeCycleState transitionMakeNontransactional(ObjectProvider sm)
     {
-        throw new NucleusUserException(Localiser.msg("027007"),op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027007"),sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakeTransient(ObjectProvider op, boolean useFetchPlan, boolean detachAllOnCommit)
+    public LifeCycleState transitionMakeTransient(ObjectProvider sm, boolean useFetchPlan, boolean detachAllOnCommit)
     {
-        throw new NucleusUserException(Localiser.msg("027008"),op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027008"),sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakePersistent(ObjectProvider op)
+    public LifeCycleState transitionMakePersistent(ObjectProvider sm)
     {
-        return changeState(op, P_CLEAN);
+        return changeState(sm, P_CLEAN);
     }
 
     @Override
-    public LifeCycleState transitionCommit(ObjectProvider op, Transaction tx)
+    public LifeCycleState transitionCommit(ObjectProvider sm, Transaction tx)
     {
         if (!tx.getRetainValues())
         {
-            op.clearFields();
+            sm.clearFields();
         }
-        return changeState(op, TRANSIENT);
+        return changeState(sm, TRANSIENT);
     }
 
     @Override
-    public LifeCycleState transitionRollback(ObjectProvider op, Transaction tx)
+    public LifeCycleState transitionRollback(ObjectProvider sm, Transaction tx)
     {
         if (tx.getRetainValues())
         {
             if (tx.getRestoreValues())
             {
-                op.restoreFields();
+                sm.restoreFields();
             }
 
-            return changeState(op, P_NONTRANS);
+            return changeState(sm, P_NONTRANS);
         }
 
-        op.clearNonPrimaryKeyFields();
-        op.clearSavedFields();
-        return changeState(op, HOLLOW);
+        sm.clearNonPrimaryKeyFields();
+        sm.clearSavedFields();
+        return changeState(sm, HOLLOW);
     }
 
     @Override
-    public LifeCycleState transitionWriteField(ObjectProvider op)
+    public LifeCycleState transitionWriteField(ObjectProvider sm)
     {
-        throw new NucleusUserException(Localiser.msg("027010"),op.getInternalObjectId());
+        throw new NucleusUserException(Localiser.msg("027010"),sm.getInternalObjectId());
     }
 
     /**

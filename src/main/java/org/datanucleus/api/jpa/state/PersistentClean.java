@@ -44,124 +44,124 @@ class PersistentClean extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionDeletePersistent(ObjectProvider op)
+    public LifeCycleState transitionDeletePersistent(ObjectProvider sm)
     {
-        return changeState(op, P_DELETED);
+        return changeState(sm, P_DELETED);
     }
 
     @Override
-    public LifeCycleState transitionMakeNontransactional(ObjectProvider op)
+    public LifeCycleState transitionMakeNontransactional(ObjectProvider sm)
     {
-        op.clearSavedFields();
-        return changeState(op, P_NONTRANS);
+        sm.clearSavedFields();
+        return changeState(sm, P_NONTRANS);
     }
 
     @Override
-    public LifeCycleState transitionMakeTransient(ObjectProvider op, boolean useFetchPlan, boolean detachAllOnCommit)
+    public LifeCycleState transitionMakeTransient(ObjectProvider sm, boolean useFetchPlan, boolean detachAllOnCommit)
     {
         if (useFetchPlan)
         {
-            op.loadUnloadedFieldsInFetchPlan();
+            sm.loadUnloadedFieldsInFetchPlan();
         }
-        return changeState(op, TRANSIENT);
+        return changeState(sm, TRANSIENT);
     }
 
     @Override
-    public LifeCycleState transitionCommit(ObjectProvider op, Transaction tx)
+    public LifeCycleState transitionCommit(ObjectProvider sm, Transaction tx)
     {
-        op.clearSavedFields();
+        sm.clearSavedFields();
 
         if (tx.getRetainValues())
         {
-            return changeState(op, P_NONTRANS);
+            return changeState(sm, P_NONTRANS);
         }
 
-        if (op.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
+        if (sm.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
         {
-            op.clearNonPrimaryKeyFields();
+            sm.clearNonPrimaryKeyFields();
         }
-        return changeState(op, HOLLOW);
+        return changeState(sm, HOLLOW);
     }
 
     @Override
-    public LifeCycleState transitionRollback(ObjectProvider op, Transaction tx)
+    public LifeCycleState transitionRollback(ObjectProvider sm, Transaction tx)
     {
         if (tx.getRestoreValues())
         {
-            op.restoreFields();
-            return changeState(op, P_NONTRANS);
+            sm.restoreFields();
+            return changeState(sm, P_NONTRANS);
         }
 
-        if (op.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
+        if (sm.getClassMetaData().getIdentityType() != IdentityType.NONDURABLE)
         {
-            op.clearNonPrimaryKeyFields();
+            sm.clearNonPrimaryKeyFields();
         }
-        op.clearSavedFields();
-        return changeState(op, HOLLOW);
+        sm.clearSavedFields();
+        return changeState(sm, HOLLOW);
     }
 
     @Override
-    public LifeCycleState transitionEvict(ObjectProvider op)
+    public LifeCycleState transitionEvict(ObjectProvider sm)
     {
-        op.clearNonPrimaryKeyFields();
-        op.clearSavedFields();
-        return changeState(op, HOLLOW);
+        sm.clearNonPrimaryKeyFields();
+        sm.clearSavedFields();
+        return changeState(sm, HOLLOW);
     }
 
     @Override
-    public LifeCycleState transitionWriteField(ObjectProvider op)
+    public LifeCycleState transitionWriteField(ObjectProvider sm)
     {
-        Transaction tx = op.getExecutionContext().getTransaction();
+        Transaction tx = sm.getExecutionContext().getTransaction();
         if (tx.getRestoreValues())
         {
-            op.saveFields();
+            sm.saveFields();
         }
 
-        return changeState(op, P_DIRTY);
+        return changeState(sm, P_DIRTY);
     }
 
     @Override
-	public LifeCycleState transitionRefresh(ObjectProvider op)
+	public LifeCycleState transitionRefresh(ObjectProvider sm)
 	{
-		op.clearSavedFields();
+		sm.clearSavedFields();
 
         // Refresh the FetchPlan fields and unload all others
-        op.refreshFieldsInFetchPlan();
-        op.unloadNonFetchPlanFields();
+        sm.refreshFieldsInFetchPlan();
+        sm.unloadNonFetchPlanFields();
 
-        Transaction tx = op.getExecutionContext().getTransaction();
+        Transaction tx = sm.getExecutionContext().getTransaction();
 		if (tx.isActive())
 		{
-			return changeState(op,P_CLEAN);
+			return changeState(sm, P_CLEAN);
 		}
-		return changeState(op,P_NONTRANS);      
+		return changeState(sm, P_NONTRANS);      
 	}
 
     @Override
-    public LifeCycleState transitionRetrieve(ObjectProvider op, boolean fgOnly)
+    public LifeCycleState transitionRetrieve(ObjectProvider sm, boolean fgOnly)
     {
 		if (fgOnly)
         {
-            op.loadUnloadedFieldsInFetchPlan();
+            sm.loadUnloadedFieldsInFetchPlan();
         }
 		else
         {
-			op.loadUnloadedFields();
+			sm.loadUnloadedFields();
         }
         return this;
     }
 
     @Override
-    public LifeCycleState transitionRetrieve(ObjectProvider op, FetchPlan fetchPlan)
+    public LifeCycleState transitionRetrieve(ObjectProvider sm, FetchPlan fetchPlan)
     {
-        op.loadUnloadedFieldsOfClassInFetchPlan(fetchPlan);
+        sm.loadUnloadedFieldsOfClassInFetchPlan(fetchPlan);
         return this;
     }
 
     @Override
-    public LifeCycleState transitionDetach(ObjectProvider op)
+    public LifeCycleState transitionDetach(ObjectProvider sm)
     {
-        return changeState(op, DETACHED_CLEAN);
+        return changeState(sm, DETACHED_CLEAN);
     }
 
     /**

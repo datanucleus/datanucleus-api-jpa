@@ -88,8 +88,8 @@ public class JPACallbackHandler implements CallbackHandler
         }
         if (beanValidationHandler != null)
         {
-            ObjectProvider op = ec.findObjectProvider(pc);
-            if (!op.getLifecycleState().isNew())
+            ObjectProvider sm = ec.findObjectProvider(pc);
+            if (!sm.getLifecycleState().isNew())
             {
                 // Don't fire this when persisting new since we will have done prePersist
                 beanValidationHandler.preStore(pc);

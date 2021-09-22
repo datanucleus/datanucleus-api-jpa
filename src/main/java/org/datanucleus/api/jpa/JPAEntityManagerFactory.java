@@ -1045,8 +1045,8 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             return false;
         }
-        ObjectProvider op = ec.findObjectProvider(entity);
-        if (op == null)
+        ObjectProvider sm = ec.findObjectProvider(entity);
+        if (sm == null)
         {
             // Not managed
             return false;
@@ -1059,7 +1059,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             return false;
         }
 
-        String[] loadedFields = op.getLoadedFieldNames();
+        String[] loadedFields = sm.getLoadedFieldNames();
         if (loadedFields != null)
         {
             for (int j=0;j<loadedFields.length;j++)
