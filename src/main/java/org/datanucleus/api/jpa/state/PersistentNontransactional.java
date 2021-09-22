@@ -43,22 +43,13 @@ class PersistentNontransactional extends LifeCycleState
         stateType = P_NONTRANS;
     }
 
-    /**
-     * Method to transition to delete persistent.
-     * @param op ObjectProvider.
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionDeletePersistent(ObjectProvider op)
     {
         return changeState(op, P_DELETED);
     }
 
-    /**
-     * Method to transition to transactional.
-     * @param op ObjectProvider.
-     * @param refreshFields Whether to refresh loaded fields
-     * @return new LifeCycle state.
-     */
+    @Override
     public LifeCycleState transitionMakeTransactional(ObjectProvider op, boolean refreshFields)
     {
         if (refreshFields)
@@ -68,12 +59,7 @@ class PersistentNontransactional extends LifeCycleState
         return changeState(op, P_CLEAN);
     }
 
-    /**
-     * Method to transition to transient.
-     * @param op ObjectProvider.
-     * @param useFetchPlan to make transient the fields in the fetch plan
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionMakeTransient(ObjectProvider op, boolean useFetchPlan, boolean detachAllOnCommit)
     {
         if (useFetchPlan)
@@ -83,33 +69,19 @@ class PersistentNontransactional extends LifeCycleState
         return changeState(op, TRANSIENT);
     }
 
-    /**
-     * Method to transition to commit state.
-     * @param op ObjectProvider.
-     * @param tx the Transaction been committed.
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionCommit(ObjectProvider op, Transaction tx)
     {
         throw new IllegalStateTransitionException(this, "commit", op);
     }
 
-    /**
-     * Method to transition to rollback state.
-     * @param op ObjectProvider.
-     * @param tx The transaction
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionRollback(ObjectProvider op, Transaction tx)
     {
         throw new IllegalStateTransitionException(this, "rollback", op);
     }
 
-    /**
-     * Method to transition to refresh state.
-     * @param op ObjectProvider.
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionRefresh(ObjectProvider op)
     {
         // Refresh the FetchPlan fields and unload all others
@@ -118,12 +90,8 @@ class PersistentNontransactional extends LifeCycleState
 
         return this;
     }
-    
-    /**
-     * Method to transition to evict state.
-     * @param op ObjectProvider.
-     * @return new LifeCycle state.
-     */
+
+    @Override
     public LifeCycleState transitionEvict(ObjectProvider op)
     {
         op.clearNonPrimaryKeyFields();
@@ -131,12 +99,7 @@ class PersistentNontransactional extends LifeCycleState
         return changeState(op, HOLLOW);
     }
 
-    /**
-     * Method to transition to read-field state.
-     * @param op ObjectProvider.
-     * @param isLoaded if the field was previously loaded.
-     * @return new LifeCycle state.
-     */
+    @Override
     public LifeCycleState transitionReadField(ObjectProvider op, boolean isLoaded)
     {
         Transaction tx = op.getExecutionContext().getTransaction();
@@ -156,11 +119,7 @@ class PersistentNontransactional extends LifeCycleState
         return this;
     }
 
-    /**
-     * Method to transition to write-field state.
-     * @param op ObjectProvider.
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionWriteField(ObjectProvider op)
     {
         Transaction tx = op.getExecutionContext().getTransaction();
@@ -179,12 +138,7 @@ class PersistentNontransactional extends LifeCycleState
         return this;
     }
 
-    /**
-     * Method to transition to retrieve state.
-     * @param op ObjectProvider.
-	 * @param fgOnly only the current fetch group fields
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionRetrieve(ObjectProvider op, boolean fgOnly)
     {
         Transaction tx = op.getExecutionContext().getTransaction();
@@ -230,12 +184,7 @@ class PersistentNontransactional extends LifeCycleState
         }
     }
 
-    /**
-     * Method to transition to retrieve state.
-     * @param op ObjectProvider.
-     * @param fetchPlan the fetch plan to load fields
-     * @return new LifeCycle state.
-     **/
+    @Override
     public LifeCycleState transitionRetrieve(ObjectProvider op, FetchPlan fetchPlan)
     {
         Transaction tx = op.getExecutionContext().getTransaction();
@@ -260,11 +209,7 @@ class PersistentNontransactional extends LifeCycleState
         }
     }
 
-    /**
-     * Method to transition when serialised.
-     * @param op ObjectProvider
-     * @return The new LifeCycle state
-     */
+    @Override
     public LifeCycleState transitionSerialize(ObjectProvider op)
     {
         Transaction tx = op.getExecutionContext().getTransaction();
@@ -275,11 +220,7 @@ class PersistentNontransactional extends LifeCycleState
         return this;
     }
 
-    /**
-     * Method to transition to detached-clean.
-     * @param op ObjectProvider.
-     * @return new LifeCycle state.
-     */
+    @Override
     public LifeCycleState transitionDetach(ObjectProvider op)
     {
         return changeState(op, DETACHED_CLEAN);
