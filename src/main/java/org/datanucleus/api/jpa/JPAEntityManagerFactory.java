@@ -80,7 +80,7 @@ import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.plugin.PluginManager;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.store.connection.ConnectionFactory;
 import org.datanucleus.store.connection.ConnectionResourceType;
 import org.datanucleus.store.query.cache.QueryCompilationCache;
@@ -1045,7 +1045,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         {
             return false;
         }
-        ObjectProvider sm = ec.findObjectProvider(entity);
+        DNStateManager sm = ec.findStateManager(entity);
         if (sm == null)
         {
             // Not managed

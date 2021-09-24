@@ -49,7 +49,7 @@ import org.datanucleus.metadata.PersistenceFileMetaData;
 import org.datanucleus.metadata.PersistenceUnitMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.plugin.PluginManager;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.store.schema.SchemaTool;
 import org.datanucleus.store.schema.SchemaTool.Mode;
 import org.datanucleus.util.ClassUtils;
@@ -160,7 +160,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             return LoadState.UNKNOWN;
         }
 
-        ObjectProvider sm = ec.findObjectProvider(entity);
+        DNStateManager sm = ec.findStateManager(entity);
         if (sm == null)
         {
             return LoadState.UNKNOWN;
@@ -226,7 +226,7 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             return LoadState.UNKNOWN;
         }
 
-        ObjectProvider sm = ec.findObjectProvider(entity);
+        DNStateManager sm = ec.findStateManager(entity);
         if (sm == null)
         {
             return LoadState.UNKNOWN;

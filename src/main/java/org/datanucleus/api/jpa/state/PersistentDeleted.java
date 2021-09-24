@@ -22,7 +22,7 @@ package org.datanucleus.api.jpa.state;
 
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.LifeCycleState;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.transaction.Transaction;
 import org.datanucleus.util.Localiser;
 
@@ -44,25 +44,25 @@ class PersistentDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionMakeNontransactional(ObjectProvider sm)
+    public LifeCycleState transitionMakeNontransactional(DNStateManager sm)
     {
         throw new NucleusUserException(Localiser.msg("027007"),sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakeTransient(ObjectProvider sm, boolean useFetchPlan, boolean detachAllOnCommit)
+    public LifeCycleState transitionMakeTransient(DNStateManager sm, boolean useFetchPlan, boolean detachAllOnCommit)
     {
         throw new NucleusUserException(Localiser.msg("027008"),sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakePersistent(ObjectProvider sm)
+    public LifeCycleState transitionMakePersistent(DNStateManager sm)
     {
         return changeState(sm, P_CLEAN);
     }
 
     @Override
-    public LifeCycleState transitionCommit(ObjectProvider sm, Transaction tx)
+    public LifeCycleState transitionCommit(DNStateManager sm, Transaction tx)
     {
         if (!tx.getRetainValues())
         {
@@ -72,7 +72,7 @@ class PersistentDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionRollback(ObjectProvider sm, Transaction tx)
+    public LifeCycleState transitionRollback(DNStateManager sm, Transaction tx)
     {
         if (tx.getRetainValues())
         {
@@ -90,7 +90,7 @@ class PersistentDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionWriteField(ObjectProvider sm)
+    public LifeCycleState transitionWriteField(DNStateManager sm)
     {
         throw new NucleusUserException(Localiser.msg("027010"),sm.getInternalObjectId());
     }

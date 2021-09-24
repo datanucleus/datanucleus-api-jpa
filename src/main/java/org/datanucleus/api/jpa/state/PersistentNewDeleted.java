@@ -22,7 +22,7 @@ package org.datanucleus.api.jpa.state;
 
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.state.LifeCycleState;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.transaction.Transaction;
 import org.datanucleus.util.Localiser;
 
@@ -44,25 +44,25 @@ class PersistentNewDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionMakeNontransactional(ObjectProvider sm)
+    public LifeCycleState transitionMakeNontransactional(DNStateManager sm)
     {
         throw new NucleusUserException(Localiser.msg("027003"), sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakeTransient(ObjectProvider sm, boolean useFetchPlan, boolean detachAllOnCommit)
+    public LifeCycleState transitionMakeTransient(DNStateManager sm, boolean useFetchPlan, boolean detachAllOnCommit)
     {
         throw new NucleusUserException(Localiser.msg("027004"), sm.getInternalObjectId());
     }
 
     @Override
-    public LifeCycleState transitionMakePersistent(ObjectProvider sm)
+    public LifeCycleState transitionMakePersistent(DNStateManager sm)
     {
         return changeState(sm, P_NEW);
     }
 
     @Override
-    public LifeCycleState transitionCommit(ObjectProvider sm, Transaction tx)
+    public LifeCycleState transitionCommit(DNStateManager sm, Transaction tx)
     {
         if (!tx.getRetainValues())
         {
@@ -72,7 +72,7 @@ class PersistentNewDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionRollback(ObjectProvider sm, Transaction tx)
+    public LifeCycleState transitionRollback(DNStateManager sm, Transaction tx)
     {
         if (tx.getRestoreValues())
         {
@@ -83,13 +83,13 @@ class PersistentNewDeleted extends LifeCycleState
     }
 
     @Override
-    public LifeCycleState transitionReadField(ObjectProvider sm, boolean isLoaded)
+    public LifeCycleState transitionReadField(DNStateManager sm, boolean isLoaded)
     {
         return this;
     }
 
     @Override
-    public LifeCycleState transitionWriteField(ObjectProvider sm)
+    public LifeCycleState transitionWriteField(DNStateManager sm)
     {
         throw new NucleusUserException(Localiser.msg("027006"), sm.getInternalObjectId());
     }

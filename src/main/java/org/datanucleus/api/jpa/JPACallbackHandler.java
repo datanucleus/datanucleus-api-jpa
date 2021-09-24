@@ -42,7 +42,7 @@ import org.datanucleus.api.jpa.metadata.JPAMetaDataManager;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.EventListenerMetaData;
 import org.datanucleus.state.CallbackHandler;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.util.NucleusLogger;
 
 /**
@@ -88,7 +88,7 @@ public class JPACallbackHandler implements CallbackHandler
         }
         if (beanValidationHandler != null)
         {
-            ObjectProvider sm = ec.findObjectProvider(pc);
+            DNStateManager sm = ec.findStateManager(pc);
             if (!sm.getLifecycleState().isNew())
             {
                 // Don't fire this when persisting new since we will have done prePersist

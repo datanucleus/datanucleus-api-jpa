@@ -75,7 +75,7 @@ import org.datanucleus.metadata.StoredProcQueryMetaData;
 import org.datanucleus.metadata.StoredProcQueryParameterMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.state.LockMode;
-import org.datanucleus.state.ObjectProvider;
+import org.datanucleus.state.DNStateManager;
 import org.datanucleus.store.NucleusConnection;
 import org.datanucleus.store.query.AbstractStoredProcedureQuery;
 import org.datanucleus.store.query.compiler.QueryCompilation;
@@ -369,7 +369,7 @@ public class JPAEntityManager implements EntityManager
                 if (pc != null && fetchGraphSpecified)
                 {
                     // Force loading of FetchPlan fields of primary object since entity graph specified
-                    ec.findObjectProvider(pc).loadUnloadedFieldsInFetchPlan();
+                    ec.findStateManager(pc).loadUnloadedFieldsInFetchPlan();
                 }
             }
             catch (NucleusObjectNotFoundException ex)
@@ -381,7 +381,7 @@ public class JPAEntityManager implements EntityManager
             if (ec.getApiAdapter().isTransactional(pc))
             {
                 // transactional instances are not validated, so we check if a deleted instance has been flushed
-                ObjectProvider sm = ec.findObjectProvider(pc);
+                DNStateManager sm = ec.findStateManager(pc);
                 if (ec.getApiAdapter().isDeleted(pc))
                 {
                     try
@@ -570,7 +570,7 @@ public class JPAEntityManager implements EntityManager
             {
                 // For pessimistic modes this will do a "SELECT ... FOR UPDATE" on the object.
                 // For optimistic modes this will just mark the lock type in StateManager for later handling
-                ec.getLockManager().lock(ec.findObjectProvider(entity), getLockModeForJPALockModeType(lock));
+                ec.getLockManager().lock(ec.findStateManager(entity), getLockModeForJPALockModeType(lock));
             }
         }
         finally
@@ -987,7 +987,7 @@ public class JPAEntityManager implements EntityManager
             throw new IllegalArgumentException(Localiser.msg("EM.EntityIsNotManaged", StringUtils.toJVMIDString(entity)));
         }
 
-        ObjectProvider sm = ec.findObjectProvider(entity);
+        DNStateManager sm = ec.findStateManager(entity);
         return getJPALockModeTypeForLockMode(ec.getLockManager().getLockMode(sm));
     }
 
