@@ -83,7 +83,7 @@ public class JPATypeConverterUtils
         return dbType;
     }
 
-    public static AttributeConverter createAttributeConverterInstance(NucleusContext nucCtx, Class attrConverterCls)
+    public static AttributeConverter createAttributeConverterInstance(NucleusContext nucCtx, Class<? extends AttributeConverter> attrConverterCls)
     {
         if (nucCtx instanceof PersistenceNucleusContext)
         {
@@ -93,7 +93,7 @@ public class JPATypeConverterUtils
                 try
                 {
                     // Create stateful AttributeConverter with any injected dependencies
-                    return (AttributeConverter) ctx.getCDIHandler().createObjectWithInjectedDependencies(attrConverterCls);
+                    return ctx.getCDIHandler().createObjectWithInjectedDependencies(attrConverterCls);
                 }
                 catch (Exception e)
                 {
@@ -103,6 +103,6 @@ public class JPATypeConverterUtils
         }
 
         // Create stateless AttributeConverter
-        return (AttributeConverter) ClassUtils.newInstance(attrConverterCls, null, null);
+        return ClassUtils.newInstance(attrConverterCls, null, null);
     }
 }
