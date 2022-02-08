@@ -59,7 +59,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
     protected XmlMetaDataParser metaDataParser = null;
 
     /** EventListeners. Use a list to preserve ordering. */
-    protected List eventListeners = new ArrayList();
+    protected List<EventListenerMetaData> eventListeners = new ArrayList<>();
 
     /** Listeners for notification of when an EntityGraph is registered. */
     protected List<JPAEntityGraphRegistrationListener> entityGraphListeners = new ArrayList<JPAEntityGraphRegistrationListener>();
@@ -111,7 +111,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * Get the event listeners
      * @return the event listeners
      */
-    public List getEventListeners()
+    public List<EventListenerMetaData> getEventListeners()
     {
         return eventListeners;
     }
@@ -121,6 +121,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param fileURL URL of the file
      * @return The FileMetaData for this file
      */
+    @Override
     protected FileMetaData parseXmlFile(URL fileURL)
     {
         if (metaDataParser == null)
@@ -136,6 +137,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param cmd Metadata for the class
      * @param clr ClassLoader resolver
      */
+    @Override
     protected void postProcessClassMetaData(AbstractClassMetaData cmd, ClassLoaderResolver clr)
     {
         if (cmd.getListeners() != null)
@@ -156,6 +158,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param fileURLString URL of the metadata file
      * @param filemd The File MetaData
      */
+    @Override
     public void registerFile(String fileURLString, FileMetaData filemd, ClassLoaderResolver clr)
     {
         if (fileURLString == null)
@@ -311,6 +314,7 @@ public class JPAMetaDataManager extends MetaDataManagerImpl
      * @param clr ClassLoader resolver
      * @return The metadata for this class (if found)
      */
+    @Override
     protected AbstractClassMetaData loadMetaDataForClass(Class c, ClassLoaderResolver clr)
     {
         if (!allowMetaDataLoad)
