@@ -1666,7 +1666,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
 
                     // Tag this field as the version field
                     VersionMetaData vermd = cmd.newVersionMetaData();
-                    vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setFieldName(mmd.getName());
+                    vermd.setStrategy(VersionStrategy.VERSION_NUMBER).setMemberName(mmd.getName());
 
                     pushStack(mmd);
                 }

@@ -75,7 +75,7 @@ public class SingularAttributeImpl<X, T> extends AttributeImpl<X, T> implements 
     public boolean isVersion()
     {
         VersionMetaData vermd = mmd.getAbstractClassMetaData().getVersionMetaData();
-        if (vermd != null && vermd.getFieldName() != null && vermd.getFieldName().equals(mmd.getName()))
+        if (vermd != null && vermd.getMemberName() != null && vermd.getMemberName().equals(mmd.getName()))
         {
             return true;
         }

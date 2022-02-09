@@ -173,7 +173,7 @@ public class IdentifiableTypeImpl<X> extends ManagedTypeImpl<X> implements Ident
      */
     public <Y> SingularAttribute<? super X, Y> getVersion(Class<Y> cls)
     {
-        String verFieldName = (cmd.getVersionMetaData() != null ? cmd.getVersionMetaData().getFieldName() : null);
+        String verFieldName = (cmd.getVersionMetaData() != null ? cmd.getVersionMetaData().getMemberName() : null);
         if (verFieldName != null)
         {
             AbstractMemberMetaData verMmd = cmd.getMetaDataForMember(verFieldName);
