@@ -226,9 +226,9 @@ public class JPAAdapter implements ApiAdapter
     }
 
     @Override
-    public Map getDefaultFactoryProperties()
+    public Map<String, Object> getDefaultFactoryProperties()
     {
-        Map<String, String> props = new HashMap<String, String>();
+        Map<String, Object> props = new HashMap<>();
         props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT, "true"); // detachAllOnCommit in JPA
         props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK, "true"); // detachAllOnRollback in JPA
         props.put(PropertyNames.PROPERTY_COPY_ON_ATTACH, "true"); // JPA spec 3.2.7.1 attach onto copy
