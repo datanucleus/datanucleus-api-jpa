@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,8 +63,8 @@ public class JPAQuery<X> implements TypedQuery<X>
 {
     public static final String QUERY_HINT_TIMEOUT = "javax.persistence.query.timeout";
 
-    public static final String QUERY_HINT_FETCH_SIZE = "datanucleus.query.fetchSize";
-    public static final String QUERY_HINT_IGNORE_CACHE = "datanucleus.query.ignoreCache";
+    public static final String QUERY_HINT_FETCH_SIZE = "datanucleus.query.fetchSize".toLowerCase(Locale.ENGLISH);
+    public static final String QUERY_HINT_IGNORE_CACHE = "datanucleus.query.ignoreCache".toLowerCase(Locale.ENGLISH);
 
     /** Underlying EntityManager handling persistence. */
     JPAEntityManager em;

@@ -17,15 +17,17 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.api.jpa;
 
+import java.util.Locale;
+
 /**
  * Utility providing convenience naming of JPA persistence properties.
  */
 public class JPAPropertyNames
 {
-    public static final String PROPERTY_JPA_ADD_CLASS_TRANSFORMER = "datanucleus.jpa.addClassTransformer";
-    public static final String PROPERTY_JPA_PERSISTENCE_CONTEXT_TYPE = "datanucleus.jpa.persistenceContextType";
-    public static final String PROPERTY_JPA_TRANSACTION_ROLLBACK_ON_EXCEPTION = "datanucleus.jpa.txnMarkForRollbackOnException";
-    public static final String PROPERTY_JPA_SINGLETON_EMF_FOR_NAME = "datanucleus.singletonEMFForName";
+    public static final String PROPERTY_JPA_ADD_CLASS_TRANSFORMER = "datanucleus.jpa.addClassTransformer".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_PERSISTENCE_CONTEXT_TYPE = "datanucleus.jpa.persistenceContextType".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_TRANSACTION_ROLLBACK_ON_EXCEPTION = "datanucleus.jpa.txnMarkForRollbackOnException".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_SINGLETON_EMF_FOR_NAME = "datanucleus.singletonEMFForName".toLowerCase(Locale.ENGLISH);
 
     public static final String PROPERTY_JPA_STANDARD_JDBC_URL = "javax.persistence.jdbc.url";
     public static final String PROPERTY_JPA_STANDARD_JDBC_DRIVER = "javax.persistence.jdbc.driver";
@@ -46,9 +48,9 @@ public class JPAPropertyNames
     public static final String PROPERTY_JPA_STANDARD_SQL_LOAD_SCRIPT_SRC = "javax.persistence.sql-load-script-source";
 
     // Override properties for elements of the persistence.xml
-    public static final String PROPERTY_JPA_STANDARD_JTA_DATASOURCE = "javax.persistence.jtaDataSource";
-    public static final String PROPERTY_JPA_STANDARD_NONJTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
-    public static final String PROPERTY_JPA_STANDARD_TRANSACTION_TYPE = "javax.persistence.transactionType";
-    public static final String PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE = "javax.persistence.sharedCache.mode";
+    public static final String PROPERTY_JPA_STANDARD_JTA_DATASOURCE = "javax.persistence.jtaDataSource".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_STANDARD_NONJTA_DATASOURCE = "javax.persistence.nonJtaDataSource".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_STANDARD_TRANSACTION_TYPE = "javax.persistence.transactionType".toLowerCase(Locale.ENGLISH);
+    public static final String PROPERTY_JPA_STANDARD_SHAREDCACHE_MODE = "javax.persistence.sharedCache.mode".toLowerCase(Locale.ENGLISH);
     public static final String PROPERTY_JPA_STANDARD_VALIDATION_MODE = "javax.persistence.validation.mode";
 }
