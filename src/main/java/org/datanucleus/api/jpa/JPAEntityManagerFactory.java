@@ -32,7 +32,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
@@ -81,7 +80,6 @@ import org.datanucleus.metadata.QueryMetaData;
 import org.datanucleus.metadata.TransactionType;
 import org.datanucleus.plugin.PluginManager;
 import org.datanucleus.state.DNStateManager;
-import org.datanucleus.store.connection.ConnectionFactory;
 import org.datanucleus.store.connection.ConnectionResourceType;
 import org.datanucleus.store.query.cache.QueryCompilationCache;
 import org.datanucleus.store.query.cache.QueryDatastoreCompilationCache;
@@ -238,7 +236,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getNonJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             if (unitInfo.getJtaDataSource() != null)
             {
@@ -251,13 +249,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitInfo.getJtaDataSource() != null)
             {
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY, unitInfo.getJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitInfo.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
                 overridingProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2, unitInfo.getNonJtaDataSource());
-                overridingProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                overridingProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE2, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
@@ -471,7 +469,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitMetaData.getNonJtaDataSource() != null)
             {
                 extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getNonJtaDataSource());
-                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             if (unitMetaData.getJtaDataSource() != null)
             {
@@ -485,13 +483,13 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (unitMetaData.getJtaDataSource() != null)
             {
                 extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
-                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE, ConnectionResourceType.JTA.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE, ConnectionResourceType.JTA.toString());
             }
             if (unitMetaData.getNonJtaDataSource() != null)
             {
                 // Use non-jta for secondary connections
                 extraProps.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
-                extraProps.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE, ConnectionResourceType.RESOURCE_LOCAL.toString());
+                extraProps.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE2, ConnectionResourceType.RESOURCE_LOCAL.toString());
             }
             else
             {
@@ -780,15 +778,15 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
 
         if (unitMetaData.getJtaDataSource() != null)
         {
-            props.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME.toLowerCase(Locale.ENGLISH), unitMetaData.getJtaDataSource());
+            props.put(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME, unitMetaData.getJtaDataSource());
         }
         if (unitMetaData.getNonJtaDataSource() != null)
         {
-            props.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME.toLowerCase(Locale.ENGLISH), unitMetaData.getNonJtaDataSource());
+            props.put(PropertyNames.PROPERTY_CONNECTION_FACTORY2_NAME, unitMetaData.getNonJtaDataSource());
         }
         if (unitMetaData.getTransactionType() != null)
         {
-            props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH), unitMetaData.getTransactionType().toString());
+            props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE, unitMetaData.getTransactionType().toString());
         }
 
         if (unitMetaData.getSharedCacheMode().equalsIgnoreCase("NONE"))
@@ -807,7 +805,7 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             for (Object key : unitProps.keySet())
             {
                 String propName = (String)key;
-                props.put(propName.toLowerCase(Locale.ENGLISH), unitProps.getProperty(propName));
+                props.put(propName.toLowerCase(), unitProps.getProperty(propName));
             }
         }
 
@@ -815,33 +813,33 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
         if (persistenceContextType == PersistenceContextType.TRANSACTION)
         {
             // Need to detach instances at transaction commit
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT.toLowerCase(Locale.ENGLISH), "true");
+                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT, "true");
             }
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK.toLowerCase(Locale.ENGLISH), "true");
+                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK, "true");
             }
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ON_CLOSE.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ON_CLOSE))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ON_CLOSE.toLowerCase(Locale.ENGLISH), "false");
+                props.put(PropertyNames.PROPERTY_DETACH_ON_CLOSE, "false");
             }
         }
         else if (persistenceContextType == PersistenceContextType.EXTENDED)
         {
             // Need to keep instances active until close of EntityManager and then detach
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT.toLowerCase(Locale.ENGLISH), "false");
+                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_COMMIT, "false");
             }
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK.toLowerCase(Locale.ENGLISH), "false");
+                props.put(PropertyNames.PROPERTY_DETACH_ALL_ON_ROLLBACK, "false");
             }
-            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ON_CLOSE.toLowerCase(Locale.ENGLISH)))
+            if (!props.containsKey(PropertyNames.PROPERTY_DETACH_ON_CLOSE))
             {
-                props.put(PropertyNames.PROPERTY_DETACH_ON_CLOSE.toLowerCase(Locale.ENGLISH), "true");
+                props.put(PropertyNames.PROPERTY_DETACH_ON_CLOSE, "true");
             }
         }
 
@@ -850,39 +848,39 @@ public class JPAEntityManagerFactory implements EntityManagerFactory, Persistenc
             if (overridingProps.containsKey(PropertyNames.PROPERTY_CONNECTION_URL))
             {
                 // User providing connectionURL overriding persistence unit so remove any JNDI
-                props.remove(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME.toLowerCase(Locale.ENGLISH));
+                props.remove(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME);
             }
             else if (overridingProps.containsKey(JPAPropertyNames.PROPERTY_JPA_STANDARD_JDBC_URL))
             {
                 // User providing connectionURL overriding persistence unit so remove any JNDI
-                props.remove(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME.toLowerCase(Locale.ENGLISH));
+                props.remove(PropertyNames.PROPERTY_CONNECTION_FACTORY_NAME);
             }
 
             // Apply the overriding properties
             props.putAll(overridingProps);
         }
 
-        props.put(PropertyNames.PROPERTY_AUTOSTART_MECHANISM.toLowerCase(Locale.ENGLISH), "None"); // Don't allow autostart with JPA
-        props.put(PropertyNames.PROPERTY_PERSISTENCE_UNIT_NAME.toLowerCase(Locale.ENGLISH), unitMetaData.getName()); // Make sure we register the name
+        props.put(PropertyNames.PROPERTY_AUTOSTART_MECHANISM, "None"); // Don't allow autostart with JPA
+        props.put(PropertyNames.PROPERTY_PERSISTENCE_UNIT_NAME, unitMetaData.getName()); // Make sure we register the name
         if (unitMetaData.getValidationMode() != null)
         {
             // Set validation mode if set on persistence-unit
-            props.put(PropertyNames.PROPERTY_VALIDATION_MODE.toLowerCase(Locale.ENGLISH), unitMetaData.getValidationMode());
+            props.put(PropertyNames.PROPERTY_VALIDATION_MODE, unitMetaData.getValidationMode());
         }
         props.remove(JPAPropertyNames.PROPERTY_JPA_PERSISTENCE_CONTEXT_TYPE); // Processed above
-        if (!props.containsKey(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH)))
+        if (!props.containsKey(PropertyNames.PROPERTY_TRANSACTION_TYPE))
         {
             // Default to RESOURCE_LOCAL txns
-            props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH), TransactionType.RESOURCE_LOCAL.toString());
+            props.put(PropertyNames.PROPERTY_TRANSACTION_TYPE, TransactionType.RESOURCE_LOCAL.toString());
         }
         else
         {
             // let TransactionType.JTA imply ResourceType.JTA
-            String transactionType = (String)props.get(PropertyNames.PROPERTY_TRANSACTION_TYPE.toLowerCase(Locale.ENGLISH));
+            String transactionType = (String)props.get(PropertyNames.PROPERTY_TRANSACTION_TYPE);
             if (TransactionType.JTA.toString().equalsIgnoreCase(transactionType))
             {
-                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH), ConnectionResourceType.JTA.toString());
-                props.put(ConnectionFactory.DATANUCLEUS_CONNECTION2_RESOURCE_TYPE.toLowerCase(Locale.ENGLISH), ConnectionResourceType.JTA.toString());
+                props.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE, ConnectionResourceType.JTA.toString());
+                props.put(PropertyNames.PROPERTY_CONNECTION_RESOURCETYPE2, ConnectionResourceType.JTA.toString());
             }
         }
 
