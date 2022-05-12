@@ -19,18 +19,18 @@ package org.datanucleus.api.jpa;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
-import java.lang.reflect.Constructor;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
 import javax.persistence.spi.ClassTransformer;
 
+import org.datanucleus.util.ClassUtils;
+
 /**
  * ClassTransformer for runtime enhancement of classes to the JPA interface.
- * A persistence provider supplies an instance of this interface to the
- * PersistenceUnitInfo.addTransformer method. The supplied transformer instance
- * will get called to transform entity class files when they are loaded or
- * redefined. The transformation occurs before the class is defined by the JVM.
+ * A persistence provider supplies an instance of this interface to the PersistenceUnitInfo.addTransformer method. 
+ * The supplied transformer instance will get called to transform entity class files when they are loaded or redefined. 
+ * The transformation occurs before the class is defined by the JVM.
  */
 public class JPAClassTransformer implements ClassTransformer
 {
@@ -41,8 +41,7 @@ public class JPAClassTransformer implements ClassTransformer
         try
         {
             Class cls = Class.forName("org.datanucleus.enhancer.DataNucleusClassFileTransformer");
-            Constructor ctr = cls.getConstructor(new Class[]{String.class, Map.class});
-            transformer = (ClassFileTransformer) ctr.newInstance(new Object[]{"-api=JPA"}, contextProps);
+            transformer = (ClassFileTransformer)ClassUtils.newInstance(cls, new Class[]{String.class, Map.class}, new Object[]{"-api=JPA", contextProps});
         }
         catch (Exception e)
         {
