@@ -306,17 +306,16 @@ public class JPACallbackHandler implements CallbackHandler
             callbackClass = clr.classForName(callbackClassName);
         }
 
-        // Need to have priveleges to perform invoke on private methods
+        // Need to have privileges to perform invoke on private methods
         AccessController.doPrivileged(
             new PrivilegedAction<Object>()
             {
-                @SuppressWarnings("deprecation")
                 public Object run()
                 {
                     try
                     {
                         Method m = callbackClass.getDeclaredMethod(callbackMethodName, (Class[])null);
-                        if (!m.isAccessible())
+                        if (!m.canAccess(listener))
                         {
                             m.setAccessible(true);
                         }
@@ -368,11 +367,10 @@ public class JPACallbackHandler implements CallbackHandler
             callbackClass = clr.classForName(callbackClassName);
         }
 
-        // Need to have priveleges to perform invoke on private methods
+        // Need to have privileges to perform invoke on private methods
         AccessController.doPrivileged(
             new PrivilegedAction<Object>()
             {
-                @SuppressWarnings("deprecation")
                 public Object run()
                 {
                     try
@@ -382,7 +380,7 @@ public class JPACallbackHandler implements CallbackHandler
                             Class[] argTypes = new Class[]{Object.class};
                             Object[] args = new Object[]{obj};
                             Method m = callbackClass.getDeclaredMethod(callbackMethodName, argTypes);
-                            if (!m.isAccessible())
+                            if (!m.canAccess(listener))
                             {
                                 m.setAccessible(true);
                             }
@@ -400,7 +398,7 @@ public class JPACallbackHandler implements CallbackHandler
                                 if (m.getName().equals(callbackMethodName) && m.getParameterTypes().length == 1 && 
                                     m.getParameterTypes()[0].isAssignableFrom(obj.getClass()))
                                 {
-                                    if (!m.isAccessible())
+                                    if (!m.canAccess(listener))
                                     {
                                         m.setAccessible(true);
                                     }
