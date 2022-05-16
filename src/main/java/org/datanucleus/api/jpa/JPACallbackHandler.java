@@ -21,8 +21,6 @@ package org.datanucleus.api.jpa;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -306,44 +304,27 @@ public class JPACallbackHandler implements CallbackHandler
             callbackClass = clr.classForName(callbackClassName);
         }
 
-        // Need to have privileges to perform invoke on private methods
-        AccessController.doPrivileged(
-            new PrivilegedAction<Object>()
+        try
+        {
+            Method m = callbackClass.getDeclaredMethod(callbackMethodName, (Class[])null);
+            if (!m.canAccess(listener))
             {
-                public Object run()
-                {
-                    try
-                    {
-                        Method m = callbackClass.getDeclaredMethod(callbackMethodName, (Class[])null);
-                        if (!m.canAccess(listener))
-                        {
-                            m.setAccessible(true);
-                        }
-                        m.invoke(listener, (Object[])null);
-                    }
-                    catch (NoSuchMethodException e)
-                    {
-                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
-                    }
-                    catch (InvocationTargetException e)
-                    {
-                        if (e.getTargetException() instanceof RuntimeException)
-                        {
-                            throw (RuntimeException) e.getTargetException();
-                        }
-                        throw new RuntimeException(e.getTargetException());
-                    }
-                    return null;
-                }
-            });
+                m.setAccessible(true);
+            }
+            m.invoke(listener, (Object[])null);
+        }
+        catch (NoSuchMethodException | IllegalArgumentException | IllegalAccessException e)
+        {
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
+        }
+        catch (InvocationTargetException e)
+        {
+            if (e.getTargetException() instanceof RuntimeException)
+            {
+                throw (RuntimeException) e.getTargetException();
+            }
+            throw new RuntimeException(e.getTargetException());
+        }
     }
 
     /**
@@ -367,66 +348,53 @@ public class JPACallbackHandler implements CallbackHandler
             callbackClass = clr.classForName(callbackClassName);
         }
 
-        // Need to have privileges to perform invoke on private methods
-        AccessController.doPrivileged(
-            new PrivilegedAction<Object>()
+        try
+        {
+            try
             {
-                public Object run()
+                Class[] argTypes = new Class[]{Object.class};
+                Object[] args = new Object[]{obj};
+                Method m = callbackClass.getDeclaredMethod(callbackMethodName, argTypes);
+                if (!m.canAccess(listener))
                 {
-                    try
-                    {
-                        try
-                        {
-                            Class[] argTypes = new Class[]{Object.class};
-                            Object[] args = new Object[]{obj};
-                            Method m = callbackClass.getDeclaredMethod(callbackMethodName, argTypes);
-                            if (!m.canAccess(listener))
-                            {
-                                m.setAccessible(true);
-                            }
-                            m.invoke(listener, args);
-                        }
-                        catch (NoSuchMethodException ex)
-                        {
-                            //either this method does not exist with the arguments, or is an interface type
-                            //if interface type, the following block will solve it
-                            Object[] args = new Object[]{obj};
-                            Method[] methods = callbackClass.getDeclaredMethods();
-                            for (int i=0; i<methods.length; i++)
-                            {
-                                Method m = methods[i];
-                                if (m.getName().equals(callbackMethodName) && m.getParameterTypes().length == 1 && 
-                                    m.getParameterTypes()[0].isAssignableFrom(obj.getClass()))
-                                {
-                                    if (!m.canAccess(listener))
-                                    {
-                                        m.setAccessible(true);
-                                    }
-                                    m.invoke(listener, args);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
-                    }
-                    catch (IllegalAccessException e)
-                    {
-                        JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
-                    }
-                    catch (InvocationTargetException e)
-                    {
-                        if (e.getTargetException() instanceof RuntimeException)
-                        {
-                            throw (RuntimeException) e.getTargetException();
-                        }
-                        throw new RuntimeException(e.getTargetException());
-                    }
-                    return null;
+                    m.setAccessible(true);
                 }
-            });
+                m.invoke(listener, args);
+            }
+            catch (NoSuchMethodException ex)
+            {
+                //either this method does not exist with the arguments, or is an interface type
+                //if interface type, the following block will solve it
+                Object[] args = new Object[]{obj};
+                Method[] methods = callbackClass.getDeclaredMethods();
+                for (int i=0; i<methods.length; i++)
+                {
+                    Method m = methods[i];
+                    if (m.getName().equals(callbackMethodName) && m.getParameterTypes().length == 1 && 
+                            m.getParameterTypes()[0].isAssignableFrom(obj.getClass()))
+                    {
+                        if (!m.canAccess(listener))
+                        {
+                            m.setAccessible(true);
+                        }
+                        m.invoke(listener, args);
+                        break;
+                    }
+                }
+            }
+        }
+        catch (IllegalArgumentException | IllegalAccessException e)
+        {
+            JPAEntityManagerFactory.LOGGER.debug("Exception in JPACallbackHandler", e);
+        }
+        catch (InvocationTargetException e)
+        {
+            if (e.getTargetException() instanceof RuntimeException)
+            {
+                throw (RuntimeException) e.getTargetException();
+            }
+            throw new RuntimeException(e.getTargetException());
+        }
     }
 
     protected Object getListenerInstance(Class listenerCls) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException
