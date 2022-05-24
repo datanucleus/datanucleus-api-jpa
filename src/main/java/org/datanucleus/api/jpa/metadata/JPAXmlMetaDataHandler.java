@@ -551,7 +551,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 {
                     FileMetaData filemd = (FileMetaData)md;
                     QueryMetaData qmd = filemd.newQueryMetaData(getAttr(attrs, "name"));
-                    qmd.setLanguage(QueryLanguage.JPQL.toString());
+                    qmd.setLanguage(QueryLanguage.JPQL.name());
                     pushStack(qmd);
                 }
                 else if (md instanceof ClassMetaData)
@@ -563,7 +563,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                         throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(name);
-                    qmd.setLanguage(QueryLanguage.JPQL.toString());
+                    qmd.setLanguage(QueryLanguage.JPQL.name());
                     cmd.addQuery(qmd);
                     pushStack(qmd);
                 }
@@ -576,7 +576,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 {
                     FileMetaData filemd = (FileMetaData)md;
                     QueryMetaData qmd = filemd.newQueryMetaData(getAttr(attrs, "name"));
-                    qmd.setLanguage(QueryLanguage.SQL.toString());
+                    qmd.setLanguage(QueryLanguage.SQL.name());
                     qmd.setResultClass(getAttr(attrs, "result-class"));
                     qmd.setResultMetaDataName(getAttr(attrs, "result-set-mapping"));
                     pushStack(qmd);
@@ -590,7 +590,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                         throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(name);
-                    qmd.setLanguage(QueryLanguage.SQL.toString());
+                    qmd.setLanguage(QueryLanguage.SQL.name());
                     qmd.setResultClass(getAttr(attrs, "result-class"));
                     qmd.setResultMetaDataName(getAttr(attrs, "result-set-mapping"));
                     cmd.addQuery(qmd);

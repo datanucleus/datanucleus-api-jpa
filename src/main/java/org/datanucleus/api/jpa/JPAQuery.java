@@ -40,6 +40,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
 import org.datanucleus.exceptions.NucleusException;
+import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.store.query.AbstractJavaQuery;
 import org.datanucleus.store.query.Query;
 import org.datanucleus.store.query.QueryInvalidParametersException;
@@ -1158,7 +1159,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     public LockModeType getLockMode()
     {
         assertIsOpen();
-        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(Query.LANGUAGE_JPQL))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(QueryLanguage.JPQL.name()))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }
@@ -1169,7 +1170,7 @@ public class JPAQuery<X> implements TypedQuery<X>
     public TypedQuery<X> setLockMode(LockModeType lock)
     {
         assertIsOpen();
-        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(Query.LANGUAGE_JPQL))
+        if (query.getType() != QueryType.SELECT || !query.getLanguage().equals(QueryLanguage.JPQL.name()))
         {
             throw new IllegalStateException("Query has to be a SELECT JPQL query to allow locking");
         }

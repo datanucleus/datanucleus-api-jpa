@@ -1161,7 +1161,7 @@ public class JPAEntityManager implements EntityManager
                 throw new IllegalArgumentException(Localiser.msg("Query.LanguageNotSupportedByStore", qmd.getLanguage()));
             }
 
-            if (qmd.getLanguage().equals(QueryLanguage.JPQL.toString()))
+            if (qmd.getLanguage().equals(QueryLanguage.JPQL.name()))
             {
                 // "named-query" so return JPQL
                 org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(qmd.getLanguage(), ec, qmd.getQuery());
@@ -1490,8 +1490,8 @@ public class JPAEntityManager implements EntityManager
         assertIsOpen();
         try
         {
-            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.JPQL.toString(), ec, queryString);
-            return new JPAQuery(this, internalQuery, QueryLanguage.JPQL.toString());
+            org.datanucleus.store.query.Query internalQuery = ec.getStoreManager().newQuery(QueryLanguage.JPQL.name(), ec, queryString);
+            return new JPAQuery(this, internalQuery, QueryLanguage.JPQL.name());
         }
         catch (NucleusException ne)
         {

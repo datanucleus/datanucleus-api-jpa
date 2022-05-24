@@ -38,7 +38,7 @@ import javax.persistence.metamodel.Metamodel;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.store.query.Query;
+import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.store.query.compiler.JPQLSymbolResolver;
 import org.datanucleus.store.query.compiler.PropertySymbol;
 import org.datanucleus.store.query.compiler.QueryCompilation;
@@ -651,7 +651,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             {
                 compilation.setResultDistinct();
             }
-            compilation.setQueryLanguage(Query.LANGUAGE_JPQL);
+            compilation.setQueryLanguage(QueryLanguage.JPQL.name());
         }
 
         if (subqueries != null && !subqueries.isEmpty())
@@ -667,7 +667,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     VariableExpression subqueryVar = (VariableExpression) subqueryExpr.getRight();
                     CriteriaQueryImpl<T> subDelegate = (CriteriaQueryImpl<T>) sub.getDelegate();
                     QueryCompilation subCompilation = subDelegate.getCompilation(mmgr, clr, compilation.getSymbolTable());
-                    subCompilation.setQueryLanguage(Query.LANGUAGE_JPQL);
+                    subCompilation.setQueryLanguage(QueryLanguage.JPQL.name());
                     compilation.addSubqueryCompilation(subqueryVar.getId(), subCompilation);
                 }
                 else if (subExpr instanceof VariableExpression)
@@ -675,7 +675,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
                     VariableExpression subVarExpr = (VariableExpression)subExpr;
                     CriteriaQueryImpl<T> subDelegate = (CriteriaQueryImpl<T>) sub.getDelegate();
                     QueryCompilation subCompilation = subDelegate.getCompilation(mmgr, clr, compilation.getSymbolTable());
-                    subCompilation.setQueryLanguage(Query.LANGUAGE_JPQL);
+                    subCompilation.setQueryLanguage(QueryLanguage.JPQL.name());
                     compilation.addSubqueryCompilation(subVarExpr.getId(), subCompilation);
                 }
             }

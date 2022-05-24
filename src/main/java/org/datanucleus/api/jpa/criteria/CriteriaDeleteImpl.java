@@ -31,7 +31,7 @@ import javax.persistence.metamodel.EntityType;
 
 import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.MetaDataManager;
-import org.datanucleus.store.query.Query;
+import org.datanucleus.metadata.QueryLanguage;
 import org.datanucleus.store.query.compiler.JPQLSymbolResolver;
 import org.datanucleus.store.query.compiler.PropertySymbol;
 import org.datanucleus.store.query.compiler.QueryCompilation;
@@ -226,7 +226,7 @@ public class CriteriaDeleteImpl<T> implements CriteriaDelete<T>, Serializable
 
             compilation = new QueryCompilation(candidateClass, candidateAlias, symtbl, null,
                 fromExprs, filterExpr, null, null, null, null);
-            compilation.setQueryLanguage(Query.LANGUAGE_JPQL);
+            compilation.setQueryLanguage(QueryLanguage.JPQL.name());
         }
 
         // TODO Handle subqueries

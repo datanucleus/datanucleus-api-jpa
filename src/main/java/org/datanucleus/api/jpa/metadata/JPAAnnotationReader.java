@@ -1210,7 +1210,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                     }
                     QueryMetaData qmd = new QueryMetaData(queries[j].name());
-                    qmd.setLanguage(QueryLanguage.JPQL.toString());
+                    qmd.setLanguage(QueryLanguage.JPQL.name());
                     qmd.setUnmodifiable(true);
                     qmd.setQuery(queries[j].query());
                     QueryHint[] hints = queries[j].hints();
@@ -1233,7 +1233,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     throw new InvalidClassMetaDataException("044154", cmd.getFullClassName());
                 }
                 QueryMetaData qmd = new QueryMetaData((String)annotationValues.get("name"));
-                qmd.setLanguage(QueryLanguage.JPQL.toString());
+                qmd.setLanguage(QueryLanguage.JPQL.name());
                 qmd.setUnmodifiable(true);
                 qmd.setQuery((String)annotationValues.get("query"));
                 QueryHint[] hints = (QueryHint[]) annotationValues.get("hints");
@@ -1264,7 +1264,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                         resultMappingName = queries[j].resultSetMapping();
                     }
                     QueryMetaData qmd = new QueryMetaData(queries[j].name());
-                    qmd.setLanguage(QueryLanguage.SQL.toString());
+                    qmd.setLanguage(QueryLanguage.SQL.name());
                     qmd.setUnmodifiable(true);
                     qmd.setResultClass(resultClassName);
                     qmd.setResultMetaDataName(resultMappingName);
@@ -1296,7 +1296,7 @@ public class JPAAnnotationReader extends AbstractAnnotationReader
                     resultMappingName = null;
                 }
                 QueryMetaData qmd = new QueryMetaData((String)annotationValues.get("name"));
-                qmd.setLanguage(QueryLanguage.SQL.toString());
+                qmd.setLanguage(QueryLanguage.SQL.name());
                 qmd.setUnmodifiable(true);
                 qmd.setResultClass(resultClassName);
                 qmd.setResultMetaDataName(resultMappingName);
