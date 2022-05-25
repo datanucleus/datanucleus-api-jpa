@@ -184,7 +184,7 @@ public class JPAEntityTransaction implements EntityTransaction
      */
     public void setOption(String option, String value)
     {
-        if (option.equalsIgnoreCase("transaction.isolation"))
+        if (option.equals(org.datanucleus.transaction.Transaction.TRANSACTION_ISOLATION_OPTION))
         {
             int isolationLevel = TransactionUtils.getTransactionIsolationLevelForName(value);
             tx.setOption(org.datanucleus.transaction.Transaction.TRANSACTION_ISOLATION_OPTION, isolationLevel);

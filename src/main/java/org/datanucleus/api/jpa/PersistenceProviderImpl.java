@@ -420,18 +420,20 @@ public class PersistenceProviderImpl implements PersistenceProvider, ProviderUti
             // Database not needed, so check if scripts needed
             modeStr = (String) overridingProps.get(JPAPropertyNames.PROPERTY_JPA_STANDARD_GENERATE_SCHEMA_SCRIPTS_ACTION);
         }
+
         Mode mode = null;
         if (modeStr != null)
         {
-            if (modeStr.equalsIgnoreCase("create"))
+            modeStr = modeStr.toLowerCase();
+            if (modeStr.equals("create"))
             {
                 mode = Mode.CREATE;
             }
-            else if (modeStr.equalsIgnoreCase("drop"))
+            else if (modeStr.equals("drop"))
             {
                 mode = Mode.DELETE;
             }
-            else if (modeStr.equalsIgnoreCase("drop-and-create"))
+            else if (modeStr.equals("drop-and-create"))
             {
                 mode = Mode.DELETE_CREATE;
             }

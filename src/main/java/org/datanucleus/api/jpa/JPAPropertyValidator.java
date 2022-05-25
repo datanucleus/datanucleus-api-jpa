@@ -41,9 +41,9 @@ public class JPAPropertyValidator implements PropertyValidator
         {
             if (value instanceof String)
             {
-                String strVal = (String)value;
-                if (strVal.equalsIgnoreCase("transaction") ||
-                    strVal.equalsIgnoreCase("extended"))
+                String strVal = ((String)value).toLowerCase();
+                if (strVal.equals("transaction") ||
+                    strVal.equals("extended"))
                 {
                     return true;
                 }
@@ -54,11 +54,11 @@ public class JPAPropertyValidator implements PropertyValidator
         {
             if (value instanceof String)
             {
-                String strVal = (String)value;
-                if (strVal.equalsIgnoreCase("none") ||
-                    strVal.equalsIgnoreCase("create") ||
-                    strVal.equalsIgnoreCase("drop-and-create") ||
-                    strVal.equalsIgnoreCase("drop"))
+                String strVal = ((String)value).toLowerCase();
+                if (strVal.equals("none") ||
+                    strVal.equals("create") ||
+                    strVal.equals("drop-and-create") ||
+                    strVal.equals("drop"))
                 {
                     return true;
                 }
@@ -70,11 +70,11 @@ public class JPAPropertyValidator implements PropertyValidator
             NucleusLogger.METADATA.warn(name + " is currently ignored. Execute the scripts yourself!");
             if (value instanceof String)
             {
-                String strVal = (String)value;
-                if (strVal.equalsIgnoreCase("metadata") ||
-                    strVal.equalsIgnoreCase("script") ||
-                    strVal.equalsIgnoreCase("metadata-then-script") ||
-                    strVal.equalsIgnoreCase("script-then-metadata"))
+                String strVal = ((String)value).toLowerCase();
+                if (strVal.equals("metadata") ||
+                    strVal.equals("script") ||
+                    strVal.equals("metadata-then-script") ||
+                    strVal.equals("script-then-metadata"))
                 {
                     return true;
                 }
