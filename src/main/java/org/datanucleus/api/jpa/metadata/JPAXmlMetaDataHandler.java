@@ -29,7 +29,6 @@ import javax.persistence.AttributeConverter;
 import org.xml.sax.Attributes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.SAXException;
-import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.PropertyNames;
 import org.datanucleus.api.jpa.JPAEntityGraph;
 import org.datanucleus.api.jpa.AbstractJPAGraph;
@@ -709,7 +708,6 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     {
                         ctrTypeColumns = new ArrayList<ConstructorTypeColumn>();
                     }
-                    ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
                     String colClsName = getAttr(attrs, "class");
                     Class ctrColCls = colClsName!=null ? clr.classForName(colClsName) : null;
                     ctrTypeColumns.add(new ConstructorTypeColumn(getAttr(attrs, "name"), ctrColCls));
@@ -1088,7 +1086,6 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                         {
                             // Not yet cached an instance of this converter so create one
                             // TODO Support injectable AttributeConverters
-                            ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
                             Class entityConvCls = clr.classForName(converterClassName);
                             AttributeConverter entityConv = JPATypeConverterUtils.createAttributeConverterInstance(mmgr.getNucleusContext(), entityConvCls);
 
@@ -1113,7 +1110,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     Boolean autoApply = Boolean.valueOf(getAttr(attrs, "auto-apply"));
 
                     TypeManager typeMgr = mmgr.getNucleusContext().getTypeManager();
-                    Class entityConvCls = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(converterClassName);
+                    Class entityConvCls = clr.classForName(converterClassName);
                     Class attrType = JPATypeConverterUtils.getAttributeTypeForAttributeConverter(entityConvCls, null);
                     Class dbType = JPATypeConverterUtils.getDatabaseTypeForAttributeConverter(entityConvCls, attrType, null);
 
@@ -2091,7 +2088,6 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 if (md instanceof AbstractClassMetaData)
                 {
                     AbstractClassMetaData cmd = (AbstractClassMetaData)md;
-                    ClassLoaderResolver clr = mmgr.getNucleusContext().getClassLoaderResolver(null);
                     JPAEntityGraph entityGraph = new JPAEntityGraph(mmgr, getAttr(attrs, "name"), clr.classForName(cmd.getFullClassName()));
                     GraphHolder graphHolder = new GraphHolder();
                     graphHolder.graph = entityGraph;
@@ -2137,7 +2133,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 Class cls = null;
                 if (!StringUtils.isWhitespace(subgraphClassName))
                 {
-                    cls = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
+                    cls = clr.classForName(subgraphClassName);
                 }
                 JPASubgraph subgraph = (cls == null ? (JPASubgraph) parentGraph.addSubgraph(attributeName) : (JPASubgraph)parentGraph.addSubgraph(attributeName, cls));
                 GraphHolder graphHolder = new GraphHolder();
@@ -2149,7 +2145,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                 GraphHolder parentGraphHolder = graphHolderStack.peek();
                 JPAEntityGraph parentGraph = (JPAEntityGraph) parentGraphHolder.graph;
                 String subgraphClassName = getAttr(attrs, "class");
-                Class subclass = mmgr.getNucleusContext().getClassLoaderResolver(null).classForName(subgraphClassName);
+                Class subclass = clr.classForName(subgraphClassName);
                 JPASubgraph subgraph = (JPASubgraph) parentGraph.addSubclassSubgraph(subclass);
                 GraphHolder graphHolder = new GraphHolder();
                 graphHolder.graph = subgraph;
