@@ -144,7 +144,7 @@ public class PathImpl<Z,X> extends ExpressionImpl<X> implements Path<X>
         // TODO Don't cache the query expression?
         if (queryExpr == null)
         {
-            List tuples = new ArrayList();
+            List<String> tuples = new ArrayList<>();
             if (parent != null)
             {
                 org.datanucleus.store.query.expression.Expression parentExpr = parent.getQueryExpression();

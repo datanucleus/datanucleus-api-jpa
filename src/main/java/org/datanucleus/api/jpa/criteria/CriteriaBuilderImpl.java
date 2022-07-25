@@ -84,7 +84,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public CriteriaQuery<Object> createQuery()
     {
-        return new CriteriaQueryImpl<Object>(this, null);
+        return new CriteriaQueryImpl<>(this, null);
     }
 
     /* (non-Javadoc)
@@ -100,7 +100,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public CriteriaQuery<Tuple> createTupleQuery()
     {
-        return new CriteriaQueryImpl<Tuple>(this, Tuple.class);
+        return new CriteriaQueryImpl<>(this, Tuple.class);
     }
 
     /* (non-Javadoc)
@@ -144,9 +144,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> abs(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "avg", args);
         return select;
     }
@@ -156,20 +156,19 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<Double> avg(Expression<N> expr)
     {
-        ExpressionImpl<Double> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<Double> select = new ExpressionImpl<>(this, Double.class);
         select.queryExpr = new InvokeExpression(null, "avg", args);
         return select;
     }
 
     public <N extends Number> Expression<Double> avgDistinct(Expression<N> expr)
     {
-        ExpressionImpl<Double> select = new ExpressionImpl(this, expr.getJavaType());
-
         DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(dyExpr);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(dyExpr);
+
+        ExpressionImpl<Double> select = new ExpressionImpl<>(this, Double.class);
         select.queryExpr = new InvokeExpression(null, "avg", args);
         return select;
     }
@@ -180,10 +179,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public Expression<Long> count(Expression<?> expr)
     {
         // TODO Check that this expression is valid?
-        ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
-
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        ExpressionImpl<Long> select = new ExpressionImpl<>(this, Long.class);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
         select.queryExpr = new InvokeExpression(null, "count", args);
         return select;
     }
@@ -193,12 +190,11 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Long> countDistinct(Expression<?> expr)
     {
-        // TODO Check that this expression is valid?
-        ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
-
         DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(dyExpr);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(dyExpr);
+
+        // TODO Check that this expression is valid?
+        ExpressionImpl<Long> select = new ExpressionImpl<>(this, Long.class);
         select.queryExpr = new InvokeExpression(null, "count", args);
         return select;
     }
@@ -208,20 +204,19 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> max(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "max", args);
         return select;
     }
 
     public <N extends Number> Expression<N> maxDistinct(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-
         DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(dyExpr);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(dyExpr);
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "max", args);
         return select;
     }
@@ -231,9 +226,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <X extends Comparable<? super X>> Expression<X> greatest(Expression<X> expr)
     {
-        ExpressionImpl<X> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<X> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "max", args);
         return select;
     }
@@ -243,20 +238,19 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> min(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "min", args);
         return select;
     }
 
     public <N extends Number> Expression<N> minDistinct(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-
         DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(dyExpr);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(dyExpr);
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "min", args);
         return select;
     }
@@ -266,9 +260,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <X extends Comparable<? super X>> Expression<X> least(Expression<X> expr)
     {
-        ExpressionImpl<X> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<X> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "min", args);
         return select;
     }
@@ -278,9 +272,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Double> sqrt(Expression<? extends Number> expr)
     {
-        ExpressionImpl<Double> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        ExpressionImpl<Double> select = new ExpressionImpl<>(this, Double.class);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
         select.queryExpr = new InvokeExpression(null, "sqrt", args);
         return select;
     }
@@ -290,20 +283,19 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> sum(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "sum", args);
         return select;
     }
 
     public <N extends Number> Expression<N> sumDistinct(Expression<N> expr)
     {
-        ExpressionImpl<N> select = new ExpressionImpl(this, expr.getJavaType());
-
         DyadicExpression dyExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_DISTINCT, ((ExpressionImpl)expr).getQueryExpression());
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
-        args.add(dyExpr);
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(dyExpr);
+
+        ExpressionImpl<N> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(null, "sum", args);
         return select;
     }
@@ -313,9 +305,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Double> sumAsDouble(Expression<Float> expr)
     {
-        ExpressionImpl<Double> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<Double> select = new ExpressionImpl<>(this, Double.class);
         select.queryExpr = new InvokeExpression(null, "sum", args);
         return select;
     }
@@ -325,9 +317,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Long> sumAsLong(Expression<Integer> expr)
     {
-        ExpressionImpl<Long> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
+
+        ExpressionImpl<Long> select = new ExpressionImpl<>(this, Long.class);
         select.queryExpr = new InvokeExpression(null, "sum", args);
         return select;
     }
@@ -645,7 +637,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> expr0, Expression<? extends N> expr1)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr0.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr0.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_ADD, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -657,7 +649,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> sum(Expression<? extends N> expr, N obj)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_ADD, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
@@ -669,7 +661,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> sum(N obj, Expression<? extends N> expr)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(new Literal(obj), org.datanucleus.store.query.expression.Expression.OP_ADD, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -681,7 +673,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Number> quot(Expression<? extends Number> expr0, Expression<? extends Number> expr1)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
+        ExpressionImpl<Number> sumExpr = new ExpressionImpl<>(this, Number.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_DIV, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -693,7 +685,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Number> quot(Expression<? extends Number> expr, Number obj)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
+        ExpressionImpl<Number> sumExpr = new ExpressionImpl<>(this, Number.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_DIV, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
@@ -705,7 +697,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Number> quot(Number obj, Expression<? extends Number> expr)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Number>(this, Number.class);
+        ExpressionImpl<Number> sumExpr = new ExpressionImpl<>(this, Number.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(new Literal(obj), org.datanucleus.store.query.expression.Expression.OP_DIV, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -717,7 +709,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> diff(Expression<? extends N> expr0, Expression<? extends N> expr1)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>)expr0.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr0.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_SUB, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -729,7 +721,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> diff(Expression<? extends N> expr, N obj)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_SUB, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
@@ -741,7 +733,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> diff(N obj, Expression<? extends N> expr)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(new Literal(obj), org.datanucleus.store.query.expression.Expression.OP_SUB, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -753,7 +745,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> prod(Expression<? extends N> expr0, Expression<? extends N> expr1)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>)expr0.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr0.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_MUL, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -765,7 +757,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> prod(Expression<? extends N> expr, N obj)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_MUL, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
@@ -777,7 +769,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> prod(N obj, Expression<? extends N> expr)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> sumExpr = new ExpressionImpl<>(this, expr.getJavaType());
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(new Literal(obj), org.datanucleus.store.query.expression.Expression.OP_MUL, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -789,7 +781,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> mod(Expression<Integer> expr0, Expression<Integer> expr1)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
+        ExpressionImpl<Integer> sumExpr = new ExpressionImpl<>(this, Integer.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr0).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_MOD, ((ExpressionImpl)expr1).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -801,7 +793,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> mod(Expression<Integer> expr, Integer obj)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
+        ExpressionImpl<Integer> sumExpr = new ExpressionImpl<>(this, Integer.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(((ExpressionImpl)expr).getQueryExpression(), org.datanucleus.store.query.expression.Expression.OP_MOD, new Literal(obj));
         sumExpr.queryExpr = queryExpr;
@@ -813,7 +805,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> mod(Integer obj, Expression<Integer> expr)
     {
-        ExpressionImpl sumExpr = new ExpressionImpl<Integer>(this, Integer.class);
+        ExpressionImpl<Integer> sumExpr = new ExpressionImpl<>(this, Integer.class);
         org.datanucleus.store.query.expression.Expression queryExpr =
             new DyadicExpression(new Literal(obj), org.datanucleus.store.query.expression.Expression.OP_MOD, ((ExpressionImpl)expr).getQueryExpression());
         sumExpr.queryExpr = queryExpr;
@@ -868,7 +860,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> coalesce(Expression<? extends Y> expr0, Expression<? extends Y> expr1)
     {
-        CoalesceExpression<Y> coalesceExpr = new CoalesceExpression<Y>(this, (Class<Y>) expr0.getJavaType());
+        CoalesceExpression<Y> coalesceExpr = new CoalesceExpression<>(this, expr0.getJavaType());
         coalesceExpr.value(expr0);
         coalesceExpr.value(expr1);
         return coalesceExpr;
@@ -879,7 +871,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> coalesce(Expression<? extends Y> expr, Y val)
     {
-        CoalesceExpression<Y> coalesceExpr = new CoalesceExpression<Y>(this, (Class<Y>) expr.getJavaType());
+        CoalesceExpression<Y> coalesceExpr = new CoalesceExpression<>(this, expr.getJavaType());
         coalesceExpr.value(expr);
         coalesceExpr.value(val);
         return coalesceExpr;
@@ -890,10 +882,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> nullif(Expression<Y> expr0, Expression<?> expr1)
     {
-        ExpressionImpl<Y> coalExpr = new ExpressionImpl<Y>(this, (Class<Y>) expr0.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr0).getQueryExpression());
-        args.add(((ExpressionImpl)expr1).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr0).getQueryExpression(), ((ExpressionImpl)expr1).getQueryExpression());
+
+        ExpressionImpl<Y> coalExpr = new ExpressionImpl<>(this, expr0.getJavaType());
         coalExpr.queryExpr = new InvokeExpression(null, "NULLIF", args);
         return coalExpr;
     }
@@ -903,10 +894,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> nullif(Expression<Y> expr, Y val)
     {
-        ExpressionImpl<Y> coalExpr = new ExpressionImpl<Y>(this, (Class<Y>)expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
-        args.add(new Literal(val));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression(), new Literal(val));
+
+        ExpressionImpl<Y> coalExpr = new ExpressionImpl<>(this, expr.getJavaType());
         coalExpr.queryExpr = new InvokeExpression(null, "NULLIF", args);
         return coalExpr;
     }
@@ -937,13 +927,13 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <Y> CompoundSelection<Y> construct(Class<Y> cls, Selection<?>... args)
     {
         CompoundSelectionImpl<Y> select = new CompoundSelectionImpl<Y>(this, cls, args);
-        List<String> clsNameComponents = new ArrayList();
+        List<String> clsNameComponents = new ArrayList<>();
         StringTokenizer tok = new StringTokenizer(cls.getName(), ".");
         while (tok.hasMoreTokens())
         {
             clsNameComponents.add(tok.nextToken());
         }
-        List<org.datanucleus.store.query.expression.Expression> ctrArgs = new ArrayList();
+        List<org.datanucleus.store.query.expression.Expression> ctrArgs = new ArrayList<>();
         if (args != null)
         {
             for (int i=0;i<args.length;i++)
@@ -961,7 +951,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Date> currentDate()
     {
-        ExpressionImpl<Date> select = new ExpressionImpl(this, Date.class);
+        ExpressionImpl<Date> select = new ExpressionImpl<>(this, Date.class);
         select.queryExpr = new InvokeExpression(null, "CURRENT_DATE", null);
         return select;
     }
@@ -971,7 +961,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Time> currentTime()
     {
-        ExpressionImpl<Time> select = new ExpressionImpl(this, Time.class);
+        ExpressionImpl<Time> select = new ExpressionImpl<>(this, Time.class);
         select.queryExpr = new InvokeExpression(null, "CURRENT_TIME", null);
         return select;
     }
@@ -981,7 +971,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Timestamp> currentTimestamp()
     {
-        ExpressionImpl<Timestamp> select = new ExpressionImpl(this, Timestamp.class);
+        ExpressionImpl<Timestamp> select = new ExpressionImpl<>(this, Timestamp.class);
         select.queryExpr = new InvokeExpression(null, "CURRENT_TIMESTAMP", null);
         return select;
     }
@@ -992,8 +982,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <T> Expression<T> function(String funcName, Class<T> returnType, Expression<?>... argExprs)
     {
         // Call method "SQL_function" with the funcName as first argument
-        ExpressionImpl<T> funcExpr = new ExpressionImpl(this, returnType);
-        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList();
+        List<org.datanucleus.store.query.expression.Expression> args = new ArrayList<>();
         args.add(new Literal(funcName));
         if (argExprs != null)
         {
@@ -1002,6 +991,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
                 args.add(((ExpressionImpl<?>)argExprs[i]).getQueryExpression());
             }
         }
+
+        ExpressionImpl<T> funcExpr = new ExpressionImpl<>(this, returnType);
         funcExpr.queryExpr = new InvokeExpression(null, "SQL_function", args);
         return funcExpr;
     }
@@ -1011,7 +1002,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> all(Subquery<Y> sub)
     {
-        ExpressionImpl<Y> allExpr = new ExpressionImpl<Y>(this, (Class<Y>) sub.getJavaType());
         org.datanucleus.store.query.expression.Expression subExpr = ((SubqueryImpl<Y>)sub).getQueryExpression();
         String varName = null;
         if (subExpr instanceof VariableExpression)
@@ -1022,6 +1012,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         {
             varName = "SUB" + SubqueryImpl.random.nextInt();
         }
+
+        ExpressionImpl<Y> allExpr = new ExpressionImpl<>(this, sub.getJavaType());
         allExpr.queryExpr = new SubqueryExpression("ALL", new VariableExpression(varName));
         return allExpr;
     }
@@ -1031,7 +1023,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> any(Subquery<Y> sub)
     {
-        ExpressionImpl<Y> allExpr = new ExpressionImpl<Y>(this, (Class<Y>) sub.getJavaType());
         org.datanucleus.store.query.expression.Expression subExpr = ((SubqueryImpl<Y>)sub).getQueryExpression();
         String varName = null;
         if (subExpr instanceof VariableExpression)
@@ -1042,6 +1033,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         {
             varName = "SUB" + SubqueryImpl.random.nextInt();
         }
+
+        ExpressionImpl<Y> allExpr = new ExpressionImpl<>(this, sub.getJavaType());
         allExpr.queryExpr = new SubqueryExpression("ANY", new VariableExpression(varName));
         return allExpr;
     }
@@ -1051,7 +1044,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <Y> Expression<Y> some(Subquery<Y> sub)
     {
-        ExpressionImpl<Y> allExpr = new ExpressionImpl<Y>(this, (Class<Y>) sub.getJavaType());
         org.datanucleus.store.query.expression.Expression subExpr = ((SubqueryImpl<Y>)sub).getQueryExpression();
         String varName = null;
         if (subExpr instanceof VariableExpression)
@@ -1062,6 +1054,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         {
             varName = "SUB" + SubqueryImpl.random.nextInt();
         }
+
+        ExpressionImpl<Y> allExpr = new ExpressionImpl<>(this, sub.getJavaType());
         allExpr.queryExpr = new SubqueryExpression("SOME", new VariableExpression(varName));
         return allExpr;
     }
@@ -1125,10 +1119,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> expr, Expression<C> collExpr)
     {
-        PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr).getQueryExpression());
         org.datanucleus.store.query.expression.Expression queryExpr = new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
+
+        PredicateImpl pred = new PredicateImpl(this);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1138,10 +1132,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <E, C extends Collection<E>> Predicate isMember(E val, Expression<C> collExpr)
     {
-        PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(new Literal(val));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(val));
         org.datanucleus.store.query.expression.Expression queryExpr = new InvokeExpression(((ExpressionImpl)collExpr).getQueryExpression(), "contains", args);
+
+        PredicateImpl pred = new PredicateImpl(this);
         pred.queryExpr = queryExpr;
         return pred;
     }
@@ -1175,7 +1169,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <C extends Collection<?>> Expression<Integer> size(Expression<C> expr)
     {
-        ExpressionImpl<Integer> collSizeExpr = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> collSizeExpr = new ExpressionImpl<>(this, Integer.class);
         collSizeExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "size", null);
         return collSizeExpr;
     }
@@ -1186,7 +1180,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
     public <C extends Collection<?>> Expression<Integer> size(C coll)
     {
         // Strange method that seemingly just returns the size of the input collection, so why have it?
-        ExpressionImpl<Integer> collSizeExpr = new ExpressionImpl<Integer>(this, Integer.class);
+        ExpressionImpl<Integer> collSizeExpr = new ExpressionImpl<>(this, Integer.class);
         collSizeExpr.queryExpr = new Literal(coll.size());
         return collSizeExpr;
     }
@@ -1256,9 +1250,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, Expression<String> expr1)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr1).getQueryExpression());
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr1).getQueryExpression());
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1268,9 +1262,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, String regex)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(regex));
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(new Literal(regex));
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1280,10 +1274,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, Expression<String> expr1, Expression<Character> escExpr)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr1).getQueryExpression(), ((ExpressionImpl)escExpr).getQueryExpression());
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr1).getQueryExpression());
-        args.add(((ExpressionImpl)escExpr).getQueryExpression());
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1293,10 +1286,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, Expression<String> expr1, char escChr)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)expr1).getQueryExpression(), new Literal(escChr));
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)expr1).getQueryExpression());
-        args.add(new Literal(escChr));
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1306,10 +1298,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, String regex, Expression<Character> escExpr)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(regex), ((ExpressionImpl)escExpr).getQueryExpression());
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(new Literal(regex));
-        args.add(((ExpressionImpl)escExpr).getQueryExpression());
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1319,10 +1310,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Predicate like(Expression<String> expr, String regex, char escChr)
     {
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(regex), new Literal(escChr));
+
         PredicateImpl pred = new PredicateImpl(this);
-        List args = new ArrayList();
-        args.add(new Literal(regex));
-        args.add(new Literal(escChr));
         pred.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "matches", args);
         return pred;
     }
@@ -1332,7 +1322,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <N extends Number> Expression<N> neg(Expression<N> expr)
     {
-        ExpressionImpl<N> negExpr = new ExpressionImpl<N>(this, (Class<N>) expr.getJavaType());
+        ExpressionImpl<N> negExpr = new ExpressionImpl<>(this, expr.getJavaType());
         negExpr.queryExpr = new DyadicExpression(org.datanucleus.store.query.expression.Expression.OP_NEG, ((ExpressionImpl)expr).getQueryExpression());
         return negExpr;
     }
@@ -1433,7 +1423,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <C, R> SimpleCase<C, R> selectCase(Expression<? extends C> expr)
     {
-        SimpleCaseExpressionImpl<C, R> caseExpr = new SimpleCaseExpressionImpl(this, (ExpressionImpl) expr);
+        SimpleCaseExpressionImpl<C, R> caseExpr = new SimpleCaseExpressionImpl<>(this, (ExpressionImpl) expr);
         return caseExpr;
     }
 
@@ -1522,9 +1512,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> locate(Expression<String> expr, Expression<String> exprSubstr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)exprSubstr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)exprSubstr).getQueryExpression());
+
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1534,9 +1524,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> locate(Expression<String> expr, String substr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
-        List args = new ArrayList();
-        args.add(new Literal(substr));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(substr));
+
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1546,10 +1536,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> locate(Expression<String> expr, Expression<String> exprSubstr, Expression<Integer> exprPos)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)exprSubstr).getQueryExpression());
-        args.add(((ExpressionImpl)exprPos).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args =
+                List.of(((ExpressionImpl)exprSubstr).getQueryExpression(), ((ExpressionImpl)exprPos).getQueryExpression());
+
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1559,10 +1549,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> locate(Expression<String> expr, String substr, int pos)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
-        List args = new ArrayList();
-        args.add(new Literal(substr));
-        args.add(new Literal(pos));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(substr), new Literal(pos));
+
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "indexOf", args);
         return select;
     }
@@ -1572,9 +1561,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> substring(Expression<String> expr, Expression<Integer> posExpr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)posExpr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)posExpr).getQueryExpression());
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1584,9 +1573,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> substring(Expression<String> expr, int pos)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(new Literal(pos));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(pos));
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1596,10 +1585,10 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> substring(Expression<String> expr, Expression<Integer> posExpr0, Expression<Integer> posExpr1)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)posExpr0).getQueryExpression());
-        args.add(((ExpressionImpl)posExpr1).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = 
+                List.of(((ExpressionImpl)posExpr0).getQueryExpression(), ((ExpressionImpl)posExpr1).getQueryExpression());
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1609,10 +1598,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> substring(Expression<String> expr, int pos0, int pos1)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(new Literal(pos0));
-        args.add(new Literal(pos1));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(pos0), new Literal(pos1));
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "substring", args);
         return select;
     }
@@ -1622,7 +1610,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "trim", null);
         return select;
     }
@@ -1632,7 +1620,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(Trimspec spec, Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         String method = "trim";
         if (spec == Trimspec.LEADING)
         {
@@ -1651,9 +1639,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(Expression<Character> chr, Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)chr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)chr).getQueryExpression());
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "trim", args);
         return select;
     }
@@ -1663,9 +1651,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(char chr, Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
-        List args = new ArrayList();
-        args.add(new Literal(chr));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(chr));
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "trim", args);
         return select;
     }
@@ -1675,7 +1663,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(Trimspec spec, Expression<Character> chr, Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
         String method = "trim";
         if (spec == Trimspec.LEADING)
         {
@@ -1685,8 +1672,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         {
             method = "trimRight";
         }
-        List args = new ArrayList();
-        args.add(((ExpressionImpl)chr).getQueryExpression());
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(((ExpressionImpl)chr).getQueryExpression());
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), method, args);
         return select;
     }
@@ -1696,7 +1684,6 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> trim(Trimspec spec, char chr, Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
         String method = "trim";
         if (spec == Trimspec.LEADING)
         {
@@ -1706,8 +1693,9 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
         {
             method = "trimRight";
         }
-        List args = new ArrayList();
-        args.add(new Literal(chr));
+        List<org.datanucleus.store.query.expression.Expression> args = List.of(new Literal(chr));
+
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), method, args);
         return select;
     }
@@ -1717,7 +1705,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> lower(Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "toLowerCase", null);
         return select;
     }
@@ -1727,7 +1715,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<String> upper(Expression<String> expr)
     {
-        ExpressionImpl<String> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<String> select = new ExpressionImpl<>(this, expr.getJavaType());
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "toUpperCase", null);
         return select;
     }
@@ -1737,7 +1725,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public Expression<Integer> length(Expression<String> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, Integer.class);
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "length", null);
         return select;
     }
@@ -1747,7 +1735,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <T> Expression<T> literal(T obj)
     {
-        ExpressionImpl expr = new ExpressionImpl<T>(this, (Class<T>) obj.getClass());
+        ExpressionImpl<T> expr = new ExpressionImpl<>(this, (Class<? extends T>) obj.getClass());
         expr.queryExpr = new Literal(obj);
         return expr;
     }
@@ -1757,7 +1745,7 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
      */
     public <T> Expression<T> nullLiteral(Class<T> cls)
     {
-        ExpressionImpl expr = new ExpressionImpl<T>(this, cls);
+        ExpressionImpl<T> expr = new ExpressionImpl<>(this, cls);
         expr.queryExpr = new Literal(null);
         return expr;
     }
@@ -1811,54 +1799,53 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
 
     public Expression<Integer> year(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getYear", null);
         return select;
     }
 
     public Expression<Integer> month(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMonth", null);
         return select;
     }
 
     public Expression<Integer> day(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getDay", null);
         return select;
     }
 
     public Expression<Integer> hour(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getHour", null);
         return select;
     }
 
     public Expression<Integer> minute(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getMinute", null);
         return select;
     }
 
     public Expression<Integer> second(Expression<? extends java.util.Date> expr)
     {
-        ExpressionImpl<Integer> select = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Integer> select = new ExpressionImpl<>(this, Integer.class);
         select.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "getSecond", null);
         return select;
     }
 
     public Expression<Number> round(Expression<Number> expr, Integer digits)
     {
-        ExpressionImpl<Number> roundedExpr = new ExpressionImpl(this, expr.getJavaType());
+        ExpressionImpl<Number> roundedExpr = new ExpressionImpl<>(this, expr.getJavaType());
         List<org.datanucleus.store.query.expression.Expression> args = null;
         if (digits != null)
         {
-            args = new ArrayList(1);
-            args.add(new Literal(digits));
+            args = List.of(new Literal(digits));
         }
         roundedExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "round", args);
         return roundedExpr;
@@ -1866,70 +1853,70 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable
 
     public Expression<Number> cos(Expression<Number> expr)
     {
-        ExpressionImpl<Number> cosExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> cosExpr = new ExpressionImpl<>(this, Number.class);
         cosExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "cos", null);
         return cosExpr;
     }
 
     public Expression<Number> sin(Expression<Number> expr)
     {
-        ExpressionImpl<Number> sinExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> sinExpr = new ExpressionImpl<>(this, Number.class);
         sinExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "sin", null);
         return sinExpr;
     }
 
     public Expression<Number> tan(Expression<Number> expr)
     {
-        ExpressionImpl<Number> tanExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> tanExpr = new ExpressionImpl<>(this, Number.class);
         tanExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "tan", null);
         return tanExpr;
     }
 
     public Expression<Number> acos(Expression<Number> expr)
     {
-        ExpressionImpl<Number> acosExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> acosExpr = new ExpressionImpl<>(this, Number.class);
         acosExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "acos", null);
         return acosExpr;
     }
 
     public Expression<Number> asin(Expression<Number> expr)
     {
-        ExpressionImpl<Number> asinExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> asinExpr = new ExpressionImpl<>(this, Number.class);
         asinExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "asin", null);
         return asinExpr;
     }
 
     public Expression<Number> atan(Expression<Number> expr)
     {
-        ExpressionImpl<Number> atanExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> atanExpr = new ExpressionImpl<>(this, Number.class);
         atanExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "atan", null);
         return atanExpr;
     }
 
     public Expression<Number> log(Expression<Number> expr)
     {
-        ExpressionImpl<Number> logExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> logExpr = new ExpressionImpl<>(this, Number.class);
         logExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "log", null);
         return logExpr;
     }
 
     public Expression<Number> exp(Expression<Number> expr)
     {
-        ExpressionImpl<Number> expExpr = new ExpressionImpl(this, Number.class);
+        ExpressionImpl<Number> expExpr = new ExpressionImpl<>(this, Number.class);
         expExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "exp", null);
         return expExpr;
     }
 
     public Expression<Integer> ceil(Expression<Number> expr)
     {
-        ExpressionImpl<Integer> ceilExpr = new ExpressionImpl(this, Integer.class);
+        ExpressionImpl<Integer> ceilExpr = new ExpressionImpl<>(this, Integer.class);
         ceilExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "ceil", null);
         return ceilExpr;
     }
 
     public Expression<Integer> floor(Expression<Number> expr)
     {
-        ExpressionImpl<Integer> floorExpr = new ExpressionImpl(this, Integer.class);
+        ExpressionImpl<Integer> floorExpr = new ExpressionImpl<>(this, Integer.class);
         floorExpr.queryExpr = new InvokeExpression(((ExpressionImpl)expr).getQueryExpression(), "floor", null);
         return floorExpr;
     }

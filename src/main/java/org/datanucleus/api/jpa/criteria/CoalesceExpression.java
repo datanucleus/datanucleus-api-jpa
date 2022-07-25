@@ -27,13 +27,13 @@ import org.datanucleus.store.query.expression.InvokeExpression;
 import org.datanucleus.store.query.expression.Literal;
 
 /**
- * Implementation of JPA2 Criteria "Coalesce".
+ * Implementation of JPA Criteria "Coalesce".
  */
 public class CoalesceExpression<T> extends ExpressionImpl<T> implements Coalesce<T>
 {
     private static final long serialVersionUID = -2906713117803554462L;
 
-    public CoalesceExpression(CriteriaBuilderImpl cb, Class<T> cls) 
+    public CoalesceExpression(CriteriaBuilderImpl cb, Class<? extends T> cls) 
     {
         super(cb, cls);
     }

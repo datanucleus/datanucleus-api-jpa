@@ -555,7 +555,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
 
             if (fetchJoins != null && !fetchJoins.isEmpty())
             {
-                List tuples = new ArrayList();
+                List<String> tuples = new ArrayList<>();
                 tuples.add(getAlias());
 
                 Iterator<Fetch<X, ?>> iter = fetchJoins.iterator();
@@ -569,7 +569,7 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
             return expr;
         }
 
-        List tuples = new ArrayList();
+        List<String> tuples = new ArrayList<>();
         String alias = getAlias();
         if (alias != null)
         {
@@ -603,11 +603,11 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         }
 
         Attribute attr = join.getAttribute();
-        List tuples = new ArrayList();
+        List<String> tuples = new ArrayList<>();
         tuples.add(alias);
         tuples.add(attr.getName());
 
-        JoinExpression joinExpr = new JoinExpression(new PrimaryExpression(new ArrayList(tuples)), join.getAlias(), jt);
+        JoinExpression joinExpr = new JoinExpression(new PrimaryExpression(new ArrayList<>(tuples)), join.getAlias(), jt);
         if (currentExpr instanceof ClassExpression)
         {
             ((ClassExpression)currentExpr).setJoinExpression(joinExpr);
@@ -651,10 +651,10 @@ public class FromImpl<Z,X> extends PathImpl<Z,X> implements From<Z,X>
         }
 
         Attribute attr = fetch.getAttribute();
-        List tuples = new ArrayList();
+        List<String> tuples = new ArrayList<>();
         tuples.add(alias);
         tuples.add(attr.getName());
-        PrimaryExpression primExpr = new PrimaryExpression(new ArrayList(tuples));
+        PrimaryExpression primExpr = new PrimaryExpression(new ArrayList<>(tuples));
         JoinExpression joinExpr = new JoinExpression(primExpr, null, jt);
         if (currentExpr instanceof ClassExpression)
         {

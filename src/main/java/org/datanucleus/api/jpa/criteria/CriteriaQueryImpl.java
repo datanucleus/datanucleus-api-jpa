@@ -129,7 +129,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
     public CriteriaQuery<T> select(Selection<? extends T> select)
     {
         discardCompiled();
-        result = new ArrayList<Selection<?>>();
+        result = new ArrayList<>();
         result.add(select);
         return this;
     }
@@ -145,7 +145,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             result = null;
             return this;
         }
-        result = new ArrayList<Selection<?>>(selects);
+        result = new ArrayList<>(selects);
         return this;
     }
 
@@ -160,7 +160,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             result = null;
             return this;
         }
-        result = new ArrayList<Selection<?>>();
+        result = new ArrayList<>();
         for (int i=0;i<selects.length;i++)
         {
             result.add(selects[i]);
@@ -207,7 +207,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         discardCompiled();
         if (from == null)
         {
-            from = new ArrayList<RootImpl<?>>();
+            from = new ArrayList<>();
         }
         RootImpl root = new RootImpl<X>(cb, type);
         from.add(root);
@@ -223,7 +223,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         {
             return null;
         }
-        return new HashSet<Root<?>>(from);
+        return new HashSet<>(from);
     }
 
     /* (non-Javadoc)
@@ -305,7 +305,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             grouping = null;
             return this;
         }
-        grouping = new ArrayList<Expression<?>>();
+        grouping = new ArrayList<>();
         for (int i=0;i<exprs.length;i++)
         {
             grouping.add(exprs[i]);
@@ -324,7 +324,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             grouping = null;
             return this;
         }
-        grouping = new ArrayList<Expression<?>>();
+        grouping = new ArrayList<>();
         grouping.addAll(exprs);
         return this;
     }
@@ -338,7 +338,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         {
             return null;
         }
-        return new ArrayList<Expression<?>>(grouping);
+        return new ArrayList<>(grouping);
     }
 
     /* (non-Javadoc)
@@ -392,7 +392,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         {
             return null;
         }
-        return new ArrayList<Order>(ordering);
+        return new ArrayList<>(ordering);
     }
 
     /* (non-Javadoc)
@@ -407,7 +407,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             return this;
         }
 
-        ordering = new ArrayList<Order>();
+        ordering = new ArrayList<>();
         ordering.addAll(orders);
         return this;
     }
@@ -424,7 +424,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             return this;
         }
 
-        ordering = new ArrayList<Order>();
+        ordering = new ArrayList<>();
         for (int i=0;i<orders.length;i++)
         {
             ordering.add(orders[i]);
@@ -440,7 +440,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         discardCompiled();
         if (subqueries == null)
         {
-            subqueries = new ArrayList<SubqueryImpl<?>>();
+            subqueries = new ArrayList<>();
         }
         SubqueryImpl<U> subquery = new SubqueryImpl<U>(cb, type, this);
         subqueries.add(subquery);
@@ -454,9 +454,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         params = null;
     }
 
-    /* (non-Javadoc)
-     * @see javax.persistence.criteria.CriteriaQuery#getParameters()
-     */
+    @Override
     public Set<ParameterExpression<?>> getParameters()
     {
         if (params != null)
@@ -464,7 +462,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
             return params;
         }
 
-        List<org.datanucleus.store.query.expression.ParameterExpression> paramExprs = new ArrayList();
+        List<org.datanucleus.store.query.expression.ParameterExpression> paramExprs = new ArrayList<>();
         if (result != null)
         {
             Iterator<Selection<?>> iter = result.iterator();
@@ -498,7 +496,7 @@ public class CriteriaQueryImpl<T> implements CriteriaQuery<T>, Serializable
         }
         else
         {
-            params = new HashSet<ParameterExpression<?>>();
+            params = new HashSet<>();
             Iterator<org.datanucleus.store.query.expression.ParameterExpression> iter = paramExprs.iterator();
             while (iter.hasNext())
             {

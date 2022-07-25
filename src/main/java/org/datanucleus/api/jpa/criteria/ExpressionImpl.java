@@ -30,20 +30,20 @@ import org.datanucleus.store.query.expression.DyadicExpression;
 import org.datanucleus.store.query.expression.Literal;
 
 /**
- * Implementation of JPA2 Criteria "Expression".
+ * Implementation of JPA Criteria "Expression".
  */
 public class ExpressionImpl<T> implements Expression<T>, Serializable
 {
     static final long serialVersionUID = -9180595377551709140L;
 
     protected CriteriaBuilderImpl cb;
-    private final Class<T> cls;
+    private final Class<? extends T> cls;
     private String alias;
 
     /** The underlying (generic) query expression. */
     org.datanucleus.store.query.expression.Expression queryExpr;
 
-    public ExpressionImpl(CriteriaBuilderImpl cb, Class<T> cls)
+    public ExpressionImpl(CriteriaBuilderImpl cb, Class<? extends T> cls)
     {
         this.cb = cb;
         this.cls = cls;

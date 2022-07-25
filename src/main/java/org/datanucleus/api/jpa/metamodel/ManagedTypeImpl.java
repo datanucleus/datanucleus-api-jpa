@@ -70,7 +70,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         AbstractMemberMetaData[] mmds = cmd.getManagedMembers();
         for (int i=0;i<mmds.length;i++)
         {
-            Attribute attr = createAttributeForMember(mmds[i], clr, this);
+            Attribute<X, ?> attr = createAttributeForMember(mmds[i], clr, this);
             attributes.put(mmds[i].getName(), attr);
         }
     }
@@ -156,7 +156,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         return model;
     }
 
-    public ManagedType getSuperclass()
+    public ManagedType<Object> getSuperclass()
     {
         AbstractClassMetaData superCmd = cmd.getSuperAbstractClassMetaData();
         if (superCmd != null)

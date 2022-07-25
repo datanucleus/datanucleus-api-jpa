@@ -61,7 +61,7 @@ public class AttributeImpl<X, Y> implements Attribute<X, Y>
      */
     public ManagedType<X> getDeclaringType()
     {
-        Class ownerCls = owner.getModel().getClassLoaderResolver().classForName(mmd.getClassName(true));
+        Class<X> ownerCls = owner.getModel().getClassLoaderResolver().classForName(mmd.getClassName(true));
         return owner.getModel().managedType(ownerCls);
     }
 

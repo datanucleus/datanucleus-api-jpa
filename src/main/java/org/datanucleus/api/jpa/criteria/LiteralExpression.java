@@ -28,14 +28,14 @@ import org.datanucleus.store.query.expression.Literal;
 /**
  * Representation of a Literal in a criteria query.
  */
-public class LiteralExpression<X> extends ExpressionImpl
+public class LiteralExpression<X> extends ExpressionImpl<X>
 {
     private static final long serialVersionUID = -867487639375209191L;
     X value;
 
     public LiteralExpression(CriteriaBuilderImpl cb, X value)
     {
-        super(cb, value.getClass());
+        super(cb, (Class<? extends X>) value.getClass());
         this.value = value;
     }
 
