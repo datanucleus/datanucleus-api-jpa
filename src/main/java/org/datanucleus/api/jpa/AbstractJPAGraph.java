@@ -36,7 +36,7 @@ import org.datanucleus.metadata.MetaDataManager;
  * Base for JPAEntityGraph and JPASubgraph.
  * @param <T> Type of the entity
  */
-public abstract class AbstractJPAGraph<T>
+public abstract class AbstractJPAGraph<T> implements Subgraph<T>
 {
     MetaDataManager mmgr;
 
@@ -66,6 +66,7 @@ public abstract class AbstractJPAGraph<T>
         this.mutable = false;
     }
 
+    @Override
     public List<AttributeNode<?>> getAttributeNodes()
     {
         if (attributeNodeMap == null)
@@ -77,6 +78,7 @@ public abstract class AbstractJPAGraph<T>
         return attributeNodes;
     }
 
+    @Override
     public void addAttributeNodes(String... attributeNames)
     {
         if (!mutable)
@@ -95,6 +97,7 @@ public abstract class AbstractJPAGraph<T>
         }
     }
 
+    @Override
     public void addAttributeNodes(Attribute<? super T, ?>... attributes)
     {
         if (!mutable)
@@ -113,6 +116,7 @@ public abstract class AbstractJPAGraph<T>
         }
     }
 
+    @Override
     public <X> Subgraph<X> addSubgraph(Attribute<? super T, X> attribute)
     {
         if (!mutable)
@@ -124,6 +128,7 @@ public abstract class AbstractJPAGraph<T>
         return (Subgraph<X>) addSubgraph(attribute, type);
     }
 
+    @Override
     public <X> Subgraph<? extends X> addSubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
     {
         if (!mutable)
@@ -147,6 +152,7 @@ public abstract class AbstractJPAGraph<T>
         return subgraph;
     }
 
+    @Override
     public <X> Subgraph<X> addSubgraph(String attributeName)
     {
         if (!mutable)
@@ -175,6 +181,7 @@ public abstract class AbstractJPAGraph<T>
         return addSubgraph(attributeName, type);
     }
 
+    @Override
     public <X> Subgraph<X> addSubgraph(String attributeName, Class<X> type)
     {
         if (!mutable)
@@ -198,6 +205,7 @@ public abstract class AbstractJPAGraph<T>
         return subgraph;
     }
 
+    @Override
     public <X> Subgraph<X> addKeySubgraph(Attribute<? super T, X> attribute)
     {
         if (!mutable)
@@ -215,6 +223,7 @@ public abstract class AbstractJPAGraph<T>
         return addKeySubgraph(attribute, type);
     }
 
+    @Override
     public <X> Subgraph<? extends X> addKeySubgraph(Attribute<? super T, X> attribute, Class<? extends X> type)
     {
         if (!mutable)
@@ -226,6 +235,7 @@ public abstract class AbstractJPAGraph<T>
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    @Override
     public <X> Subgraph<X> addKeySubgraph(String attributeName)
     {
         if (!mutable)
@@ -242,6 +252,7 @@ public abstract class AbstractJPAGraph<T>
         return addKeySubgraph(attributeName, type);
     }
 
+    @Override
     public <X> Subgraph<X> addKeySubgraph(String attributeName, Class<X> type)
     {
         if (!mutable)
