@@ -21,4 +21,11 @@
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.._.._.._.._.._usr_local_software_datanucleus_datanucleus-api-jpa_src_main_resources</name>
+			<type>2</type>
+			<location>//usr/local/software/datanucleus/datanucleus-api-jpa/src/main/resources/</location>
+		</link>
+	</linkedResources>
 </projectDescription>
