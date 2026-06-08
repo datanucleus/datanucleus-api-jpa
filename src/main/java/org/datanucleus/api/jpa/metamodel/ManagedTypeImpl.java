@@ -39,6 +39,7 @@ import org.datanucleus.ClassLoaderResolver;
 import org.datanucleus.metadata.AbstractClassMetaData;
 import org.datanucleus.metadata.AbstractMemberMetaData;
 import org.datanucleus.metadata.RelationType;
+import org.datanucleus.util.ClassUtils;
 
 /**
  * Implementation of JPA Metamodel "ManagedType".
@@ -712,7 +713,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
             throw new IllegalArgumentException("Attribute " + attr + " was not found in class");
         }
         AbstractMemberMetaData mmd = theAttr.getMetadata();
-        if (!type.isAssignableFrom(mmd.getType()))
+        if (!ClassUtils.typesAreCompatible(mmd.getType(), type))
         {
             throw new IllegalArgumentException("Attribute " + attr + " isnt of type " + type.getName());
         }
@@ -778,7 +779,7 @@ public class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedType<X>
         }
 
         AbstractMemberMetaData mmd = theAttr.getMetadata();
-        if (!type.isAssignableFrom(mmd.getType()))
+        if (!ClassUtils.typesAreCompatible(mmd.getType(), type))
         {
             throw new IllegalArgumentException("Attribute " + attr + " isnt of type " + type.getName());
         }
