@@ -621,7 +621,7 @@ public class JPAXmlMetaDataHandler extends AbstractXmlMetaDataHandler
                     pushStack(spqmd);
                 }
             }
-            else if (localName.equals("stored-procedure-parameter"))
+            else if (localName.equals("parameter"))
             {
                 // Stored Procedure parameter
                 MetaData md = getStack();
